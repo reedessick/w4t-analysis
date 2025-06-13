@@ -1,0 +1,36 @@
+#!/bin/bash
+
+# convert the format of HDF files to something faster to read
+# Reed Essick (reed.essick@gmail.com)
+
+#-------------------------------------------------
+
+BASES=""
+
+BASES="$BASES M05MA01"
+BASES="$BASES M05MA05"
+BASES="$BASES M05MA10"
+BASES="$BASES M10MA01"
+BASES="$BASES M10MA05"
+BASES="$BASES M10MA10"
+
+#-------------------------------------------------
+
+for BASE in $BASES
+do
+
+    for FLASH in $(ls ${BASE}/Turb_hdf5_plt_cnt_???? 2> /dev/null)
+    do
+
+        SNAP=$(echo $FLASH | awk -F "_" '{print $5}')
+
+#        echo \
+        w4t-convert-flash \
+            ${FLASH} \
+            ${BASE}/${BASE}_${SNAP}.hdf \
+            vel mag dens \
+            --Verbose \
+        || exit 1
+
+    done
+done

@@ -1,0 +1,39 @@
+#!/bin/bash
+
+# a simple script to iterate over boxes and compute moments for each
+# Reed Essick (reed.essick@gmail.com)
+
+#-------------------------------------------------
+
+BASEDIR="/fs/lustre/project/plasmaastro/jbeattie/turbulent_boxes/"
+
+SIMS=""
+
+SIMS="$SIMS M05MA01"
+#SIMS="$SIMS M05MA05"
+#SIMS="$SIMS M05MA10"
+
+#SIMS="$SIMS M10MA01"
+#SIMS="$SIMS M10MA05"
+#SIMS="$SIMS M10MA10"
+
+#-------------------------------------------------
+
+for SIM in $SIMS
+do
+
+    echo "processing: $SIM"
+
+    #---
+
+    mkdir -p $SIM
+
+    #---
+
+    # grab just one
+#    scp essick@gw.cita.utoronto.ca:$BASEDIR/$SIM/Turb_hdf5_plt_cnt_0050 $SIM
+
+    # grab a large set of snapshots
+    scp essick@gw.cita.utoronto.ca:$BASEDIR/$SIM/Turb_hdf5_plt_cnt_00?0 $SIM
+
+done
