@@ -10,13 +10,19 @@ SNAP=$2
 
 #------------------------
 
-COMP="0"
+#COMP="0"
+#COMP="1"
+COMP="2"
 
 #FIELD="vel"
 #TITLE='$u_x$'
+#TITLE='$u_y$'
+#TITLE='$u_z$'
 
 FIELD="mag"
-TITLE='$B_x$'
+#TITLE='$B_x$'
+#TITLE='$B_y$'
+TITLE='$B_z$'
 
 #------------------------
 

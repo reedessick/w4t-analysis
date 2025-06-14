@@ -5,18 +5,18 @@
 
 #-------------------------------------------------
 
-#./scaling M05MA01 0050
+./scaling M05MA01 0050
 ./scaling M05MA01 0060
 ./scaling M05MA01 0070
 ./scaling M05MA01 0080
 ./scaling M05MA01 0090
 
-#./scaling M05MA05 0050
+./scaling M05MA05 0050
 
-#./scaling M05MA10 0050
+./scaling M05MA10 0050
 
-#./scaling M10MA01 0050
+./scaling M10MA01 0050
 
-#./scaling M10MA05 0050
+./scaling M10MA05 0050
 
-#./scaling M10MA10 0050
+./scaling M10MA10 0050
