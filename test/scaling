@@ -8,21 +8,10 @@
 FLOW=$1
 SNAP=$2
 
-#------------------------
+FIELD=$3
+COMP=$4
 
-#COMP="0"
-#COMP="1"
-COMP="2"
-
-#FIELD="vel"
-#TITLE='$u_x$'
-#TITLE='$u_y$'
-#TITLE='$u_z$'
-
-FIELD="mag"
-#TITLE='$B_x$'
-#TITLE='$B_y$'
-TITLE='$B_z$'
+TITLE="${FIELD}[${COMP}]"
 
 #------------------------
 
@@ -49,7 +38,7 @@ BASE="${OUTDIR}/${TAG}"
 
 # compute structure function
 
-#echo \
+echo \
 w4t-structure-function \
     ${BASE}.hdf \
     ${BASE}-${FIELD}_${COMP}-structure-function.hdf \
@@ -62,7 +51,7 @@ w4t-structure-function \
 
 #---
 
-#echo \
+echo \
 w4t-scaling-exponent \
     ${BASE}-${FIELD}_${COMP}-structure-function.hdf \
     ${BASE}-${FIELD}_${COMP}-scaling-exponent.hdf \
@@ -74,7 +63,7 @@ w4t-scaling-exponent \
 
 #-------
 
-#echo \
+echo \
 w4t-structure-function \
     ${BASE}.hdf \
     ${BASE}-${FIELD}_${COMP}-direct-structure-function.hdf \
@@ -88,7 +77,7 @@ w4t-structure-function \
 
 #---
 
-#echo \
+echo \
 w4t-scaling-exponent \
     ${BASE}-${FIELD}_${COMP}-direct-structure-function.hdf \
     ${BASE}-${FIELD}_${COMP}-direct-scaling-exponent.hdf \
@@ -102,7 +91,7 @@ w4t-scaling-exponent \
 
 # denoise to identify coherent structures
 
-#echo \
+echo \
 w4t-denoise \
     ${BASE}.hdf \
     ${BASE}-${FIELD}_${COMP}-denoise.hdf \
@@ -119,7 +108,7 @@ w4t-denoise \
 
 # compute structure function of denoised flow
 
-#echo \
+echo \
 w4t-structure-function \
     ${BASE}-${FIELD}_${COMP}-denoise.hdf \
     ${BASE}-${FIELD}_${COMP}-denoise-structure-function.hdf \
@@ -145,7 +134,7 @@ w4t-scaling-exponent \
 
 # identify structures as separate sets of pixels
 
-#echo \
+echo \
 w4t-structures \
     ${BASE}-${FIELD}_${COMP}-denoise.hdf \
     ${BASE}-${FIELD}_${COMP}-denoise-structures.hdf \
@@ -161,7 +150,7 @@ w4t-structures \
 
 # denoise to remove coherent structures
 
-#echo \
+echo \
 w4t-denoise \
     ${BASE}.hdf \
     ${BASE}-${FIELD}_${COMP}-smooth.hdf \
@@ -179,7 +168,7 @@ w4t-denoise \
 
 # compute structure function of smoothed flow
 
-#echo \
+echo \
 w4t-structure-function \
     ${BASE}-${FIELD}_${COMP}-smooth.hdf \
     ${BASE}-${FIELD}_${COMP}-smooth-structure-function.hdf \
@@ -191,7 +180,7 @@ w4t-structure-function \
 
 #-----------
 
-#echo \
+echo \
 w4t-scaling-exponent \
     ${BASE}-${FIELD}_${COMP}-smooth-structure-function.hdf \
     ${BASE}-${FIELD}_${COMP}-smooth-scaling-exponent.hdf \
@@ -205,7 +194,7 @@ w4t-scaling-exponent \
 
 # plot the structure functions
 
-#echo \
+echo \
 w4t-plot-structure-function \
     --title "$FLOW $SNAP $TITLE" \
     --source    'wavelet'   ${BASE}-${FIELD}_${COMP}-structure-function.hdf \
@@ -221,7 +210,7 @@ w4t-plot-structure-function \
 
 #---
 
-#echo \
+echo \
 w4t-plot-structure-function \
     --title "$FLOW $SNAP $TITLE" \
     --source       'full'    ${BASE}-${FIELD}_${COMP}-structure-function.hdf \

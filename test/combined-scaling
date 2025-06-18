@@ -13,83 +13,82 @@ SEED=1
 
 #-------------------------------------------------
 
-FLOW="M05MA01"
-
-#------------------------
-
-#FIELD="mag"
-FIELD="vel"
-
-#-------------------------------------------------
-
-# average over structure functions for each component separate
-for COMP in 0 1 2
+for FIELD in "vel" "mag"
 do
 
-#    echo \
-    w4t-average-structure-function \
-        ../data/${FLOW}/${FLOW}_0???-${FIELD}_${COMP}-direct-structure-function.hdf \
-        ../data/${FLOW}/${FLOW}_aved-${FIELD}_${COMP}-direct-structure-function.hdf \
-        --verbose \
-    || exit 1
+    for FLOW in "M05MA01" # "M05MA05" "M05MA10" "M10MA01" "M10MA05" "M10MA10"
+    do
 
-    #---
+        # average over structure functions for each component separate
+        for COMP in 0 1 2
+        do
 
-#    echo \
-    w4t-sample-structure-function-ansatz \
-        "../data/${FLOW}/${FLOW}_aved-${FIELD}_${COMP}-direct-structure-function.hdf" \
-        "../data/${FLOW}/${FLOW}_aved-${FIELD}_${COMP}-direct-sample-structure-function-ansatz.hdf" \
-        --num-warmup $NUM_WARMUP \
-        --num-samples $NUM_SAMPLES \
-        --seed $SEED \
-        --verbose \
-    || exit 1
+#            echo \
+            w4t-average-structure-function \
+                ../data/${FLOW}/${FLOW}_0???-${FIELD}_${COMP}-direct-structure-function.hdf \
+                ../data/${FLOW}/${FLOW}_aved-${FIELD}_${COMP}-direct-structure-function.hdf \
+                --verbose \
+            || exit 1
 
-#        --max-scale $MAX_SCALE \
+            #---
 
-#    echo \
-    w4t-plot-structure-function-ansatz \
-        "../data/${FLOW}/${FLOW}_aved-${FIELD}_${COMP}-direct-structure-function.hdf" \
-        "../data/${FLOW}/${FLOW}_aved-${FIELD}_${COMP}-direct-sample-structure-function-ansatz.hdf" \
-        --max-num-samples 100 \
-        --output-dir ../data/${FLOW}/ \
-        --tag ${FIELD}_${COMP}-${FLOW}_aved-direct \
-        --verbose \
-    || exit 1
+#            echo \
+            w4t-sample-structure-function-ansatz \
+                "../data/${FLOW}/${FLOW}_aved-${FIELD}_${COMP}-direct-structure-function.hdf" \
+                "../data/${FLOW}/${FLOW}_aved-${FIELD}_${COMP}-direct-sample-structure-function-ansatz.hdf" \
+                --num-warmup $NUM_WARMUP \
+                --num-samples $NUM_SAMPLES \
+                --seed $SEED \
+                --verbose \
+            || exit 1
+
+#                --max-scale $MAX_SCALE \
+
+#            echo \
+            w4t-plot-structure-function-ansatz \
+                "../data/${FLOW}/${FLOW}_aved-${FIELD}_${COMP}-direct-structure-function.hdf" \
+                "../data/${FLOW}/${FLOW}_aved-${FIELD}_${COMP}-direct-sample-structure-function-ansatz.hdf" \
+                --max-num-samples 100 \
+                --output-dir ../data/${FLOW}/ \
+                --tag ${FIELD}_${COMP}-${FLOW}_aved-direct \
+                --verbose \
+            || exit 1
+
+        done
+
+        #-----------------------------------------
+
+        # average over components
+
+#        echo \
+        w4t-average-structure-function \
+            ../data/${FLOW}/${FLOW}_aved-${FIELD}_?-direct-structure-function.hdf \
+            ../data/${FLOW}/${FLOW}_aved-${FIELD}-direct-structure-function.hdf \
+            --verbose \
+        || exit 1
+
+#        echo \
+        w4t-sample-structure-function-ansatz \
+            "../data/${FLOW}/${FLOW}_aved-${FIELD}-direct-structure-function.hdf" \
+            "../data/${FLOW}/${FLOW}_aved-${FIELD}-direct-sample-structure-function-ansatz.hdf" \
+            --num-warmup $NUM_WARMUP \
+            --num-samples $NUM_SAMPLES \
+            --seed $SEED \
+            --verbose \
+        || exit 1
+
+            --max-scale $MAX_SCALE \
+
+#        echo \
+        w4t-plot-structure-function-ansatz \
+            "../data/${FLOW}/${FLOW}_aved-${FIELD}-direct-structure-function.hdf" \
+            "../data/${FLOW}/${FLOW}_aved-${FIELD}-direct-sample-structure-function-ansatz.hdf" \
+            --max-num-samples 100 \
+            --output-dir ../data/${FLOW}/ \
+            --tag ${FIELD}-${FLOW}_aved-direct \
+            --verbose \
+        || exit 1
+
+    done
 
 done
-
-#------------------------
-
-# average over components
-
-#echo \
-w4t-average-structure-function \
-    ../data/${FLOW}/${FLOW}_aved-${FIELD}_?-direct-structure-function.hdf \
-    ../data/${FLOW}/${FLOW}_aved-${FIELD}-direct-structure-function.hdf \
-    --verbose \
-|| exit 1
-
-#-------------------------------------------------
-
-#echo \
-w4t-sample-structure-function-ansatz \
-    "../data/${FLOW}/${FLOW}_aved-${FIELD}-direct-structure-function.hdf" \
-    "../data/${FLOW}/${FLOW}_aved-${FIELD}-direct-sample-structure-function-ansatz.hdf" \
-    --num-warmup $NUM_WARMUP \
-    --num-samples $NUM_SAMPLES \
-    --seed $SEED \
-    --verbose \
-|| exit 1
-
-#    --max-scale $MAX_SCALE \
-
-#echo \
-w4t-plot-structure-function-ansatz \
-    "../data/${FLOW}/${FLOW}_aved-${FIELD}-direct-structure-function.hdf" \
-    "../data/${FLOW}/${FLOW}_aved-${FIELD}-direct-sample-structure-function-ansatz.hdf" \
-    --max-num-samples 100 \
-    --output-dir ../data/${FLOW}/ \
-    --tag ${FIELD}-${FLOW}_aved-direct \
-    --verbose \
-|| exit 1
