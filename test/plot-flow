@@ -1,0 +1,64 @@
+#!/bin/bash
+
+# a quick script to test plotting functionality
+# Reed Essick (reed.essick@gmail.com)
+
+#-------------------------------------------------
+
+FLOW="../data/M05MA10/M05MA10_0050.hdf"
+FIELD="vel"
+COMP="0"
+
+#------------------------
+
+# test 1D plotting
+
+echo \
+w4t-plot-flow \
+    $FLOW \
+    plot plot_coeff hist hist_coeff scalogram \
+    $FIELD --component $COMP \
+    --max-edgelength 512 \
+    --slice 0 256 \
+    --slice 1 256 \
+    --levels 1 \
+    --verbose \
+    --output-dir ./ \
+    --tag dim1 \
+    --figtype pdf --figtype png \
+|| exit 1
+
+#---
+
+# test 2D plotting
+
+echo \
+w4t-plot-flow \
+    $FLOW \
+    plot plot_coeff hist hist_coeff grand_tour \
+    $FIELD --component $COMP \
+    --max-edgelength 512 \
+    --slice 0 256 \
+    --levels 1 1 \
+    --verbose \
+    --output-dir ./ \
+    --tag dim2 \
+    --figtype pdf --figtype png \
+|| exit 1
+
+#---
+
+# test 3D plotting
+
+#echo \
+w4t-plot-flow \
+    $FLOW \
+    plot plot_coeff hist hist_coeff grand_tour \
+    $FIELD --component $COMP \
+    --max-edgelength 512 \
+    --levels 1 1 1 \
+    --verbose \
+    --output-dir ./ \
+    --tag dim3 \
+    --figtype pdf --figtype png \
+|| exit 1
