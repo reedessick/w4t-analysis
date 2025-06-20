@@ -22,7 +22,7 @@ w4t-plot-structures \
     plot hist grand_tour \
     ${FIELD}_${COMP} \
     --max-edgelength 256 \
-    --structure-index 0 1 \
+    --structure-index 162 \
     --increment 1 \
     --wavelet haar \
     --verbose \
@@ -38,7 +38,7 @@ w4t-plot-structures \
     plot hist grand_tour \
     ${FIELD}_${COMP} \
     --max-edgelength 256 \
-    --structure-index 0 1 \
+    --structure-index 162 \
     --increment 1 \
     --wavelet haar \
     --verbose \
