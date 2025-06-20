@@ -120,7 +120,7 @@ w4t-structure-function \
 
 #-----------
 
-#echo \
+echo \
 w4t-scaling-exponent \
     ${BASE}-${FIELD}_${COMP}-denoise-structure-function.hdf \
     ${BASE}-${FIELD}_${COMP}-denoise-scaling-exponent.hdf \
@@ -234,7 +234,7 @@ w4t-plot-structure-function \
 
 #---------------------------------------------
 
-#echo \
+echo \
 w4t-sample-structure-function-ansatz \
     ${BASE}-${FIELD}_${COMP}-structure-function.hdf \
     ${BASE}-${FIELD}_${COMP}-sample-structure-function-ansatz.hdf \
@@ -245,7 +245,7 @@ w4t-sample-structure-function-ansatz \
     --verbose \
 || exit 1
 
-#echo \
+echo \
 w4t-plot-structure-function-ansatz \
     ${BASE}-${FIELD}_${COMP}-structure-function.hdf \
     ${BASE}-${FIELD}_${COMP}-sample-structure-function-ansatz.hdf \
@@ -257,7 +257,7 @@ w4t-plot-structure-function-ansatz \
 
 #---
 
-#echo \
+echo \
 w4t-sample-structure-function-ansatz \
     ${BASE}-${FIELD}_${COMP}-direct-structure-function.hdf \
     ${BASE}-${FIELD}_${COMP}-direct-sample-structure-function-ansatz.hdf \
@@ -268,7 +268,7 @@ w4t-sample-structure-function-ansatz \
     --verbose \
 || exit 1
 
-#echo \
+echo \
 w4t-plot-structure-function-ansatz \
     ${BASE}-${FIELD}_${COMP}-direct-structure-function.hdf \
     ${BASE}-${FIELD}_${COMP}-direct-sample-structure-function-ansatz.hdf \
