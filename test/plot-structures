@@ -1,0 +1,48 @@
+#!/bin/bash
+
+# a simple script to test visualization of structures
+# Reed Essick (reed.essick@gmail.com)
+
+#-------------------------------------------------
+
+FLOW="../data/M05MA01/M05MA01_0050-mag_0-denoise.hdf"
+STRUCTURES="../data/M05MA01/M05MA01_0050-mag_0-denoise-structures.hdf"
+
+#------------------------
+
+FIELD="mag"
+COMP="0"
+
+#-------------------------------------------------
+
+#echo \
+w4t-plot-structures \
+    $FLOW \
+    $STRUCTURES \
+    plot hist grand_tour \
+    ${FIELD}_${COMP} \
+    --max-edgelength 256 \
+    --structure-index 0 1 \
+    --increment 1 \
+    --wavelet haar \
+    --verbose \
+    --output-dir structures \
+|| exit 1
+
+#------------------------
+
+#echo \
+w4t-plot-structures \
+    $FLOW \
+    $STRUCTURES \
+    plot hist grand_tour \
+    ${FIELD}_${COMP} \
+    --max-edgelength 256 \
+    --structure-index 0 1 \
+    --increment 1 \
+    --wavelet haar \
+    --verbose \
+    --output-dir structures-zoom \
+    --zoom \
+    --aspect equal \
+|| exit 1

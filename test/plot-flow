@@ -13,7 +13,7 @@ COMP="0"
 
 # test 1D plotting
 
-echo \
+#echo \
 w4t-plot-flow \
     $FLOW \
     plot plot_coeff hist hist_coeff scalogram \
@@ -31,7 +31,7 @@ w4t-plot-flow \
 
 # test 2D plotting
 
-echo \
+#echo \
 w4t-plot-flow \
     $FLOW \
     plot plot_coeff hist hist_coeff grand_tour \
