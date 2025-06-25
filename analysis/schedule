@@ -79,7 +79,7 @@ vectors = []
 #for field in ['mag', 'curr', 'vel', 'vort']:
 for field in ['mag', 'vel']:
     vectors += [(tag+'_%s'%field, cmd, field) for tag, cmd in commands] # default map2scalar: magnitude of differences btwn vectors
-    vectors += [(tag+'_%s-abs'%field, cmd+['--magnitude'], field) for tag, cmd in commands] # magnitude
+    vectors += [(tag+'_%s-mag'%field, cmd+['--magnitude'], field) for tag, cmd in commands] # magnitude
     for component in range(3):
 #        vectors += [(tag+'_%s-%d'%(field, component), cmd+['--component', '%d'%component], field) for tag, cmd, in commands]
         vectors += [(tag+'_%s-%d'%(field, component), cmd+['--component %d'%component], field) for tag, cmd, in commands]
