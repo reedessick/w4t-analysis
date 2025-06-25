@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# a simple script to iterate over data and schedule workflows
+# Reed Essick (reed.essick@gmail.com)
+
+#-------------------------------------------------
+
+./schedule M05MA01 50 -o M05MA01 -d ../data/M05MA01 --direct-increment 16 --max-edgelength 512

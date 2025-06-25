@@ -1,0 +1,109 @@
+#!/usr/bin/env python3
+
+"""a quick script to schedule workflows
+"""
+__author__ = "Reed Essick (reed.essick@gmail.com)"
+
+#-------------------------------------------------
+
+import os
+
+from argparse import ArgumentParser
+
+#-------------------------------------------------
+
+parser = ArgumentParser()
+
+parser.add_argument('flow', type=str)
+parser.add_argument('snap', type=int)
+
+parser.add_argument('-o', '--output-dir', default='.', type=str)
+parser.add_argument('-d', '--data-dir', default='.', type=str)
+
+parser.add_argument('--max-edgelength', default=None, type=int)
+parser.add_argument('--index', nargs='*', type=int, default=[1, 2, 3, 4, 5, 6])
+
+parser.add_argument('--direct-increment', default=None, type=int)
+
+parser.add_argument('-v', '--verbose', default=False, action='store_true')
+
+args = parser.parse_args()
+
+os.makedirs(args.output_dir, exist_ok=True)
+
+#-------------------------------------------------
+
+base = '%s_%04d' % (args.flow, args.snap)
+
+cmd = [
+    'w4t-structure-function',
+    os.path.join(os.path.abspath(args.data_dir), base+'.hdf'),
+    '--Verbose',
+]
+
+#cmd += ['--index'] + ['%d'%_ for _ in args.index]
+cmd += ['--index %s' % (' '.join('%d'%_ for _ in args.index))]
+
+if args.max_edgelength is not None:
+#    cmd += ['--max-edgelength', '%d'%args.max_edgelength]
+    cmd += ['--max-edgelength %d'%args.max_edgelength]
+
+if args.direct_increment:
+#    cmd += ['--direct-increment', '%d'%args.direct_increment]
+    cmd += ['--direct-increment %d'%args.direct_increment]
+
+
+#-------------------------------------------------
+
+commands = [(base, cmd)]
+
+#---
+
+# add different directions
+directions = []
+for direction in range(3):
+#    directions += [(tag+'_dir-%d'%direction, cmd+['--direction', '%d'%direction]) for tag, cmd in commands]
+    directions += [(tag+'_dir-%d'%direction, cmd+['--direction %d'%direction]) for tag, cmd in commands]
+
+commands = commands + directions
+
+#---
+
+# add different fields
+scalars = []
+for field in ['dens']:
+    scalars += [(tag+'_%s'%field, cmd, field) for tag, cmd in commands] # default map2scalar: just take the value of the field
+
+vectors = []
+for field in ['mag', 'curr', 'vel', 'vort']:
+    vectors += [(tag+'_%s'%field, cmd, field) for tag, cmd in commands] # default map2scalar: magnitude of differences btwn vectors
+    vectors += [(tag+'_%s-abs'%field, cmd+['--magnitude'], field) for tag, cmd in commands] # magnitude
+    for component in range(3):
+#        vectors += [(tag+'_%s-%d'%(field, component), cmd+['--component', '%d'%component], field) for tag, cmd, in commands]
+        vectors += [(tag+'_%s-%d'%(field, component), cmd+['--component %d'%component], field) for tag, cmd, in commands]
+
+commands = scalars + vectors
+
+#---
+
+# add different methods
+wavelet = [(tag+'_wsf', cmd+[os.path.join(os.path.abspath(args.output_dir), tag+'_wsf.hdf'), field]) \
+    for tag, cmd, field in commands]
+
+direct = [(tag+'_dsf', cmd+['--direct', os.path.join(os.path.abspath(args.output_dir), tag+'_dsf.hdf'), field]) \
+    for tag, cmd, field in commands]
+
+commands = wavelet + direct
+
+#------------------------
+
+for tag, cmd in commands:
+    script = os.path.join(args.output_dir, tag+'.sh')
+
+    if args.verbose:
+        print('writing: '+script)
+
+    with open(script, 'w') as obj:
+        obj.write('#!/bin/bash')
+        obj.write('\n\n# %s' % (tag.replace('_', ' ')))
+        obj.write('\n\n%s\n|| exit 1' % (' \\\n    '.join(cmd)))
