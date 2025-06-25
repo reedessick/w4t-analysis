@@ -76,7 +76,8 @@ for field in ['dens']:
     scalars += [(tag+'_%s'%field, cmd, field) for tag, cmd in commands] # default map2scalar: just take the value of the field
 
 vectors = []
-for field in ['mag', 'curr', 'vel', 'vort']:
+#for field in ['mag', 'curr', 'vel', 'vort']:
+for field in ['mag', 'vel']:
     vectors += [(tag+'_%s'%field, cmd, field) for tag, cmd in commands] # default map2scalar: magnitude of differences btwn vectors
     vectors += [(tag+'_%s-abs'%field, cmd+['--magnitude'], field) for tag, cmd in commands] # magnitude
     for component in range(3):
@@ -107,6 +108,6 @@ for tag, cmd in commands:
     with open(script, 'w') as obj:
         obj.write('#!/bin/bash')
         obj.write('\n\n# %s' % (tag.replace('_', ' ')))
-        obj.write('\n\n%s\n|| exit 1' % (' \\\n    '.join(cmd)))
+        obj.write('\n\n%s\\\n|| exit 1' % (' \\\n    '.join(cmd)))
 
     os.chmod(script, os.stat(script).st_mode | stat.S_IEXEC)
