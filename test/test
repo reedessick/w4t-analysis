@@ -5,27 +5,23 @@
 
 #-------------------------------------------------
 
-for FIELD in "mag" "vel"
+for FIELD in "mag" "vel" "dens"
 do
 
-    for COMP in "0" "1" "2"
-    do
+        ./scaling M05MA01 0050 $FIELD || exit 1
+        ./scaling M05MA01 0060 $FIELD || exit 1
+        ./scaling M05MA01 0070 $FIELD || exit 1
+        ./scaling M05MA01 0080 $FIELD || exit 1
+        ./scaling M05MA01 0090 $FIELD || exit 1
 
-        ./scaling M05MA01 0050 $FIELD $COMP
-        ./scaling M05MA01 0060 $FIELD $COMP
-        ./scaling M05MA01 0070 $FIELD $COMP
-        ./scaling M05MA01 0080 $FIELD $COMP
-        ./scaling M05MA01 0090 $FIELD $COMP
+        ./scaling M05MA05 0050 $FIELD || exit 1
 
-        ./scaling M05MA05 0050 $FIELD $COMP
+        ./scaling M05MA10 0050 $FIELD || exit 1
 
-        ./scaling M05MA10 0050 $FIELD $COMP
+        ./scaling M10MA01 0050 $FIELD || exit 1
 
-        ./scaling M10MA01 0050 $FIELD $COMP
+        ./scaling M10MA05 0050 $FIELD || exit 1
 
-        ./scaling M10MA05 0050 $FIELD $COMP
+        ./scaling M10MA10 0050 $FIELD || exit 1
 
-        ./scaling M10MA10 0050 $FIELD $COMP
-
-    done
 done

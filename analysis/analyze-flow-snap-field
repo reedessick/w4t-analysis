@@ -1,0 +1,136 @@
+#!/bin/bash
+
+# basic workflow to analyze a single box
+# Reed Essick (reed.essick@gmail.com)
+
+#---------------------------------------------
+
+# compute the following
+
+# for field in mag curr vel vort dens
+#    for map2scalar in "euclidean vector norm" "each component separately"
+#        for displacement in "averaged over all displacement directions" "each displacement direction separately"
+#            wavelet structure function
+#            direct structure function
+
+# then repeat for several denoise thresholds
+#     compute structure functions for denoised flow (just coherent structures)
+#     compute structure functions for smoothed flow (flow without coherent structures)
+
+# you should then fit and plot all the different structure functions
+
+#-------------------------------------------------
+
+### PARSE ARGUMENTS
+
+FLOW=$1
+SNAP=$2
+FIELD=$3
+
+#-----------
+
+TITLE="${FIELD}"
+TAG="${FLOW}_${SNAP}"
+OUTDIR="../data/${FLOW}"
+BASE="${OUTDIR}/${TAG}"
+
+#-----------
+
+NUM_WARMUP=1000
+NUM_SAMPLES=10000
+SEED=1
+
+MIN_SCALE="5"
+MAX_SCALE="120"
+
+#-------------------------------------------------
+
+### PERFORM CALCULATIONS
+
+echo \
+w4t-structure-function \
+    ${BASE}.hdf \
+    ${BASE}-${FIELD}-structure-function.hdf \
+    ${FIELD} \
+    --max-edgelength 512 \
+    --index 1 2 3 4 \
+    --Verbose \
+|| exit 1
+
+#-------
+
+echo \
+w4t-structure-function \
+    ${BASE}.hdf \
+    ${BASE}-${FIELD}-direct-structure-function.hdf \
+    ${FIELD} \
+    --max-edgelength 512 \
+    --direct-increment 16 \
+    --index 1 2 3 4 \
+    --direct \
+    --Verbose \
+|| exit 1
+
+#---
+
+# also plot the flow variables that you're using to denoise, etc
+
+echo \
+w4t-plot-flow \
+    $FLOW \
+    plot plot_coeff hist hist_coeff grand_tour \
+    $FIELD --component $COMP \
+    --max-edgelength 512 \
+    --levels 1 1 1 \
+    --increment 4 \
+    --verbose \
+    --output-dir ./dim3/ \
+    --tag dim3 \
+|| exit 1
+
+#---
+
+echo \
+w4t-plot-structure-function \
+    --title "$FLOW $SNAP $TITLE" \
+    --source       'full'    ${BASE}-${FIELD}-structure-function.hdf \
+    --scaling-poly 'full'    ${BASE}-${FIELD}-scaling-exponent.hdf \
+    --linestyle    'full'    'none' \
+    --marker       'full'    'o' \
+    --source       'denoise' ${BASE}-${FIELD}-denoise-structure-function.hdf \
+    --scaling-poly 'denoise' ${BASE}-${FIELD}-denoise-scaling-exponent.hdf \
+    --linestyle    'denoise' 'dashed' \
+    --marker       'denoise' 's' \
+    --source       'smooth'  ${BASE}-${FIELD}-smooth-structure-function.hdf \
+    --scaling-poly 'smooth'  ${BASE}-${FIELD}-smooth-scaling-exponent.hdf \
+    --linestyle    'smooth'  'dotted' \
+    --marker       'smooth'  '^' \
+    --output-dir $OUTDIR \
+    --tag ${FIELD}-$TAG \
+    --Verbose \
+|| exit 1
+
+#    --rescale \
+
+#---------------------------------------------
+
+echo \
+w4t-sample-structure-function-ansatz \
+    ${BASE}-${FIELD}-structure-function.hdf \
+    ${BASE}-${FIELD}-sample-structure-function-ansatz.hdf \
+    --num-warmup $NUM_WARMUP \
+    --num-samples $NUM_SAMPLES \
+    --max-scale $MAX_SCALE \
+    --seed $SEED \
+    --verbose \
+|| exit 1
+
+echo \
+w4t-plot-structure-function-ansatz \
+    ${BASE}-${FIELD}-structure-function.hdf \
+    ${BASE}-${FIELD}-sample-structure-function-ansatz.hdf \
+    --max-num-samples 100 \
+    --output-dir $OUTDIR \
+    --tag ${FIELD}-$TAG \
+    --verbose \
+|| exit 1

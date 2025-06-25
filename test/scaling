@@ -9,9 +9,8 @@ FLOW=$1
 SNAP=$2
 
 FIELD=$3
-COMP=$4
 
-TITLE="${FIELD}[${COMP}]"
+TITLE="${FIELD}"
 
 #------------------------
 
@@ -41,9 +40,8 @@ BASE="${OUTDIR}/${TAG}"
 echo \
 w4t-structure-function \
     ${BASE}.hdf \
-    ${BASE}-${FIELD}_${COMP}-structure-function.hdf \
+    ${BASE}-${FIELD}-structure-function.hdf \
     ${FIELD} \
-    --component ${COMP} \
     --max-edgelength 512 \
     --index 1 2 3 4 \
     --Verbose \
@@ -53,8 +51,8 @@ w4t-structure-function \
 
 echo \
 w4t-scaling-exponent \
-    ${BASE}-${FIELD}_${COMP}-structure-function.hdf \
-    ${BASE}-${FIELD}_${COMP}-scaling-exponent.hdf \
+    ${BASE}-${FIELD}-structure-function.hdf \
+    ${BASE}-${FIELD}-scaling-exponent.hdf \
     --min-scale $MIN_SCALE \
     --max-scale $MAX_SCALE \
     --degree 1 \
@@ -66,10 +64,10 @@ w4t-scaling-exponent \
 echo \
 w4t-structure-function \
     ${BASE}.hdf \
-    ${BASE}-${FIELD}_${COMP}-direct-structure-function.hdf \
+    ${BASE}-${FIELD}-direct-structure-function.hdf \
     ${FIELD} \
-    --component ${COMP} \
     --max-edgelength 512 \
+    --direct-increment 16 \
     --index 1 2 3 4 \
     --direct \
     --Verbose \
@@ -79,8 +77,8 @@ w4t-structure-function \
 
 echo \
 w4t-scaling-exponent \
-    ${BASE}-${FIELD}_${COMP}-direct-structure-function.hdf \
-    ${BASE}-${FIELD}_${COMP}-direct-scaling-exponent.hdf \
+    ${BASE}-${FIELD}-direct-structure-function.hdf \
+    ${BASE}-${FIELD}-direct-scaling-exponent.hdf \
     --min-scale $MIN_SCALE \
     --max-scale $MAX_SCALE \
     --degree 1 \
@@ -91,15 +89,14 @@ w4t-scaling-exponent \
 
 # denoise to identify coherent structures
 
-echo \
+#echo \
 w4t-denoise \
     ${BASE}.hdf \
-    ${BASE}-${FIELD}_${COMP}-denoise.hdf \
+    ${BASE}-${FIELD}-denoise.hdf \
     ${FIELD} \
-    --component ${COMP} \
     --max-edgelength 512 \
     --wavelet haar \
-    --threshold 2.0 \
+    --threshold 3.0 \
     --max-scale 256 \
     --verbose \
 || exit 1
@@ -110,9 +107,9 @@ w4t-denoise \
 
 echo \
 w4t-structure-function \
-    ${BASE}-${FIELD}_${COMP}-denoise.hdf \
-    ${BASE}-${FIELD}_${COMP}-denoise-structure-function.hdf \
-    ${FIELD}_${COMP} \
+    ${BASE}-${FIELD}-denoise.hdf \
+    ${BASE}-${FIELD}-denoise-structure-function.hdf \
+    ${FIELD} \
     --max-edgelength 512 \
     --index 1 2 3 4 \
     --Verbose \
@@ -122,8 +119,8 @@ w4t-structure-function \
 
 echo \
 w4t-scaling-exponent \
-    ${BASE}-${FIELD}_${COMP}-denoise-structure-function.hdf \
-    ${BASE}-${FIELD}_${COMP}-denoise-scaling-exponent.hdf \
+    ${BASE}-${FIELD}-denoise-structure-function.hdf \
+    ${BASE}-${FIELD}-denoise-scaling-exponent.hdf \
     --min-scale $MIN_SCALE \
     --max-scale $MAX_SCALE \
     --degree 1 \
@@ -134,14 +131,14 @@ w4t-scaling-exponent \
 
 # identify structures as separate sets of pixels
 
-echo \
+#echo \
 w4t-structures \
-    ${BASE}-${FIELD}_${COMP}-denoise.hdf \
-    ${BASE}-${FIELD}_${COMP}-denoise-structures.hdf \
-    ${FIELD}_${COMP} \
+    ${BASE}-${FIELD}-denoise.hdf \
+    ${BASE}-${FIELD}-denoise-structures.hdf \
+    ${FIELD} \
     --wavelet haar \
     --max-edgelength 256 \
-    --threshold 3.0 \
+    --structure-threshold 3.0 \
     --num-proc 4 \
     --verbose \
 || exit 1
@@ -150,15 +147,14 @@ w4t-structures \
 
 # denoise to remove coherent structures
 
-echo \
+#echo \
 w4t-denoise \
     ${BASE}.hdf \
-    ${BASE}-${FIELD}_${COMP}-smooth.hdf \
+    ${BASE}-${FIELD}-smooth.hdf \
     ${FIELD} \
-    --component ${COMP} \
     --max-edgelength 512 \
     --wavelet haar \
-    --threshold 2.0 \
+    --threshold 3.0 \
     --smooth \
     --max-scale 256 \
     --verbose \
@@ -170,9 +166,9 @@ w4t-denoise \
 
 echo \
 w4t-structure-function \
-    ${BASE}-${FIELD}_${COMP}-smooth.hdf \
-    ${BASE}-${FIELD}_${COMP}-smooth-structure-function.hdf \
-    ${FIELD}_${COMP} \
+    ${BASE}-${FIELD}-smooth.hdf \
+    ${BASE}-${FIELD}-smooth-structure-function.hdf \
+    ${FIELD} \
     --max-edgelength 512 \
     --index 1 2 3 4 \
     --Verbose \
@@ -182,8 +178,8 @@ w4t-structure-function \
 
 echo \
 w4t-scaling-exponent \
-    ${BASE}-${FIELD}_${COMP}-smooth-structure-function.hdf \
-    ${BASE}-${FIELD}_${COMP}-smooth-scaling-exponent.hdf \
+    ${BASE}-${FIELD}-smooth-structure-function.hdf \
+    ${BASE}-${FIELD}-smooth-scaling-exponent.hdf \
     --min-scale $MIN_SCALE \
     --max-scale $MAX_SCALE \
     --degree 1 \
@@ -197,14 +193,14 @@ w4t-scaling-exponent \
 echo \
 w4t-plot-structure-function \
     --title "$FLOW $SNAP $TITLE" \
-    --source    'wavelet'   ${BASE}-${FIELD}_${COMP}-structure-function.hdf \
+    --source    'wavelet'   ${BASE}-${FIELD}-structure-function.hdf \
     --linestyle 'wavelet'   'none' \
     --marker    'wavelet'   'o' \
-    --source    'direct'    ${BASE}-${FIELD}_${COMP}-direct-structure-function.hdf \
+    --source    'direct'    ${BASE}-${FIELD}-direct-structure-function.hdf \
     --linestyle 'direct'    'none' \
     --marker    'direct'    '^' \
     --output-dir $OUTDIR \
-    --tag wavelet_vs_direct-${FIELD}_${COMP}-$TAG \
+    --tag wavelet_vs_direct-${FIELD}-$TAG \
     --Verbose \
 || exit 1
 
@@ -213,20 +209,20 @@ w4t-plot-structure-function \
 echo \
 w4t-plot-structure-function \
     --title "$FLOW $SNAP $TITLE" \
-    --source       'full'    ${BASE}-${FIELD}_${COMP}-structure-function.hdf \
-    --scaling-poly 'full'    ${BASE}-${FIELD}_${COMP}-scaling-exponent.hdf \
+    --source       'full'    ${BASE}-${FIELD}-structure-function.hdf \
+    --scaling-poly 'full'    ${BASE}-${FIELD}-scaling-exponent.hdf \
     --linestyle    'full'    'none' \
     --marker       'full'    'o' \
-    --source       'denoise' ${BASE}-${FIELD}_${COMP}-denoise-structure-function.hdf \
-    --scaling-poly 'denoise' ${BASE}-${FIELD}_${COMP}-denoise-scaling-exponent.hdf \
+    --source       'denoise' ${BASE}-${FIELD}-denoise-structure-function.hdf \
+    --scaling-poly 'denoise' ${BASE}-${FIELD}-denoise-scaling-exponent.hdf \
     --linestyle    'denoise' 'dashed' \
     --marker       'denoise' 's' \
-    --source       'smooth'  ${BASE}-${FIELD}_${COMP}-smooth-structure-function.hdf \
-    --scaling-poly 'smooth'  ${BASE}-${FIELD}_${COMP}-smooth-scaling-exponent.hdf \
+    --source       'smooth'  ${BASE}-${FIELD}-smooth-structure-function.hdf \
+    --scaling-poly 'smooth'  ${BASE}-${FIELD}-smooth-scaling-exponent.hdf \
     --linestyle    'smooth'  'dotted' \
     --marker       'smooth'  '^' \
     --output-dir $OUTDIR \
-    --tag ${FIELD}_${COMP}-$TAG \
+    --tag ${FIELD}-$TAG \
     --Verbose \
 || exit 1
 
@@ -236,8 +232,8 @@ w4t-plot-structure-function \
 
 echo \
 w4t-sample-structure-function-ansatz \
-    ${BASE}-${FIELD}_${COMP}-structure-function.hdf \
-    ${BASE}-${FIELD}_${COMP}-sample-structure-function-ansatz.hdf \
+    ${BASE}-${FIELD}-structure-function.hdf \
+    ${BASE}-${FIELD}-sample-structure-function-ansatz.hdf \
     --num-warmup $NUM_WARMUP \
     --num-samples $NUM_SAMPLES \
     --max-scale $MAX_SCALE \
@@ -247,11 +243,11 @@ w4t-sample-structure-function-ansatz \
 
 echo \
 w4t-plot-structure-function-ansatz \
-    ${BASE}-${FIELD}_${COMP}-structure-function.hdf \
-    ${BASE}-${FIELD}_${COMP}-sample-structure-function-ansatz.hdf \
+    ${BASE}-${FIELD}-structure-function.hdf \
+    ${BASE}-${FIELD}-sample-structure-function-ansatz.hdf \
     --max-num-samples 100 \
     --output-dir $OUTDIR \
-    --tag ${FIELD}_${COMP}-$TAG \
+    --tag ${FIELD}-$TAG \
     --verbose \
 || exit 1
 
@@ -259,8 +255,8 @@ w4t-plot-structure-function-ansatz \
 
 echo \
 w4t-sample-structure-function-ansatz \
-    ${BASE}-${FIELD}_${COMP}-direct-structure-function.hdf \
-    ${BASE}-${FIELD}_${COMP}-direct-sample-structure-function-ansatz.hdf \
+    ${BASE}-${FIELD}-direct-structure-function.hdf \
+    ${BASE}-${FIELD}-direct-sample-structure-function-ansatz.hdf \
     --num-warmup $NUM_WARMUP \
     --num-samples $NUM_SAMPLES \
     --max-scale $MAX_SCALE \
@@ -270,10 +266,10 @@ w4t-sample-structure-function-ansatz \
 
 echo \
 w4t-plot-structure-function-ansatz \
-    ${BASE}-${FIELD}_${COMP}-direct-structure-function.hdf \
-    ${BASE}-${FIELD}_${COMP}-direct-sample-structure-function-ansatz.hdf \
+    ${BASE}-${FIELD}-direct-structure-function.hdf \
+    ${BASE}-${FIELD}-direct-sample-structure-function-ansatz.hdf \
     --max-num-samples 100 \
     --output-dir $OUTDIR \
-    --tag ${FIELD}_${COMP}-${TAG}-direct \
+    --tag ${FIELD}-${TAG}-direct \
     --verbose \
 || exit 1
