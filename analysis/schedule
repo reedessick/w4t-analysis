@@ -99,11 +99,14 @@ commands = wavelet + direct
 
 #------------------------
 
+if args.verbose:
+    print('writing individual jobs')
+scripts = []
 for tag, cmd in commands:
     script = os.path.join(args.output_dir, tag+'.sh')
 
     if args.verbose:
-        print('writing: '+script)
+        print('    '+script)
 
     with open(script, 'w') as obj:
         obj.write('#!/bin/bash')
@@ -111,3 +114,19 @@ for tag, cmd in commands:
         obj.write('\n\n%s\\\n|| exit 1' % (' \\\n    '.join(cmd)))
 
     os.chmod(script, os.stat(script).st_mode | stat.S_IEXEC)
+
+    scripts.append(os.path.abspath(script))
+
+#---
+
+script = os.path.join(args.output_dir, 'schedule-%s.sh' % base)
+if args.verbose:
+    print('writing overall workflow: '+script)
+
+with open(script, 'w') as obj:
+    obj.write('#!/bin/bash')
+    obj.write('\n\n# %s\n' % (base.replace('_', ' ')))
+    for s in scripts:
+        obj.write('\n%s || exit 1' % s)
+
+os.chmod(script, os.stat(script).st_mode | stat.S_IEXEC)
