@@ -13,6 +13,78 @@ from argparse import ArgumentParser
 
 #-------------------------------------------------
 
+def sf_outpath(base, field=None, magnitude=False, component=None, direction=None, direct=False, outdir='.'):
+
+    assert field is not None
+
+    tag = '%s_%s' % (base, field)
+
+    if magnitude:
+        tag = tag+'-mag'
+
+    elif component is not None:
+        tag = tag+'-%d'%component
+
+    if direction is not None:
+        tag = tag+'_dir-%d' % direction
+
+    if direct:
+        tag += '_dsf'
+    else:
+        tag += '_wsf'
+
+    return os.path.join(os.path.abspath(outdir), tag+'.hdf')
+
+#------------------------
+
+def sf_cmd(
+        inpath,
+        index,
+        base,
+        field=None,
+        component=None,
+        magnitude=False,
+        direction=None,
+        direct=False,
+        verbose=True,
+        max_edgelength=None,
+        direct_increment=None,
+        outdir='.',
+    ):
+
+    assert field is not None
+
+    outpath = sf_outpath(base, field, magnitude=magnitude, component=component, direction=direction, direct=direct, outdir=outdir)
+
+    cmd = ['w4t-structure-function', inpath, outpath, field]
+
+    cmd += ['--index %s' % (' '.join('%d'%_ for _ in index))]
+
+    if verbose:
+        cmd += ['--Verbose']
+
+    if max_edgelength is not None:
+        cmd += ['--max-edgelength %d' % max_edgelength]
+
+    if direct_increment is not None:
+        cmd += ['--direct-increment %d' % direct_increment]
+
+    if magnitude:
+        cmd += ['--magnitude']
+
+    elif component is not None:
+        cmd += ['--component %d' % component]
+
+    if direction is not None:
+        cmd += ['--direction %d' % direction]
+
+    if direct:
+        cmd += ['--direct']
+
+    return cmd, outpath
+
+#-------------------------------------------------
+
 parser = ArgumentParser()
 
 parser.add_argument('flow', type=str)
@@ -35,83 +107,74 @@ os.makedirs(args.output_dir, exist_ok=True)
 #-------------------------------------------------
 
 base = '%s_%04d' % (args.flow, args.snap)
+inpath = os.path.join(os.path.abspath(args.data_dir), base+'.hdf')
 
-cmd = [
-    'w4t-structure-function',
-    os.path.join(os.path.abspath(args.data_dir), base+'.hdf'),
-    '--Verbose',
-]
+#------------------------
 
-#cmd += ['--index'] + ['%d'%_ for _ in args.index]
-cmd += ['--index %s' % (' '.join('%d'%_ for _ in args.index))]
-
-if args.max_edgelength is not None:
-#    cmd += ['--max-edgelength', '%d'%args.max_edgelength]
-    cmd += ['--max-edgelength %d'%args.max_edgelength]
-
-if args.direct_increment:
-#    cmd += ['--direct-increment', '%d'%args.direct_increment]
-    cmd += ['--direct-increment %d'%args.direct_increment]
-
-
-#-------------------------------------------------
-
-commands = [(base, cmd)]
-
-#---
-
-# add different directions
-directions = []
-for direction in range(3):
-#    directions += [(tag+'_dir-%d'%direction, cmd+['--direction', '%d'%direction]) for tag, cmd in commands]
-    directions += [(tag+'_dir-%d'%direction, cmd+['--direction %d'%direction]) for tag, cmd in commands]
-
-commands = commands + directions
-
-#---
+# create commands
+commands = [dict()]
 
 # add different fields
 scalars = []
 for field in ['dens']:
-    scalars += [(tag+'_%s'%field, cmd, field) for tag, cmd in commands] # default map2scalar: just take the value of the field
+    scalars += [dict(field=field, **cmd) for cmd in commands] # default map2scalar: just take the value of the field
 
 vectors = []
-#for field in ['mag', 'curr', 'vel', 'vort']:
-for field in ['mag', 'vel']:
-    vectors += [(tag+'_%s'%field, cmd, field) for tag, cmd in commands] # default map2scalar: magnitude of differences btwn vectors
-    vectors += [(tag+'_%s-mag'%field, cmd+['--magnitude'], field) for tag, cmd in commands] # magnitude
-    for component in range(3):
-#        vectors += [(tag+'_%s-%d'%(field, component), cmd+['--component', '%d'%component], field) for tag, cmd, in commands]
-        vectors += [(tag+'_%s-%d'%(field, component), cmd+['--component %d'%component], field) for tag, cmd, in commands]
+for field in ['mag', 'vel']: # 'curr', 'vort']:
+    for cmd in commands:
+        vectors += [
+            dict(field=field, **cmd), # default map2scalar: magnitude of differences btwn vectors
+            dict(field=field, magnitude=True, **cmd), # magnitude
+        ]
+        vectors += [dict(field=field, component=component, **cmd) for component in range(3)]
 
 commands = scalars + vectors
 
 #---
 
-# add different methods
-wavelet = [(tag+'_wsf', cmd+[os.path.join(os.path.abspath(args.output_dir), tag+'_wsf.hdf'), field]) \
-    for tag, cmd, field in commands]
+# add different directions
+directions = []
+for cmd in commands:
+    directions += [cmd] + [dict(direction=direction, **cmd) for direction in range(3)]
 
-direct = [(tag+'_dsf', cmd+['--direct', os.path.join(os.path.abspath(args.output_dir), tag+'_dsf.hdf'), field]) \
-    for tag, cmd, field in commands]
+commands = directions
 
-commands = wavelet + direct
+#---
+
+# add different methods for computing structure function
+methods = []
+for cmd in commands:
+    methods += [cmd, dict(direct=True, **cmd)]
+
+commands = methods
 
 #------------------------
 
 if args.verbose:
     print('writing individual jobs')
 scripts = []
-for tag, cmd in commands:
-    script = os.path.join(args.output_dir, tag+'.sh')
+for cmd in commands:
+
+    cmd_str, script = sf_cmd(
+        inpath,
+        args.index,
+        base,
+        verbose=args.verbose,
+        max_edgelength=args.max_edgelength,
+        direct_increment=args.direct_increment,
+        outdir=args.output_dir,
+        **cmd
+    )
 
     if args.verbose:
         print('    '+script)
 
     with open(script, 'w') as obj:
         obj.write('#!/bin/bash')
-        obj.write('\n\n# %s' % (tag.replace('_', ' ')))
-        obj.write('\n\n%s\\\n|| exit 1' % (' \\\n    '.join(cmd)))
+        obj.write('\n\n# %s' % base)
+        for key, val in cmd.items():
+            obj.write('\n# %s : %s' % (key, val))
+        obj.write('\n\n%s \\\n|| exit 1' % (' \\\n    '.join(cmd_str)))
 
     os.chmod(script, os.stat(script).st_mode | stat.S_IEXEC)
 
@@ -119,14 +182,14 @@ for tag, cmd in commands:
 
 #---
 
-script = os.path.join(args.output_dir, 'schedule-%s.sh' % base)
+script = os.path.join(args.output_dir, 'sf-%s.sh' % base)
 if args.verbose:
     print('writing overall workflow: '+script)
 
 with open(script, 'w') as obj:
     obj.write('#!/bin/bash')
     obj.write('\n\n# %s\n' % (base.replace('_', ' ')))
-    for s in scripts:
+    for s in sorted(scripts):
         obj.write('\n%s || exit 1' % s)
 
 os.chmod(script, os.stat(script).st_mode | stat.S_IEXEC)
