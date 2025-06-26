@@ -5,4 +5,4 @@
 
 #-------------------------------------------------
 
-./schedule M05MA01 50 -o M05MA01 -d ../data/M05MA01 --direct-increment 16 --max-edgelength 512
+./schedule M05MA01 50 -o M05MA01 -d ../data/M05MA01 --direct-increment 16 --max-edgelength 512 -V
