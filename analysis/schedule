@@ -82,6 +82,7 @@ def sf_cmd(
         direct=direct,
         outdir=outdir,
     )
+    script = outpath[:-3] + 'sh'
 
     cmd = ['w4t-structure-function', inpath, outpath, field]
 
@@ -108,7 +109,7 @@ def sf_cmd(
     if direct:
         cmd += ['--direct']
 
-    return cmd, outpath
+    return cmd, script
 
 #------------------------
 
