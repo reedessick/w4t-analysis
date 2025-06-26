@@ -25,6 +25,10 @@ MAP2SCALARS = [('' if component is None else '_%d'%component, dict(component=com
 
 DIRECTS = [True, False]
 
+#------------------------
+
+MARKERS = ['o', '^', 's', 'D', 'p', '>', '<', 'v']
+
 #-------------------------------------------------
 
 def sf_nickname(field=None, magnitude=False, component=None, direction=None, direct=False):
@@ -121,7 +125,9 @@ def plot_cmd(base, tag, combo, verbose=False, outdir='.'):
         '--output-dir %s' % os.path.abspath(outdir),
         '--tag %s' % tag,
     ]
-    plt += ['--source %s %s' % (sf_nickname(**cmd), sf_outpath(base, outdir=outdir, **cmd)) for cmd in combo]
+    for cmd, marker in zip(combo, MARKERS):
+        nickname = sf_nickname(**cmd)
+        plt += ['--source %s %s' % (nickname, sf_outpath(base, outdir=outdir, **cmd)), '--marker %s %s' % (nickname, marker)]
 
     if verbose:
         plt += ['--Verbose']
@@ -237,7 +243,7 @@ if args.verbose:
 with open(script, 'w') as obj:
     obj.write('#!/bin/bash')
     obj.write('\n\n# %s\n' % (base.replace('_', ' ')))
-    for s in sorted(scripts):
+    for s in scripts:
         obj.write('\n%s || exit 1' % s)
 
 os.chmod(script, os.stat(script).st_mode | stat.S_IEXEC)
