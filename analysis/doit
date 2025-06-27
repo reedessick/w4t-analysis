@@ -7,11 +7,11 @@
 
 declare -A SNAPS
 
-SNAPS['M05MA01']=$(seq 50 10 90)
+SNAPS['M05MA01']=$(seq -f "%04g" 50 10 90)
 
 for SNAP in M05MA05  M05MA10  M10MA01  M10MA05  M10MA10
 do
-    SNAPS[$SNAP]=50
+    SNAPS[$SNAP]=0050
 done
 
 #-------------------------------------------------
@@ -21,6 +21,8 @@ do
 
     for SNAP in ${SNAPS[$FLOW]}
     do
+
+        # schedule workflows
 
 #        echo \
         ./schedule \
@@ -32,6 +34,19 @@ do
             --Verbose \
         || exit 1
 
+        #---
+
+        # launch workflows
+
+#        echo \
+        /usr/bin/time -v \
+        $PWD/${FLOW}/${SNAP}/sf-${FLOW}_${SNAP}.sh \
+        || exit 1
+
+#        echo \
+        /usr/bin/time -v \
+        $PWD/${FLOW}/${SNAP}/plot-sf-${FLOW}_${SNAP}.sh \
+        || exit 1
+
     done
 done
-
