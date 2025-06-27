@@ -350,3 +350,84 @@ with open(script, 'w') as obj:
         obj.write('\n%s || exit 1' % s)
 
 os.chmod(script, os.stat(script).st_mode | stat.S_IEXEC)
+
+#------------------------
+
+# organize figures into summary HTML pages
+
+if args.verbose:
+    print('writing summary HTML pages')
+
+raise NotImplementedError('''
+need to write summary HTML set-up.
+
+  * oganize the plots into simple tabs and/or pages to make them easy to navigate.
+  * link to HDF behind each figure beneath the figures
+''')
+
+#-------------------------------------------------
+
+# write workflows to fit each structure function with our simple ansatz
+
+if args.verbose:
+    print('writing workflows to fit structure functions with ansatz')
+
+raise NotImplementedError('''
+$ w4t-sample-structure-function-ansatz -h
+pyfftw not installed, using scipy's serial fft
+usage: w4t-sample-structure-function-ansatz [-h] [-m MIN_SCALE] [-M MAX_SCALE] [--num-warmup NUM_WARMUP] [--num-samples NUM_SAMPLES]
+                                            [--seed SEED] [-v]
+                                            source target
+
+positional arguments:
+  source
+  target
+
+options:
+  -h, --help            show this help message and exit
+  -m MIN_SCALE, --min-scale MIN_SCALE
+                        only include scales > min_scale within the fit
+  -M MAX_SCALE, --max-scale MAX_SCALE
+                        only include scales < max_scale within the fit
+  --num-warmup NUM_WARMUP
+  --num-samples NUM_SAMPLES
+  --seed SEED
+  -v, --verbose
+''')
+
+#------------------------
+
+# write workflows to plot the fits to each structure function
+
+if args.verbose:
+    print('writing workflows to plot inferred ansatz parameters')
+
+raise NotImplementedError('''
+$ w4t-plot-structure-function-ansatz -h
+pyfftw not installed, using scipy's serial fft
+usage: w4t-plot-structure-function-ansatz [-h] [--max-num-samples MAX_NUM_SAMPLES] [-v] [-o OUTPUT_DIR] [-t TAG] [--figtype FIGTYPE]
+                                          [--dpi DPI]
+                                          structure_function samples
+
+positional arguments:
+  structure_function
+  samples
+
+options:
+  -h, --help            show this help message and exit
+  --max-num-samples MAX_NUM_SAMPLES
+  -v, --verbose
+  -o OUTPUT_DIR, --output-dir OUTPUT_DIR
+  -t TAG, --tag TAG
+  --figtype FIGTYPE
+  --dpi DPI
+''')
+
+#------------------------
+
+if args.verbose:
+    print('writing summary HTML pages')
+
+raise NotImplementedError('''
+write summary HTML pages for ansatz fits
+''')
