@@ -5,4 +5,33 @@
 
 #-------------------------------------------------
 
-./schedule M05MA01 50 -o M05MA01 -d ../data/M05MA01 --direct-increment 16 --max-edgelength 512 -V
+declare -A SNAPS
+
+SNAPS['M05MA01']=$(seq 50 10 90)
+
+for SNAP in M05MA05  M05MA10  M10MA01  M10MA05  M10MA10
+do
+    SNAPS[$SNAP]=50
+done
+
+#-------------------------------------------------
+
+for FLOW in ${!SNAPS[@]}
+do
+
+    for SNAP in ${SNAPS[$FLOW]}
+    do
+
+#        echo \
+        ./schedule \
+            $FLOW $SNAP \
+            --output-dir $PWD/${FLOW}/${SNAP} \
+            --data-dir ../data/$FLOW \
+            --direct-increment 16 \
+            --max-edgelength 512 \
+            --Verbose \
+        || exit 1
+
+    done
+done
+

@@ -23,6 +23,9 @@ COMPONENTS = [None, 0, 1, 2]
 MAP2SCALARS = [('' if component is None else '_%d'%component, dict(component=component)) for component in COMPONENTS] \
     + [('_mag', dict(magnitude=True))]
 
+MAP2SCALARS_MAGS = [('', dict(component=None)), ('_mag', dict(magnitude=True))]
+MAP2SCALARS_CMPS = [('' if component is None else '_%d'%component, dict(component=component)) for component in COMPONENTS]
+
 DIRECTS = [True, False]
 
 #------------------------
@@ -132,7 +135,7 @@ def plot_cmd(base, tag, combo, verbose=False, outdir='.'):
     if verbose:
         plt += ['--Verbose']
 
-    script = os.path.join(os.path.abspath(outdir), 'plot-sf_%s.sh' % tag)
+    script = os.path.join(os.path.abspath(outdir), 'plot-sf_%s_%s.sh' % (base, tag))
 
     return plt, script
 
@@ -307,7 +310,8 @@ for field in VECTORS:
                 _tag = tag+'_dsf'
             else:
                 _tag = tag+'_wsf'
-            combos.append((_tag+'_compare-map2scalar', [dict(**map2scalar, **cmd) for _, map2scalar in MAP2SCALARS]))
+            combos.append((_tag+'_compare-map2scalar_magnitudes', [dict(**map2scalar, **cmd) for _, map2scalar in MAP2SCALARS_MAGS]))
+            combos.append((_tag+'_compare-map2scalar_components', [dict(**map2scalar, **cmd) for _, map2scalar in MAP2SCALARS_CMPS]))
 
 #------------------------
 
