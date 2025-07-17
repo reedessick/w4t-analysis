@@ -185,9 +185,12 @@ def write_workflow(path, scripts, verbose=False, **notes):
     with open(path, 'w') as obj:
         obj.write('#!/bin/bash')
 
-        for key, val in notes.items():
-            obj.write('\n# %s : %s' % (key, val))
+        if len(notes):
+            obj.write('\n')
+            for key, val in notes.items():
+                obj.write('\n# %s : %s' % (key, val))
 
+        obj.write('\n')
         for s in scripts:
             obj.write('\n%s || exit 1' % s)
 
@@ -206,7 +209,7 @@ parser.add_argument('snap', type=int)
 parser.add_argument('--flash', default=False, action='store_true')
 
 parser.add_argument('-o', '--output-dir', default='.', type=str)
-parser.add_argument('-d', '--data-dir', default='.', type=str)
+#parser.add_argument('-d', '--data-dir', default='.', type=str)
 
 parser.add_argument('--max-edgelength', default=None, type=int)
 parser.add_argument('--index', nargs='*', type=int, default=[1, 2, 3, 4, 5, 6])
