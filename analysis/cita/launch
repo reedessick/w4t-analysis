@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# a simple script to schedule other scripts
+# a simple script to launch scripts
 # Reed Essick (reed.essick@gmail.com)
 
 #-------------------------------------------------
@@ -27,22 +27,17 @@ done
 
 for FLOW in ${FLOWS[@]}
 do
-
-    for INPATH in $(ls ${BASEDIR}/${FLOW}/Turb_hdf5_plt_cnt_????)
+    for SNAP in $(ls ${FLOW})
     do
-        SNAP=$(echo $INPATH | awk -F 'Turb_hdf5_plt_cnt_' '{print $2}')
+        for FIELD in dens vel vort mag curr
+	do
+	    for METHOD in dsf wsf
+            do
 
-#        echo \
-        ./schedule4cita \
-            ${INPATH} --flash \
-            ${FLOW} \
-            ${SNAP} \
-            --output-dir ${PWD}/${FLOW}/${SNAP} \
-            --max-edgelength 512 \
-            --index 1 2 3 4 5 6 \
-            --direct-increment 4 \
-            --Verbose \
-        || exit 1
+                echo \
+                qsub ${FLOW}/${SNAP}/${FLOW}_${SNAP}_${FIELD}_${METHOD}.sh || exit 1
 
+	    done
+	done
     done
 done

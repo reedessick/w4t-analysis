@@ -158,6 +158,9 @@ def write_script(path, cmd_str, verbose=False, **notes):
         obj.write('\n#PBS -q workq')
         obj.write('\n#PBS -r n') # not re-runnable
 
+        obj.write('\n#PBS -o %s' % (path[:-2]+'out'))
+        obj.write('\n#PBS -e %s' % (path[:-2]+'err'))
+
         # add other notes
         if len(notes):
             obj.write('\n')
@@ -171,7 +174,7 @@ def write_script(path, cmd_str, verbose=False, **notes):
         obj.write('\n\n%s \\\n|| exit 1' % (' \\\n    '.join(cmd_str)))
 
     # change script to be executable
-    os.chmod(script, os.stat(script).st_mode | stat.S_IEXEC)
+    os.chmod(path, os.stat(path).st_mode | stat.S_IEXEC)
 
     # return
     return os.path.abspath(path)
@@ -194,7 +197,7 @@ def write_workflow(path, scripts, verbose=False, **notes):
         for s in scripts:
             obj.write('\n%s || exit 1' % s)
 
-    os.chmod(script, os.stat(script).st_mode | stat.S_IEXEC)
+    os.chmod(path, os.stat(path).st_mode | stat.S_IEXEC)
 
     return os.path.abspath(path)
 
