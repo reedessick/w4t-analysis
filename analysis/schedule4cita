@@ -199,6 +199,7 @@ def write_workflow(path, scripts, verbose=False, **notes):
 
 parser = ArgumentParser()
 
+parser.add_argument('inpath', type=str)
 parser.add_argument('flow', type=str)
 parser.add_argument('snap', type=int)
 
@@ -224,7 +225,7 @@ args.verbose |= args.Verbose
 #-------------------------------------------------
 
 base = '%s_%04d' % (args.flow, args.snap)
-inpath = os.path.join(os.path.abspath(args.data_dir), base+'.hdf')
+#inpath = os.path.join(os.path.abspath(args.data_dir), base+'.hdf')
 
 #------------------------
 
@@ -271,7 +272,7 @@ scripts = []
 for cmd in commands:
 
     cmd_str, script = sf_cmd(
-        inpath,
+        args.inpath,
         args.index,
         base,
         flash=args.flash,
