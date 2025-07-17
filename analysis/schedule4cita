@@ -145,7 +145,7 @@ def plot_cmd(base, tag, combo, verbose=False, outdir='.'):
 
 #------------------------
 
-def write_script(path, cmd_str, verbose=False, **notes)
+def write_script(path, cmd_str, verbose=False, **notes):
     if verbose:
         print('    writing: '+path)
 
