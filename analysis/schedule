@@ -358,12 +358,20 @@ os.chmod(script, os.stat(script).st_mode | stat.S_IEXEC)
 if args.verbose:
     print('writing summary HTML pages')
 
-raise NotImplementedError('''
+# group plots by field
+
+for field in SCALARS + VECTORS:
+    raise NotImplementedError('''
 need to write summary HTML set-up.
 
   * oganize the plots into simple tabs and/or pages to make them easy to navigate.
   * link to HDF behind each figure beneath the figures
 ''')
+
+# group plots by type of comparison
+
+for comparison in set([tag.split('compare-')[-1] for tag, _ in combos]):
+    raise NotImplementedError
 
 #-------------------------------------------------
 
