@@ -12,7 +12,7 @@ BASEDIR="/fs/lustre/project/plasmaastro/jbeattie/turbulent_boxes/"
 FLOWS=()
 
 #for M in "05" "2" "4" "10"
-for M in "2"
+for M in "4"
 do
     for MA in "01" "05" "1" "2" "4" "6" "8" "10"
     do
@@ -35,8 +35,11 @@ do
 	    for METHOD in dsf wsf
             do
 
+	        SCRIPT="${FLOW}/${SNAP}/${FLOW}_${SNAP}_${FIELD}_${METHOD}.sh"
+                echo "launching: $SCRIPT"
+
 #                echo \
-                qsub ${FLOW}/${SNAP}/${FLOW}_${SNAP}_${FIELD}_${METHOD}.sh || exit 1
+                qsub ${SCRIPT} || exit 1
 
 	    done
 	done
