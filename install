@@ -1,0 +1,33 @@
+#!/bin/bash
+
+### install supporting libraries
+### Reed Essick (reed.essick@gmail.com)
+
+#-------------------------------------------------
+
+OPTDIR="$PWD/opt"
+SRCDIR="$PWD/src"
+
+#------------------------
+
+mkdir -p $OPTDIR
+mkdir -p $SRCDIR
+
+#------------------------
+
+# install FLASH wrappers from James Beattie (jbeattie@cita.utoronto.ca)
+
+pushd $OPTDIR
+git clone https://github.com/AstroJames/PLASMAtools.git
+popd
+
+#------------------------
+
+# install this module
+
+pushd $SRCDIR
+git clone git@github.com:reedessick/wavelets4turbulence.git
+pushd wavelets4turbulence
+pip install . --prefix $OPTDIR
+popd
+popd
