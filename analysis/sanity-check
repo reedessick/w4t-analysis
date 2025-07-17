@@ -1,0 +1,46 @@
+#!/usr/bin/env python3
+
+"""a quick script to sanity-check the limit of the 2nd order structure function
+"""
+__author__ = "Reed Essick (reed.essick@gmail.com)"
+
+#-------------------------------------------------
+
+import numpy as np
+
+from w4t.utils import io
+
+#-------------------------------------------------
+
+snap = '0050'
+
+for flow in 'M05MA01 M05MA05 M05MA10 M10MA01 M10MA05 M10MA10'.split():
+
+    data = '../data/%s/%s_%s.hdf' % (flow, flow, snap)
+    dsf = '%s/%s/%s_%s_dens_dsf.hdf' % (flow, snap, flow, snap)
+    wsf = '%s/%s/%s_%s_dens_wsf.hdf' % (flow, snap, flow, snap)
+
+    #---------------------------------------------
+
+    # load flow
+    dens = io.load(['dens'], path=data, flash_format=False, Verbose=True)['dens']
+
+    # compute sample variance
+    var = np.var(dens.flatten())
+
+    #------------------------
+
+    # load structure function
+    dsf_scales, dsf_index, dsf_mom, dsf_cov = io.load_structure_function(dsf, verbose=True)
+    wsf_scales, wsf_index, wsf_mom, wsf_cov = io.load_structure_function(wsf, verbose=True)
+
+    #-------------------------------------------------
+
+    # compare them
+    print('2*v = %9.4f' % (2*var))
+    print('dsf = %9.4f +/- %.4f' % (dsf_mom[-1,1], dsf_cov[-1,1,1]**0.5)) ### FIXME? indexing could be fragile
+    print('wsf = %9.4f +/- %.4f' % (wsf_mom[-1,1], wsf_cov[-1,1,1]**0.5))
+
+    #--------------------
+
+    print('--------------')
