@@ -14,6 +14,8 @@ Each field has a table showing the structure functions calculated separately for
 Flow parameters are represented in the rows and columns of each table.
 Rows correspond to M and columns correspond to MA.
 
+If you click on any image, you should be redirected to the PNG itself and can zoom in for more detail.
+
 ---
 
 ## Density
