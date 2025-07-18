@@ -27,10 +27,13 @@ do
             ARGS=""
             for SNAP in $(seq 50 100)
             do
-                ARGS="$ARGS --source $SNAP ${FLOW}/*${SNAP}/${FLOW}_*${SNAP}_${FIELD}_${METHOD}.hdf --linestyle $SNAP solid --marker $SNAP o"
+                ARGS="$ARGS --source $SNAP ${FLOW}/*${SNAP}/${FLOW}_*${SNAP}_${FIELD}_${METHOD}.hdf"
+                ARGS="$ARGS --linestyle $SNAP solid"
+                ARGS="$ARGS --marker $SNAP o"
+                ARGS="$ARGS --alpha $SNAP 0.10"
             done
 
-#            echo \
+            echo \
             w4t-plot-structure-function \
                 $ARGS \
                 --Verbose \
