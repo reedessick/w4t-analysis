@@ -1,0 +1,43 @@
+#!/bin/bash
+
+# a quick script to generate some summary plots
+# Reed Essick (reed.essick@gmail.com)
+
+#-------------------------------------------------
+
+FLOWS=()
+
+for M in "05" "2" "4" "10"
+do
+    for MA in "01" "05" "1" "2" "4" "6" "8" "10"
+    do
+        FLOWS+=(M${M}MA${MA})
+    done
+done
+
+#-------------------------------------------------
+
+for FLOW in ${FLOWS[@]}
+do
+    for FIELD in dens vel vort mag curr
+    do
+        for METHOD in dsf wsf
+	do
+
+            ARGS=""
+            for SNAP in $(seq 50 100)
+            do
+                ARGS="$ARGS --source $SNAP ${FLOW}/*${SNAP}/${FLOW}_*${SNAP}_${FIELD}_${METHOD}.hdf --linestyle $SNAP solid --marker $SNAP o"
+            done
+
+#            echo \
+            w4t-plot-structure-function \
+                $ARGS \
+                --Verbose \
+                --output-dir $FLOW \
+                --tag ${FLOW}_${FIELD}_${METHOD} \
+            || exit 1
+
+        done
+    done
+done
