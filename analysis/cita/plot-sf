@@ -30,7 +30,7 @@ do
                 ARGS="$ARGS --source $SNAP ${FLOW}/*${SNAP}/${FLOW}_*${SNAP}_${FIELD}_${METHOD}.hdf"
                 ARGS="$ARGS --linestyle $SNAP solid"
                 ARGS="$ARGS --marker $SNAP o"
-                ARGS="$ARGS --alpha $SNAP 0.10"
+                ARGS="$ARGS --alpha $SNAP 0.05"
             done
 
             echo \
