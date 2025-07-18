@@ -11,6 +11,8 @@ Structure functions are color-coded by their order as follows
   * 6th order : brown
 
 Each field has a table showing the structure functions calculated separately for each of the 51 snapshots available with the same flow parameters.
+Flow parameters are represented in the rows and columns of each table.
+Rows correspond to M and columns correspond to MA.
 
 ---
 
