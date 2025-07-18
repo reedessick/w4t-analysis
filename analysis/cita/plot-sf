@@ -36,6 +36,7 @@ do
 #            echo \
             w4t-plot-structure-function \
                 $ARGS \
+                --title "$FLOW $FIELD $METHOD" \
                 --Verbose \
                 --output-dir $FLOW \
                 --tag ${FLOW}_${FIELD}_${METHOD} \

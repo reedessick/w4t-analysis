@@ -1,6 +1,14 @@
 # Structure Functions
 
 Below, we summarize the structure functions for many snapshots for each set of flow parameters and field.
+Structure functions are color-coded by their order as follows
+
+  * 1st order : blue
+  * 2nd order : orange
+  * 3rd order : green
+  * 4th order : red
+  * 5th order : purple
+  * 6th order : brown
 
 ## Density
 
