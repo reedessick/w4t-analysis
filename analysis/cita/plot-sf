@@ -33,7 +33,7 @@ do
                 ARGS="$ARGS --alpha $SNAP 0.05"
             done
 
-            echo \
+#            echo \
             w4t-plot-structure-function \
                 $ARGS \
                 --Verbose \
