@@ -42,6 +42,8 @@ do
                 --tag ${FLOW}_${FIELD}_${METHOD} \
             || exit 1
 
+#                --normalize-scale 128 \
+
         done
     done
 done
