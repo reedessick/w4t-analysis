@@ -1,0 +1,77 @@
+#!/bin/bash
+
+# a quick script to fit the average structure functions
+# Reed Essick (reed.essick@gmail.com)
+
+#-------------------------------------------------
+
+FLOWS=()
+
+for M in "05" "2" "4" "10"
+do
+    for MA in "01" "05" "1" "2" "4" "6" "8" "10"
+    do
+        FLOWS+=(M${M}MA${MA})
+    done
+done
+
+#-------------------------------------------------
+
+for FLOW in ${FLOWS[@]}
+do
+    for FIELD in dens vel vort mag curr
+    do
+        for METHOD in dsf wsf
+        do
+
+            STRCFNC="${FLOW}/${FLOW}_avrg_${FIELD}_${METHOD}.hdf"
+            SAMPLES="${FLOW}/${FLOW}_avrg_${FIELD}_${METHOD}-ansatz.hdf"
+
+            #---
+
+#            echo \
+            w4t-sample-structure-function-ansatz \
+                $STRCFNC \
+                $SAMPLES \
+                --min-scale 1 \
+                --max-scale 256 \
+                --num-warmup 500 \
+                --num-samples 5000 \
+                --seed 123 \
+                --verbose \
+            || exit 1
+
+            #---
+
+#            echo \
+            w4t-plot-structure-function-ansatz \
+                $STRCFNC \
+                $SAMPLES \
+                --max-num-samples 100 \
+                --output-dir ${FLOW} \
+                --tag ${FLOW}_avrg_${FIELD}_${METHOD} \
+                --verbose \
+            || exit 1
+
+            #---
+
+            for p in $(seq 1 6)
+            do
+
+#                echo \
+                w4t-corner \
+                    $SAMPLES \
+                    --fields amp bh bl nh nl sh sl xi \
+                    --log amp \
+                    --root posterior_$p \
+                    --title "$FLOW $FIELD $METHOD average p=$p" \
+                    --output-dir ${FLOW} \
+                    --tag ${FLOW}_avrg_${FIELD}_${METHOD}_p$p \
+                    --verbose \
+                || exit 1
+
+            done
+
+        done
+    done
+done
