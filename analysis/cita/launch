@@ -27,18 +27,20 @@ done
 
 for FLOW in ${FLOWS[@]}
 do
-    for SNAP in $(ls ${FLOW})
+    for SNAP in $(seq 50 100)
     do
         for FIELD in dens vel vort mag curr
 	do
 	    for METHOD in dsf wsf
             do
 
-	        SCRIPT="${FLOW}/${SNAP}/${FLOW}_${SNAP}_${FIELD}_${METHOD}.sh"
+	        SCRIPT=$(ls ${FLOW}/*${SNAP}/${FLOW}_*${SNAP}_${FIELD}_${METHOD}.sh)
                 echo "launching: $SCRIPT"
 
                 echo \
                 qsub ${SCRIPT} || exit 1
+
+                exit 1
 
 	    done
 	done
