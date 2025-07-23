@@ -5,7 +5,7 @@ Additionally, fair draws from the hyperposterior are shown on top of the average
 Our ansatz for the functional form of the structure function (`S`) at scale `s` of order `p` is
 
 ```math
-    S(s, p) = A  s^\xi  \left( 1 + (s_l/s)^{n_l} \right)^{b_l/n_l} \left( 1 + (s/s_h)^{n_h} \right)^{b_h/n_h}
+    S(s, p) = A  s^\xi  \left( 1 + \left(\frac{s_l}{s}\right)^{n_l} \right)^{b_l/n_l} \left( 1 + \left(\frac{s}{s_h}\right)^{n_h} \right)^{b_h/n_h}
 ```
 
 Structure functions are color-coded by their order as follows
