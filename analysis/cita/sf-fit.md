@@ -2,6 +2,12 @@
 
 Below, we summarize the structure functions averaged over many snapshots for each set of flow parameters and field.
 Additionally, fair draws from the hyperposterior are shown on top of the averaged data points.
+Our ansatz for the functional form of the structure function (`S`) at scale `s` of order `p` is
+
+```math
+    S(s, p) = A  s^\xi  \left( 1 + (s_l/s)^{n_l} \right)^{b_l/n_l} \left( 1 + (s/s_h)^{n_h} \right)^{b_h/n_h}
+```
+
 Structure functions are color-coded by their order as follows
 
   * 1st order : blue
