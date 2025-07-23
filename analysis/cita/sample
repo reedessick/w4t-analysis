@@ -9,8 +9,7 @@ FLOWS=()
 
 for M in "05" "2" "4" "10"
 do
-#    for MA in "01" "05" "1" "2" "4" "6" "8" "10"
-    for MA in "1" "2" "4" "6" "8" "10"
+    for MA in "01" "05" "1" "2" "4" "6" "8" "10"
     do
         FLOWS+=(M${M}MA${MA})
     done
@@ -35,9 +34,10 @@ do
                 $STRCFNC \
                 $SAMPLES \
                 --min-scale 1 \
-                --max-scale 256 \
-                --num-warmup 500 \
-                --num-samples 5000 \
+                --max-scale 512 \
+                --index 1 2 3 4 5 \
+                --num-warmup 10000 \
+                --num-samples 10000 \
                 --seed 1234 \
                 --verbose \
             || exit 1
@@ -48,7 +48,7 @@ do
             w4t-plot-structure-function-ansatz \
                 $STRCFNC \
                 $SAMPLES \
-                --max-num-samples 100 \
+                --max-num-samples 500 \
                 --output-dir ${FLOW} \
                 --tag ${FLOW}_avrg_${FIELD}_${METHOD} \
                 --verbose \
@@ -56,7 +56,7 @@ do
 
             #---
 
-            for p in $(seq 1 6)
+            for p in $(seq 1 5)
             do
 
 #                echo \
