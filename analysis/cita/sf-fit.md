@@ -2,10 +2,10 @@
 
 Below, we summarize the structure functions averaged over many snapshots for each set of flow parameters and field.
 Additionally, fair draws from the hyperposterior are shown on top of the averaged data points.
-Our ansatz for the functional form of the structure function (`S`) at scale `s` of order `p` is
+Our ansatz for the functional form of the structure function (`S`) at scale `tau` of order `p` is
 
 ```math
-    S(s, p) = A  s^\xi  \left( 1 + \left(\frac{s_l}{s}\right)^{n_l} \right)^{b_l/n_l} \left( 1 + \left(\frac{s}{s_h}\right)^{n_h} \right)^{b_h/n_h}
+    S^p_\tau = A  \tau^\xi  \left( 1 + \left(\frac{s_l}{\tau}\right)^{n_l} \right)^{b_l/n_l} \left( 1 + \left(\frac{\tau}{s_h}\right)^{n_h} \right)^{b_h/n_h}
 ```
 
 For the most part, this ansatz (smoothly broken 3-piece powerlaw) is able to fit most of that data very well.
