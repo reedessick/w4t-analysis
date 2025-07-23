@@ -8,6 +8,13 @@ Our ansatz for the functional form of the structure function (`S`) at scale `s` 
     S(s, p) = A  s^\xi  \left( 1 + \left(\frac{s_l}{s}\right)^{n_l} \right)^{b_l/n_l} \left( 1 + \left(\frac{s}{s_h}\right)^{n_h} \right)^{b_h/n_h}
 ```
 
+For the most part, this ansatz (smoothly broken 3-piece powerlaw) is able to fit most of that data very well.
+However, there are a few instances where it is not able to capture all the structure that's visible by eye.
+
+**Note**, there also appear to be overlow issues for the uncertainty estimates for `p=5, 6` for some fields and flows.
+As such, those high-order structure functions have not been fit.
+Once these issues are resolved, we will additionally fit for these (and higher-order?) structure functions.
+
 Structure functions are color-coded by their order as follows
 
   * 1st order : blue
