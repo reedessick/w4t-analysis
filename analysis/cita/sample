@@ -35,7 +35,7 @@ do
                 $SAMPLES \
                 --min-scale 1 \
                 --max-scale 512 \
-                --index 1 2 3 4 5 \
+                --index 1 2 3 4 \
                 --num-warmup 10000 \
                 --num-samples 10000 \
                 --seed 1234 \
@@ -56,7 +56,7 @@ do
 
             #---
 
-            for p in $(seq 1 5)
+            for p in $(seq 1 4)
             do
 
 #                echo \
