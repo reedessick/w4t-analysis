@@ -1,0 +1,34 @@
+#!/usr/bin/env python3
+
+import h5py
+import numpy as np
+
+#-------------------------------------------------
+
+for M in ['05', '2', '4', '10']:
+    for MA in ['01', '05', '1', '2', '4', '6', '8', '10']:
+        flow = 'M%sMA%s' % (M, MA)
+
+        for field in ['dens', 'vel', 'vort', 'mag', 'curr']:
+            for method in ['wsf', 'dsf']:
+
+                # check individual snapshots, which should all be updated and fixed
+
+                for snap in range(50, 101):
+                    path = '%s/%04d/%s_%04d_%s_%s.hdf' % (flow, snap, flow, snap, field, method)
+                    print('loading: '+path)
+
+                    with h5py.File(path, 'r') as obj:
+                        print('    %.3e %.3e' % (np.max(obj['mom']), np.max(obj['cov'])))
+                        if np.any(np.isnan(obj['cov'])) or np.any(obj['cov']==np.inf):
+                            raise RuntimeError('problem detected in: '+path)
+
+                # check averages, which may still have issues
+
+                path = '%s/%s_avrg_%s_%s.hdf' % (flow, flow, field, method)
+                print('loading: '+path)
+
+                with h5py.File(path, 'r') as obj:
+                    print('    %.3e %.3e' % (np.max(obj['mom']), np.max(obj['cov'])))
+                    if np.any(np.isnan(obj['cov'])) or np.any(obj['cov']==np.inf):
+                        raise RuntimeError('problem detected in: '+path)

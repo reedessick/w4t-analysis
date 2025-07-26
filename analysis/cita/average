@@ -7,9 +7,11 @@
 
 FLOWS=()
 
-for M in "05" "2" "4" "10"
+#for M in "05" "2" "4" "10"
+for M in "10"
 do
-    for MA in "01" "05" "1" "2" "4" "6" "8" "10"
+#    for MA in "01" "05" "1" "2" "4" "6" "8" "10"
+    for MA in "10"
     do
         FLOWS+=(M${M}MA${MA})
     done
@@ -19,7 +21,8 @@ done
 
 for FLOW in ${FLOWS[@]}
 do
-    for FIELD in dens vel vort mag curr
+#    for FIELD in dens vel vort mag curr
+    for FIELD in curr
     do
         for METHOD in dsf wsf
         do
