@@ -37,10 +37,8 @@ do
 	        SCRIPT=$(ls ${FLOW}/*${SNAP}/${FLOW}_*${SNAP}_${FIELD}_${METHOD}.sh)
                 echo "launching: $SCRIPT"
 
-                echo \
+#                echo \
                 qsub ${SCRIPT} || exit 1
-
-                exit 1
 
 	    done
 	done
