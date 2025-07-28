@@ -29,12 +29,17 @@ do
 	do
 	    for METHOD in dsf wsf
             do
+                for SCRIPT in $(ls ${FLOW}/*${SNAP}/${FLOW}_*${SNAP}_${FIELD}_${METHOD}_denoise-*.sh)
+                do
+                    echo "launching: $SCRIPT"
 
-	        SCRIPT=$(ls ${FLOW}/*${SNAP}/${FLOW}_*${SNAP}_${FIELD}_${METHOD}.sh)
-                echo "launching: $SCRIPT"
+#                    echo \
+#                    qsub ${SCRIPT} || exit 1
 
-#                echo \
-                qsub ${SCRIPT} || exit 1
+
+                done
+
+                exit 1
 
 	    done
 	done
