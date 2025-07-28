@@ -4,7 +4,7 @@ Below, we summarize the scaling exponents (logarithmic derivatives) of structure
 Violin plots are the posterior distributions of the logarithmic derivative of our anstaz for the structure function (`S`) at scale `tau` of order `p`
 
 ```math
-    \frac{d\log S^p_\tau}{d\log \tau} = \xi  - b_l \left( 1 + \left(\frac{s_l}{\tau}\right)^{-n_l} \right)^{-1} + b_h \left( 1 + \left(\frac{\tau}{s_h}\right)^{-n_h} \right)
+    \frac{d\log S^p_\tau}{d\log \tau} = \xi  - b_l \left( 1 + \left(\frac{s_l}{\tau}\right)^{-n_l} \right)^{-1} + b_h \left( 1 + \left(\frac{\tau}{s_h}\right)^{-n_h} \right)^{-1}
 ```
 
 Structure functions are color-coded by their order as follows
