@@ -11,10 +11,6 @@ Our ansatz for the functional form of the structure function (`S`) at scale `tau
 For the most part, this ansatz (smoothly broken 3-piece powerlaw) is able to fit most of that data very well.
 However, there are a few instances where it is not able to capture all the structure that's visible by eye.
 
-**Note**, there also appear to be overlow issues for the uncertainty estimates for `p=5, 6` for some fields and flows.
-As such, those high-order structure functions have not been fit.
-Once these issues are resolved, we will additionally fit for these (and higher-order?) structure functions.
-
 Structure functions are color-coded by their order as follows
 
   * 1st order : blue
@@ -24,7 +20,7 @@ Structure functions are color-coded by their order as follows
   * 5th order : purple
   * 6th order : brown
 
-Each field has a table showing the structure functions calculated separately for each of the 51 snapshots available with the same flow parameters and then averaged together.
+Each field has a table showing the structure functions (calculated separately for each of the 51 snapshots available with the same flow parameters and then averaged together).
 Flow parameters are represented in the rows and columns of each table.
 Rows correspond to M and columns correspond to MA.
 

@@ -29,7 +29,7 @@ do
 
             #---
 
-#            echo \
+            echo \
             w4t-sample-structure-function-ansatz \
                 $STRCFNC \
                 $SAMPLES \
@@ -47,10 +47,12 @@ do
             w4t-plot-structure-function-ansatz \
                 $STRCFNC \
                 $SAMPLES \
+                16 \
+                --title "$FLOW $FIELD $METHOD" \
                 --max-num-samples 500 \
                 --output-dir ${FLOW} \
                 --tag ${FLOW}_avrg_${FIELD}_${METHOD} \
-                --verbose \
+                --Verbose \
             || exit 1
 
             #---
