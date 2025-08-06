@@ -29,7 +29,7 @@ do
 
             #---
 
-#            echo \
+            echo \
             w4t-sample-structure-function-ansatz \
                 $STRCFNC \
                 $SAMPLES \
@@ -47,7 +47,7 @@ do
             w4t-plot-structure-function-ansatz \
                 $STRCFNC \
                 $SAMPLES \
-                16 \
+                8 16 32 64 128 \
                 --title "$FLOW $FIELD $METHOD" \
                 --max-num-samples 500 \
                 --output-dir ${FLOW} \
@@ -57,22 +57,22 @@ do
 
             #---
 
-            for p in $(seq 1 6)
-            do
-
-#                echo \
-                w4t-corner \
-                    $SAMPLES \
-                    --fields amp bh bl nh nl sh sl xi \
-                    --log amp \
-                    --root posterior_$p \
-                    --title "$FLOW $FIELD $METHOD average p=$p" \
-                    --output-dir ${FLOW} \
-                    --tag ${FLOW}_avrg_${FIELD}_${METHOD}_p$p \
-                    --verbose \
-                || exit 1
-
-            done
+#            for p in $(seq 1 6)
+#            do
+#
+##                echo \
+#                w4t-corner \
+#                    $SAMPLES \
+#                    --fields amp bh bl nh nl sh sl xi \
+#                    --log amp \
+#                    --root posterior_$p \
+#                    --title "$FLOW $FIELD $METHOD average p=$p" \
+#                    --output-dir ${FLOW} \
+#                    --tag ${FLOW}_avrg_${FIELD}_${METHOD}_p$p \
+#                    --verbose \
+#                || exit 1
+#
+#            done
 
         done
     done
