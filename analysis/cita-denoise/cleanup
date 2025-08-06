@@ -1,0 +1,24 @@
+#!/usr/bin/env python
+
+"""identifies which jobs failed
+"""
+__author__ = "Reed Essick (reed.essick@gmail.com)"
+
+#-------------------------------------------------
+
+import sys
+
+import os
+import glob
+
+#-------------------------------------------------
+
+flow = sys.argv[1]
+
+#-------------------------------------------------
+
+for snap in glob.glob('%s/*' % flow):
+    for sh in glob.glob('%s/%s*sh' % (snap, flow)):
+        hdf = sh.replace('.sh', '.hdf')
+        if not os.path.exists(hdf):
+            print(sh)

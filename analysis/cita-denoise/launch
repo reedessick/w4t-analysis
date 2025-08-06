@@ -7,9 +7,11 @@
 
 FLOWS=()
 
-for M in "05" "2" "4" "10"
+#for M in "05" "2" "4" "10"
+for M in "2"
 do
-    for MA in "01" "05" "1" "2" "4" "6" "8" "10"
+#    for MA in "01" "05" "1" "2" "4" "6" "8" "10"
+    for MA in "01"
     do
         FLOWS+=(M${M}MA${MA})
     done
@@ -29,18 +31,14 @@ do
 	do
 	    for METHOD in dsf wsf
             do
-                for SCRIPT in $(ls ${FLOW}/*${SNAP}/${FLOW}_*${SNAP}_${FIELD}_${METHOD}_denoise-*.sh)
+                for SCRIPT in $(ls ${FLOW}/*${SNAP}/${FLOW}_*${SNAP}_${FIELD}_${METHOD}_denoise-*.sh 2> /dev/null)
                 do
                     echo "launching: $SCRIPT"
 
 #                    echo \
-#                    qsub ${SCRIPT} || exit 1
-
+                    qsub ${SCRIPT} || exit 1
 
                 done
-
-                exit 1
-
 	    done
 	done
     done

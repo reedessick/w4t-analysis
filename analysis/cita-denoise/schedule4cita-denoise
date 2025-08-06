@@ -19,12 +19,9 @@ VECTORS = ["mag", "vel", "curr", "vort"]
 
 DIRECTIONS = [None, 0, 1, 2]
 
-COMPONENTS = [None, 0, 1, 2]
-MAP2SCALARS = [('' if component is None else '_%d'%component, dict(component=component)) for component in COMPONENTS] \
-    + [('_mag', dict(magnitude=True))]
-
-MAP2SCALARS_MAGS = [('', dict(component=None)), ('_mag', dict(magnitude=True))]
-MAP2SCALARS_CMPS = [('' if component is None else '_%d'%component, dict(component=component)) for component in COMPONENTS]
+COMPONENTS = [None] # , 0, 1, 2]
+MAP2SCALARS = [('' if component is None else '_%d'%component, dict(component=component)) for component in COMPONENTS]
+#MAP2SCALARS += [('_mag', dict(magnitude=True))]
 
 DIRECTS = [True, False]
 
@@ -32,7 +29,7 @@ DIRECTS = [True, False]
 
 SMOOTHS = [True, False]
 
-THRESHOLDS = [1, 2, 3, 4, 5, 10, 15, 20]
+THRESHOLDS = [1, 2, 3, 4, 5, 10] # , 15, 20]
 
 #------------------------
 
@@ -123,7 +120,7 @@ def sf_cmd(
     cmd += ['--threshold %.6f' % thr]
 
     if smooth:
-        cmd += ['smooth']
+        cmd += ['--smooth']
 
     if max_scale:
         cmd += ['--max-scale %.6f' % max_scale]
@@ -285,12 +282,14 @@ commands = scalars + vectors
 
 #---
 
+'''
 # add different directions
 directions = []
 for cmd in commands:
     directions += [dict(direction=direction, **cmd) for direction in DIRECTIONS]
 
 commands = directions
+'''
 
 #---
 
