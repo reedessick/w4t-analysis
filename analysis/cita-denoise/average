@@ -10,8 +10,7 @@ FLOWS=()
 #for M in "05" "2" "4" "10"
 for M in "05"
 do
-#    for MA in "01" "05" "1" "2" "4" "6" "8" "10"
-    for MA in "01" "05" "2" "4" "6" "8"
+    for MA in "01" "05" "1" "2" "4" "6" "8" "10"
     do
         FLOWS+=(M${M}MA${MA})
     done
