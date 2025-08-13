@@ -7,7 +7,8 @@
 
 FLOWS=()
 
-for M in "05" "2" "4" "10"
+#for M in "05" "2" "4" "10"
+for M in "05"
 do
     for MA in "01" "05" "1" "2" "4" "6" "8" "10"
     do
@@ -56,7 +57,7 @@ do
                         --title "$FLOW $FIELD $METHOD" \
                         --max-num-samples 500 \
                         --output-dir ${FLOW} \
-                        --tag ${FLOW}_avrg_${FIELD}_${METHOD} \
+                        --tag ${FLOW}_avrg_${FIELD}_${METHOD}_denoise-${THR}${SMOOTH} \
                         --Verbose \
                     || exit 1
 
@@ -73,7 +74,7 @@ do
 #                            --root posterior_$p \
 #                            --title "$FLOW $FIELD $METHOD average p=$p" \
 #                            --output-dir ${FLOW} \
-#                            --tag ${FLOW}_avrg_${FIELD}_${METHOD}_p$p \
+#                            --tag ${FLOW}_avrg_${FIELD}_${METHOD}_denoise-${THR}${SMOOTH}_p$p \
 #                            --verbose \
 #                        || exit 1
 #
