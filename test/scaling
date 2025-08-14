@@ -96,6 +96,7 @@ w4t-denoise \
     ${FIELD} \
     --max-edgelength 512 \
     --wavelet haar \
+    --quantile 0.30 \
     --threshold 3.0 \
     --max-scale 256 \
     --verbose \
@@ -137,6 +138,7 @@ w4t-structures \
     ${BASE}-${FIELD}-denoise-structures.hdf \
     ${FIELD} \
     --wavelet haar \
+    --quantile 0.68 \
     --max-edgelength 256 \
     --structure-threshold 3.0 \
     --num-proc 4 \
@@ -147,7 +149,7 @@ w4t-structures \
 
 # denoise to remove coherent structures
 
-#echo \
+echo \
 w4t-denoise \
     ${BASE}.hdf \
     ${BASE}-${FIELD}-smooth.hdf \
