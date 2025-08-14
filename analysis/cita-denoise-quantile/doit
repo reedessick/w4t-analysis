@@ -1,0 +1,51 @@
+#!/bin/bash
+
+# a simple script to schedule other scripts
+# Reed Essick (reed.essick@gmail.com)
+
+#-------------------------------------------------
+
+BASEDIR="/fs/lustre/project/plasmaastro/jbeattie/turbulent_boxes/"
+
+#-------------------------------------------------
+
+FLOWS=()
+
+#for M in "05" "2" "4" "10"
+for M in "05"
+do
+#    for MA in "01" "05" "1" "2" "4" "6" "8" "10"
+    for MA in "01"
+    do
+        FLOWS+=(M${M}MA${MA})
+    done
+done
+
+#FLOWS+=(M6MA01)
+#FLOWS+=(M6MA05)
+#FLOWS+=(M6MA1)
+
+#-------------------------------------------------
+
+for FLOW in ${FLOWS[@]}
+do
+
+#    for INPATH in $(ls ${BASEDIR}/${FLOW}/Turb_hdf5_plt_cnt_????)
+    for INPATH in $(ls ${BASEDIR}/${FLOW}/Turb_hdf5_plt_cnt_0050)
+    do
+        SNAP=$(echo $INPATH | awk -F 'Turb_hdf5_plt_cnt_' '{print $2}')
+
+#        echo \
+        ./schedule4cita-denoise \
+            ${INPATH} --flash \
+            ${FLOW} \
+            ${SNAP} \
+            --output-dir ${PWD}/${FLOW}/${SNAP} \
+            --max-edgelength 512 \
+            --index 1 2 3 4 5 6 \
+            --direct-increment 4 \
+            --Verbose \
+        || exit 1
+
+    done
+done
