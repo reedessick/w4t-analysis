@@ -1,0 +1,128 @@
+#!/bin/bash
+
+for SNAP in "0050"
+do
+
+    for FLOW in "M05MA01" "M05MA10" "M10MA10"
+    do
+        SOURCE="../../data/${FLOW}/${FLOW}_${SNAP}.hdf"
+
+        for FIELD in "dens" # "vel" "mag"
+        do
+
+            for level in 0 2 4 6
+            do
+
+                echo \
+                w4t-plot-flow \
+                    ${SOURCE} \
+                    plot plot_coeff hist hist_coeff \
+                    ${FIELD} \
+                    --max-edgelength 128 \
+                    --levels $level $level $level \
+                    -v \
+                    --tag M05MA01_0050-$level \
+                || exit 1
+
+                echo \
+                w4t-structure-function \
+                    ${SOURCE} \
+                    ${FLOW}_${SNAP}-${FIELD}-dsf.hdf \
+                    $FIELD \
+                    --index 1 2 3 4 5 6 \
+                    --max-edgelength 512 \
+                    --direct --direct-increment 16 \
+                    --Verbose \
+                || exit 1
+
+#                echo \
+                w4t-plot-structure-function \
+                    --source $FIELD ${FLOW}_${SNAP}-${FIELD}-dsf.hdf \
+                    --tag ${FLOW}_${SNAP}-${FIELD}-dsf \
+                    --Verbose \
+                || exit 1
+
+                #---
+
+                for thr in 0 1 2 3 4 5 10
+                do
+
+                    echo \
+                    w4t-plot-flow \
+                        ${SOURCE} \
+                        plot plot_coeff hist hist_coeff \
+                        ${FIELD} \
+                        --threshold $thr \
+                        --smooth \
+                        --max-edgelength 128 \
+                        --levels $level $level $level \
+                        -v \
+                        --tag ${FLOW}_${SNAP}-${level}-denoise-0${thr}d00-smooth \
+                    || exit 1
+
+                    echo \
+                    w4t-structure-function \
+                        ${SOURCE} \
+                        ${FLOW}_${SNAP}-${FIELD}-dsf-denoise-0${thr}d00-smooth.hdf \
+                        $FIELD \
+                        --index 1 2 3 4 5 6 \
+                        --max-edgelength 512 \
+                        --threshold $thr \
+                        --smooth \
+                        --direct --direct-increment 16 \
+                        --Verbose \
+                    || exit 1
+
+#                    echo \
+                    w4t-plot-structure-function \
+                        --source $FIELD ${FLOW}_${SNAP}-${FIELD}-dsf-denoise-0${thr}d00-smooth.hdf \
+                        --tag ${FLOW}_${SNAP}-${FIELD}-dsf-denoise-0${thr}d00-smooth \
+                        --Verbose \
+                    || exit 1
+
+                    #---
+
+                    for q in 1 3 6 9
+                    do
+
+                        echo \
+                        w4t-plot-flow \
+                            ${SOURCE} \
+                            plot plot_coeff hist hist_coeff \
+                            ${FIELD} \
+                            --quantile 0.${q} \
+                            --threshold $thr \
+                            --smooth \
+                            --max-edgelength 128 \
+                            --levels $level $level $level \
+                            -v \
+                            --tag ${FLOW}_${SNAP}-${level}-quantile-0d${q}0-denoise-0${thr}d00-smooth \
+                        || exit 1
+
+                        echo \
+                        w4t-structure-function \
+                            ${SOURCE} \
+                            ${FLOW}_${SNAP}-${FIELD}-dsf-quantile-0d${q}0-denoise-0${thr}d00-smooth.hdf \
+                            $FIELD \
+                            --index 1 2 3 4 5 6 \
+                            --max-edgelength 512 \
+                            --threshold $thr \
+                            --quantile 0.$q \
+                            --smooth \
+                            --direct --direct-increment 16 \
+                            --Verbose \
+                        || exit 1
+
+#                        echo \
+                        w4t-plot-structure-function \
+                            --source $FIELD ${FLOW}_${SNAP}-${FIELD}-dsf-quantile-0d${q}0-denoise-0${thr}d00-smooth.hdf \
+                            --tag ${FLOW}_${SNAP}-${FIELD}-dsf-quantile-0d${q}0-denoise-0${thr}d00-smooth \
+                            --Verbose \
+                        || exit 1
+
+                    done
+                done
+            done
+        done
+    done
+done
