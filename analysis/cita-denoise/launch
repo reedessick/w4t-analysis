@@ -11,7 +11,7 @@ FLOWS=()
 for M in "2"
 do
 #    for MA in "01" "05" "1" "2" "4" "6" "8" "10"
-    for MA in "8"
+    for MA in "10"
     do
         FLOWS+=(M${M}MA${MA})
     done

@@ -43,7 +43,7 @@ do
             --output-dir ${PWD}/${FLOW}/${SNAP} \
             --max-edgelength 512 \
             --index 1 2 3 4 5 6 \
-            --direct-increment 4 \
+            --direct-increment 16 \
             --Verbose \
         || exit 1
 
