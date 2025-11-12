@@ -1,0 +1,348 @@
+#!/usr/bin/env python3
+
+"""a quick script to schedule workflows
+"""
+__author__ = "Reed Essick (reed.essick@gmail.com)"
+
+#-------------------------------------------------
+
+import os
+import stat
+
+from argparse import ArgumentParser
+
+#-------------------------------------------------
+
+SCALARS = ["dens"]
+
+VECTORS = ["mag", "vel", "curr", "vort"]
+
+DIRECTIONS = [None, 0, 1, 2]
+
+COMPONENTS = [None] # , 0, 1, 2]
+MAP2SCALARS = [('' if component is None else '_%d'%component, dict(component=component)) for component in COMPONENTS]
+#MAP2SCALARS += [('_mag', dict(magnitude=True))]
+
+DIRECTS = [True, False]
+
+#------------------------
+
+SMOOTHS = [True, False]
+
+THRESHOLDS = [None, 1, 2, 3, 4, 5, 10] # , 15, 20]
+
+#------------------------
+
+MARKERS = ['o', '^', 's', 'D', 'p', '>', '<', 'v']
+
+#-------------------------------------------------
+
+def sf_nickname(thr=None, smooth=False, field=None, magnitude=False, component=None, direction=None, direct=False):
+    assert field is not None
+
+    tag = field
+
+    if magnitude:
+        tag = tag+'-mag'
+
+    elif component is not None:
+        tag = tag+'-%d'%component
+
+    if direction is not None:
+        tag = tag+'_dir-%d' % direction
+
+    if direct:
+        tag += '_dsf'
+    else:
+        tag += '_wsf'
+
+    if thr is not None:
+        tag = tag + ('_denoise-%05.2f' % thr).replace('.', 'd')
+
+    if smooth:
+        tag = tag+'-smooth'
+
+    return tag
+
+#---
+
+def sf_outpath(base, thr, smooth=False, field=None, magnitude=False, component=None, direction=None, direct=False, outdir='.'):
+    nickname = sf_nickname(
+        thr,
+        smooth=smooth,
+        field=field,
+        magnitude=magnitude,
+        component=component,
+        direction=direction,
+        direct=direct,
+    )
+    return os.path.join(os.path.abspath(outdir), '%s_%s.hdf' % (base, nickname))
+
+#------------------------
+
+def sf_cmd(
+        inpath,
+        index,
+        base,
+        thr,
+        smooth=False,
+        max_scale=None,
+        field=None,
+        component=None,
+        magnitude=False,
+        direction=None,
+        direct=False,
+        flash=False,
+        verbose=True,
+        max_edgelength=None,
+        direct_increment=None,
+        outdir='.',
+    ):
+
+    assert field is not None
+
+    outpath = sf_outpath(
+        base,
+        thr,
+        smooth=smooth,
+        field=field,
+        magnitude=magnitude,
+        component=component,
+        direction=direction,
+        direct=direct,
+        outdir=outdir,
+    )
+    script = outpath[:-3] + 'sh'
+
+    cmd = ['w4t-structure-function', inpath, outpath, field]
+
+    cmd += ['--index %s' % (' '.join('%d'%_ for _ in index))]
+
+    if thr is not None:
+        cmd += ['--threshold %.6f' % thr]
+
+    if smooth:
+        cmd += ['--smooth']
+
+    if max_scale:
+        cmd += ['--max-scale %.6f' % max_scale]
+
+    if flash:
+        cmd += ['--flash']
+
+    if verbose:
+        cmd += ['--Verbose']
+
+    if max_edgelength is not None:
+        cmd += ['--max-edgelength %d' % max_edgelength]
+
+    if direct_increment is not None:
+        cmd += ['--direct-increment %d' % direct_increment]
+
+    if magnitude:
+        cmd += ['--magnitude']
+
+    elif component is not None:
+        cmd += ['--component %d' % component]
+
+    if direction is not None:
+        cmd += ['--direction %d' % direction]
+
+    if direct:
+        cmd += ['--direct']
+
+    return cmd, script
+
+#------------------------
+
+def plot_cmd(base, tag, combo, verbose=False, outdir='.'):
+
+    plt = [
+        'w4t-plot-structure-function',
+        '--title "%s"' % base,
+        '--output-dir %s' % os.path.abspath(outdir),
+        '--tag %s' % tag,
+    ]
+    for cmd, marker in zip(combo, MARKERS):
+        nickname = sf_nickname(**cmd)
+        plt += ['--source %s %s' % (nickname, sf_outpath(base, outdir=outdir, **cmd)), '--marker %s %s' % (nickname, marker)]
+
+    if verbose:
+        plt += ['--Verbose']
+
+    script = os.path.join(os.path.abspath(outdir), 'plot-sf_%s_%s.sh' % (base, tag))
+
+    return plt, script
+
+#------------------------
+
+def write_script(path, cmd_str, verbose=False, **notes):
+    if verbose:
+        print('    writing: '+path)
+
+    with open(path, 'w') as obj:
+        obj.write('#!/bin/bash -l')
+
+        # add material for PBS
+        obj.write('\n#PBS -l nodes=1:ppn=1')
+        obj.write('\n#PBS -l walltime=48:00:00')
+        obj.write('\n#PBS -q workq')
+        obj.write('\n#PBS -r n') # not re-runnable
+
+        obj.write('\n#PBS -o %s' % (path[:-2]+'out'))
+        obj.write('\n#PBS -e %s' % (path[:-2]+'err'))
+
+        # add other notes
+        if len(notes):
+            obj.write('\n')
+            for key, val in notes.items():
+                obj.write('\n# %s : %s' % (key, val))
+
+        # load modules?
+#        module load gcc/7.3.0 python/2.7.14
+
+        # add actual command
+        obj.write('\n\n%s \\\n|| exit 1\n' % (' \\\n    '.join(cmd_str)))
+
+    # change script to be executable
+    os.chmod(path, os.stat(path).st_mode | stat.S_IEXEC)
+
+    # return
+    return os.path.abspath(path)
+
+#------------------------
+
+def write_workflow(path, scripts, verbose=False, **notes):
+    if verbose:
+        print('    writing: '+path)
+
+    with open(path, 'w') as obj:
+        obj.write('#!/bin/bash')
+
+        if len(notes):
+            obj.write('\n')
+            for key, val in notes.items():
+                obj.write('\n# %s : %s' % (key, val))
+
+        obj.write('\n')
+        for s in scripts:
+            obj.write('\n%s || exit 1' % s)
+
+    os.chmod(path, os.stat(path).st_mode | stat.S_IEXEC)
+
+    return os.path.abspath(path)
+
+#-------------------------------------------------
+
+parser = ArgumentParser()
+
+parser.add_argument('inpath', type=str)
+parser.add_argument('flow', type=str)
+parser.add_argument('snap', type=int)
+
+parser.add_argument('--flash', default=False, action='store_true')
+
+parser.add_argument('-o', '--output-dir', default='.', type=str)
+#parser.add_argument('-d', '--data-dir', default='.', type=str)
+
+parser.add_argument('--max-edgelength', default=None, type=int)
+parser.add_argument('--index', nargs='*', type=int, default=[1, 2, 3, 4, 5, 6])
+
+parser.add_argument('--direct-increment', default=None, type=int)
+
+parser.add_argument('-v', '--verbose', default=False, action='store_true')
+parser.add_argument('-V', '--Verbose', default=False, action='store_true')
+
+args = parser.parse_args()
+
+os.makedirs(args.output_dir, exist_ok=True)
+
+args.verbose |= args.Verbose
+
+#-------------------------------------------------
+
+base = '%s_%04d' % (args.flow, args.snap)
+#inpath = os.path.join(os.path.abspath(args.data_dir), base+'.hdf')
+
+#------------------------
+
+# schedule jobs that compute structure functions
+
+commands = [dict()]
+
+# add different fields
+scalars = []
+for field in SCALARS:
+    scalars += [dict(field=field, **cmd) for cmd in commands] # default map2scalar: just take the value of the field
+
+vectors = []
+for field in VECTORS:
+    for cmd in commands:
+        vectors += [dict(field=field, **map2scalar, **cmd) for _, map2scalar in MAP2SCALARS]
+
+commands = scalars + vectors
+
+#---
+
+'''
+# add different directions
+directions = []
+for cmd in commands:
+    directions += [dict(direction=direction, **cmd) for direction in DIRECTIONS]
+
+commands = directions
+'''
+
+#---
+
+# add different methods for computing structure function
+methods = []
+for cmd in commands:
+    methods += [dict(direct=direct, **cmd) for direct in DIRECTS]
+
+commands = methods
+
+#-----------
+
+# add options to process with smoothing instead of denoising
+denoise = []
+for cmd in commands:
+    denoise += [dict(smooth=smooth, **cmd) for smooth in SMOOTHS]
+
+commands = denoise
+
+#------------------------
+
+if args.verbose:
+    print('writing individual structure function jobs')
+
+scripts = []
+for cmd in commands:
+
+    for thr in THRESHOLDS:
+        cmd_str, script = sf_cmd(
+            args.inpath,
+            args.index,
+            base,
+            thr,
+            flash=args.flash,
+            verbose=args.verbose,
+            max_edgelength=args.max_edgelength,
+            direct_increment=args.direct_increment,
+            outdir=args.output_dir,
+            **cmd
+        )
+
+        scripts.append(write_script(script, cmd_str, verbose=args.Verbose, base=base, **cmd))
+
+#---
+
+if args.verbose:
+    print('writing overall workflow')
+
+write_workflow(
+    os.path.join(args.output_dir, 'sf-%s.sh' % base),
+    scripts,
+    verbose=args.verbose,
+    base=base,
+)

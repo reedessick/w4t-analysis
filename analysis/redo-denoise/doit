@@ -1,0 +1,46 @@
+#!/bin/bash
+
+# a simple script to schedule other scripts
+# Reed Essick (reed.essick@gmail.com)
+
+#-------------------------------------------------
+
+BASEDIR="../../data"
+
+#-------------------------------------------------
+
+FLOWS=()
+
+for M in "05"
+do
+    for MA in "01" "05" "10"
+    do
+        FLOWS+=(M${M}MA${MA})
+    done
+done
+
+#FLOWS+=(M6MA01)
+#FLOWS+=(M6MA05)
+#FLOWS+=(M6MA1)
+
+#-------------------------------------------------
+
+for FLOW in ${FLOWS[@]}
+do
+
+    SNAP=0050
+    INPATH=${BASEDIR}/${FLOW}/${FLOW}_${SNAP}.hdf
+
+    echo \
+    ./schedule \
+        ${INPATH} --flash \
+        ${FLOW} \
+        ${SNAP} \
+        --output-dir ${PWD}/${FLOW}/${SNAP} \
+        --max-edgelength 512 \
+        --index 1 2 3 4 5 6 \
+        --direct-increment 4 \
+        --Verbose \
+    || exit 1
+
+done
