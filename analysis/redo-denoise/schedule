@@ -29,7 +29,7 @@ DIRECTS = [True, False]
 
 SMOOTHS = [True, False]
 
-THRESHOLDS = [None, 1, 2, 3, 4, 5, 10] # , 15, 20]
+THRESHOLDS = [None, 0, 1, 2, 3, 4, 5, 10, 99] # , 15, 20]
 
 #------------------------
 
@@ -59,8 +59,8 @@ def sf_nickname(thr=None, smooth=False, field=None, magnitude=False, component=N
     if thr is not None:
         tag = tag + ('_denoise-%05.2f' % thr).replace('.', 'd')
 
-    if smooth:
-        tag = tag+'-smooth'
+        if smooth:
+            tag = tag+'-smooth'
 
     return tag
 

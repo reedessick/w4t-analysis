@@ -19,9 +19,7 @@ do
     done
 done
 
-#FLOWS+=(M6MA01)
-#FLOWS+=(M6MA05)
-#FLOWS+=(M6MA1)
+FLOWS+=(M10MA01)
 
 #-------------------------------------------------
 
@@ -31,9 +29,9 @@ do
     SNAP=0050
     INPATH=${BASEDIR}/${FLOW}/${FLOW}_${SNAP}.hdf
 
-    echo \
+#    echo \
     ./schedule \
-        ${INPATH} --flash \
+        ${INPATH} \
         ${FLOW} \
         ${SNAP} \
         --output-dir ${PWD}/${FLOW}/${SNAP} \
