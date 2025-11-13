@@ -1,0 +1,97 @@
+#!/bin/zsh
+
+#---
+
+flows=(M05MA01)
+snaps=(0050)
+
+#---
+
+fields=(dens mag curr vel vort)
+thrs=(00d00 01d00 02d00 03d00 04d00 05d00 10d00 99d00)
+
+#---
+
+methods=(dsf wsf)
+
+#---
+
+MIN_SCALE=1
+MAX_SCALE=256
+
+NUM_WARMUP=1000
+NUM_SAMPLES=5000
+NUM_RETAINED=5000
+
+SEED=123
+
+#---
+
+for method in $methods
+do
+
+    for flow in $flows
+    do
+
+        for snap in $snaps
+        do
+
+            for field in $fields
+            do
+
+                # fit the full flow
+#                echo \
+                w4t-sample-structure-function-ansatz \
+                    ${flow}/${snap}/${flow}_${snap}_${field}_${method}.hdf \
+                    ${flow}/${snap}/${flow}_${snap}_${field}_${method}-ansatz.hdf \
+                    --min-scale $MIN_SCALE \
+                    --max-scale $MAX_SCALE \
+                    --num-warmup $NUM_WARMUP \
+                    --num-samples $NUM_SAMPLES \
+                    --num-retained $NUM_RETAINED \
+                    --seed $SEED \
+                    --verbose \
+                || exit 1
+
+                for thr in $thrs
+                do
+
+                    # fit the coherent structures
+#                    echo \
+                    w4t-sample-structure-function-ansatz \
+                        ${flow}/${snap}/${flow}_${snap}_${field}_${method}_denoise-${thr}.hdf \
+                        ${flow}/${snap}/${flow}_${snap}_${field}_${method}_denoise_${thr}-ansatz.hdf \
+                        --min-scale $MIN_SCALE \
+                        --max-scale $MAX_SCALE \
+                        --num-warmup $NUM_WARMUP \
+                        --num-samples $NUM_SAMPLES \
+                        --num-retained $NUM_RETAINED \
+                        --seed $SEED \
+                        --verbose \
+                    || exit 1 
+
+                    #---
+
+                    # fit the incoherent flow
+#                    echo \
+                    w4t-sample-structure-function-ansatz \
+                        ${flow}/${snap}/${flow}_${snap}_${field}_${method}_denoise-${thr}-smooth.hdf \
+                        ${flow}/${snap}/${flow}_${snap}_${field}_${method}_denoise_${thr}-smooth-ansatz.hdf \
+                        --min-scale $MIN_SCALE \
+                        --max-scale $MAX_SCALE \
+                        --num-warmup $NUM_WARMUP \
+                        --num-samples $NUM_SAMPLES \
+                        --num-retained $NUM_RETAINED \
+                        --seed $SEED \
+                        --verbose \
+                    || exit 1 
+
+                done
+
+            done
+
+        done
+
+    done
+
+done

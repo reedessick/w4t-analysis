@@ -19,41 +19,41 @@ methods=(dsf wsf)
 for method in $methods
 do
 
-for flow in $flows
-do
+    for flow in $flows
+    do
 
-for snap in $snaps
-do
+        for snap in $snaps
+        do
 
-for field in $fields
-do
+            for field in $fields
+            do
 
-for thr in $thrs
-do
+                for thr in $thrs
+                do
 
-#echo \
-w4t-plot-structure-function \
-    --title "${flow}_${snap}_${field}_${method}-$thr" \
-    --source full ${flow}/${snap}/${flow}_${snap}_${field}_${method}.hdf \
-    --marker full o \
-    --source inco ${flow}/${snap}/${flow}_${snap}_${field}_${method}_denoise-${thr}-smooth.hdf \
-    --marker inco s \
-    --source cohr ${flow}/${snap}/${flow}_${snap}_${field}_${method}_denoise-${thr}.hdf \
-    --marker cohr ^ \
-    --output-dir "${flow}/${snap}" \
-    --tag ${flow}_${snap}_${field}_${method}-${thr} \
-    --legend \
-    --grid \
-    --figtype png --dpi 200 \
-    --Verbose \
-|| exit 1
+                    #echo \
+                    w4t-plot-structure-function \
+                        --title "${flow}_${snap}_${field}_${method}-$thr" \
+                        --source full ${flow}/${snap}/${flow}_${snap}_${field}_${method}.hdf \
+                        --marker full o \
+                        --source inco ${flow}/${snap}/${flow}_${snap}_${field}_${method}_denoise-${thr}-smooth.hdf \
+                        --marker inco s \
+                        --source cohr ${flow}/${snap}/${flow}_${snap}_${field}_${method}_denoise-${thr}.hdf \
+                        --marker cohr ^ \
+                        --output-dir "${flow}/${snap}" \
+                        --tag ${flow}_${snap}_${field}_${method}-${thr} \
+                        --legend \
+                        --grid \
+                        --figtype png --dpi 200 \
+                        --Verbose \
+                    || exit 1
 
-done
+                done
 
-done
+            done
 
-done
+        done
 
-done
+    done
 
 done
