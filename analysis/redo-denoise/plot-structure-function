@@ -7,7 +7,7 @@ snaps=(0050)
 
 #---
 
-fields=(dens) # vel vort mag curr)
+fields=(dens mag curr vel vort)
 thrs=(00d00 01d00 02d00 03d00 04d00 05d00 10d00 99d00)
 
 #---
@@ -40,8 +40,8 @@ w4t-plot-structure-function \
     --marker inco s \
     --source cohr ${flow}/${snap}/${flow}_${snap}_${field}_${method}_denoise-${thr}.hdf \
     --marker cohr ^ \
-    --output-dir figures \
-    --tag ${flow}_${snap}_${field}_dsf-${thr} \
+    --output-dir "${flow}/${snap}" \
+    --tag ${flow}_${snap}_${field}_${method}-${thr} \
     --legend \
     --grid \
     --figtype png --dpi 200 \
