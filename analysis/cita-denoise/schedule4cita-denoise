@@ -56,7 +56,7 @@ def sf_nickname(thr, smooth=False, field=None, magnitude=False, component=None, 
     else:
         tag += '_wsf'
 
-    tag = tag + ('_denoise-%05.2f' % thr).replace('.', 'd')
+    tag = tag + ('_denoise-%s' % thr)
 
     if smooth:
         tag = tag+'-smooth'
@@ -78,6 +78,70 @@ def sf_outpath(base, thr, smooth=False, field=None, magnitude=False, component=N
     return os.path.join(os.path.abspath(outdir), '%s_%s.hdf' % (base, nickname))
 
 #------------------------
+
+def sf_cmds(
+        inpath,
+        index,
+        base,
+        field,
+        thrs,
+        commands,
+        max_edgelength=None,
+        direct_increment=None,
+        flash=False,
+        outdir='.',
+        verbose=True,
+        copy=False,
+    ):
+
+    # a list of commands
+    cmd_strs = []
+
+    #---
+
+    if copy:
+        # get a local copy of HDf file
+        newpath = '%s_%s.hdf' % (base, field)
+        cmd_strs.append('cp %s %s \\\n|| exit 1' %(inpath, newpath))
+
+    else:
+        newpath = inpath
+
+    #---
+
+    # set up iteration over thrs, commands
+    cmd_str = 'for THR in %s' % (' '.join(['%02d'%_ for _ in thrs]))
+    cmd_str += '\ndo'
+    for cmd in commands:
+        c = sf_cmd(
+            newpath,
+            index,
+            base,
+            '${THR}',
+            field=field,
+            max_edgelength=max_edgelength,
+            direct_increment=direct_increment,
+            flash=flash,
+            outdir=outdir,
+            verbose=verbose,
+            **cmd
+        )
+        cmd_str += '\n\n' + ' \\\n    '.join(c) + ' \\\n|| exit 1'
+
+    cmd_str += '\n\ndone'
+
+    cmd_strs.append(cmd_str)
+
+    #---
+
+    script = os.path.join(outdir, '%s_%s.sh' % (base, field))
+
+    #---
+
+    # return
+    return cmd_strs, script
+
+#---
 
 def sf_cmd(
         inpath,
@@ -117,7 +181,7 @@ def sf_cmd(
 
     cmd += ['--index %s' % (' '.join('%d'%_ for _ in index))]
 
-    cmd += ['--threshold %.6f' % thr]
+    cmd += ['--threshold %s' % thr]
 
     if smooth:
         cmd += ['--smooth']
@@ -149,32 +213,11 @@ def sf_cmd(
     if direct:
         cmd += ['--direct']
 
-    return cmd, script
+    return cmd
 
 #------------------------
 
-def plot_cmd(base, tag, combo, verbose=False, outdir='.'):
-
-    plt = [
-        'w4t-plot-structure-function',
-        '--title "%s"' % base,
-        '--output-dir %s' % os.path.abspath(outdir),
-        '--tag %s' % tag,
-    ]
-    for cmd, marker in zip(combo, MARKERS):
-        nickname = sf_nickname(**cmd)
-        plt += ['--source %s %s' % (nickname, sf_outpath(base, outdir=outdir, **cmd)), '--marker %s %s' % (nickname, marker)]
-
-    if verbose:
-        plt += ['--Verbose']
-
-    script = os.path.join(os.path.abspath(outdir), 'plot-sf_%s_%s.sh' % (base, tag))
-
-    return plt, script
-
-#------------------------
-
-def write_script(path, cmd_str, verbose=False, **notes):
+def write_script(path, cmd_strs, verbose=False, **notes):
     if verbose:
         print('    writing: '+path)
 
@@ -199,8 +242,11 @@ def write_script(path, cmd_str, verbose=False, **notes):
         # load modules?
 #        module load gcc/7.3.0 python/2.7.14
 
-        # add actual command
-        obj.write('\n\n%s \\\n|| exit 1' % (' \\\n    '.join(cmd_str)))
+        # add actual commands
+        for cmd_str in cmd_strs:
+            obj.write('\n\n%s' % cmd_str)
+
+        obj.write('\n')
 
     # change script to be executable
     os.chmod(path, os.stat(path).st_mode | stat.S_IEXEC)
@@ -248,6 +294,8 @@ parser.add_argument('--index', nargs='*', type=int, default=[1, 2, 3, 4, 5, 6])
 
 parser.add_argument('--direct-increment', default=None, type=int)
 
+parser.add_argument('--copy', default=False, action='store_true')
+
 parser.add_argument('-v', '--verbose', default=False, action='store_true')
 parser.add_argument('-V', '--Verbose', default=False, action='store_true')
 
@@ -266,48 +314,26 @@ base = '%s_%04d' % (args.flow, args.snap)
 
 # schedule jobs that compute structure functions
 
-commands = [dict()]
+commands = dict()
 
 # add different fields
-scalars = []
 for field in SCALARS:
-    scalars += [dict(field=field, **cmd) for cmd in commands] # default map2scalar: just take the value of the field
+    commands[field] = [] # default map2scalar: the field's value
 
-vectors = []
 for field in VECTORS:
-    for cmd in commands:
-        vectors += [dict(field=field, **map2scalar, **cmd) for _, map2scalar in MAP2SCALARS]
-
-commands = scalars + vectors
-
-#---
-
-'''
-# add different directions
-directions = []
-for cmd in commands:
-    directions += [dict(direction=direction, **cmd) for direction in DIRECTIONS]
-
-commands = directions
-'''
+    commands[field] = [dict(**map2scalar) for _, map2scalar in MAP2SCALARS]
 
 #---
 
 # add different methods for computing structure function
-methods = []
-for cmd in commands:
-    methods += [dict(direct=direct, **cmd) for direct in DIRECTS]
-
-commands = methods
+for field in commands.keys():
+    commands[field] = [dict(direct=direct, **cmd) for direct in DIRECTS for cmd in commands[field]]
 
 #-----------
 
 # add options to process with smoothing instead of denoising
-denoise = []
-for cmd in commands:
-    denoise += [dict(smooth=smooth, **cmd) for smooth in SMOOTHS]
-
-commands = denoise
+for field in commands.keys():
+    commands[field] = [dict(smooth=smooth, **cmd) for smooth in SMOOTHS for cmd in commands[field]]
 
 #------------------------
 
@@ -315,23 +341,24 @@ if args.verbose:
     print('writing individual structure function jobs')
 
 scripts = []
-for cmd in commands:
+for field in commands.keys():
 
-    for thr in THRESHOLDS:
-        cmd_str, script = sf_cmd(
-            args.inpath,
-            args.index,
-            base,
-            thr,
-            flash=args.flash,
-            verbose=args.verbose,
-            max_edgelength=args.max_edgelength,
-            direct_increment=args.direct_increment,
-            outdir=args.output_dir,
-            **cmd
-        )
+    cmd_strs, script = sf_cmds(
+        args.inpath,
+        args.index,
+        base,
+        field,
+        THRESHOLDS,
+        commands=commands[field],
+        flash=args.flash,
+        verbose=args.verbose,
+        max_edgelength=args.max_edgelength,
+        direct_increment=args.direct_increment,
+        copy=args.copy,
+        outdir=args.output_dir,
+    )
 
-        scripts.append(write_script(script, cmd_str, verbose=args.Verbose, base=base, **cmd))
+    scripts.append(write_script(script, cmd_strs, verbose=args.Verbose, base=base))
 
 #---
 

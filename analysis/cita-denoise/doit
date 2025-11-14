@@ -44,5 +44,8 @@ do
             --Verbose \
         || exit 1
 
+#            --copy \
+exit 1
+
     done
 done
