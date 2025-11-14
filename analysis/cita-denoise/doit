@@ -41,10 +41,10 @@ do
             --max-edgelength 512 \
             --index 1 2 3 4 5 6 \
             --direct-increment 4 \
+            --copy \
             --Verbose \
         || exit 1
 
-#            --copy \
 exit 1
 
     done

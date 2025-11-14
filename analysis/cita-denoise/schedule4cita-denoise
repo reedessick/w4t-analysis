@@ -101,8 +101,9 @@ def sf_cmds(
 
     if copy:
         # get a local copy of HDf file
-        newpath = '%s_%s.hdf' % (base, field)
-        cmd_strs.append('cp %s %s \\\n|| exit 1' %(inpath, newpath))
+        newpath = '/mnt/node_scratch/essick/%s_%s.hdf' % (base, field)
+        cmd_strs.append('echo "copying data locally to: %s"\ncp \\\n    %s \\\n    %s \\\n|| exit 1' % \
+            (newpath, inpath, newpath))
 
     else:
         newpath = inpath
@@ -134,7 +135,12 @@ def sf_cmds(
 
     #---
 
-    script = os.path.join(outdir, '%s_%s.sh' % (base, field))
+    if copy: # remove local copy
+        cmd_strs.append('echo "removing local copy from: %s"\nrm %s' % (newpath, newpath))
+
+    #---
+
+    script = os.path.join(outdir, 'sf-%s_%s.sh' % (base, field))
 
     #---
 
@@ -244,6 +250,7 @@ def write_script(path, cmd_strs, verbose=False, **notes):
 
         # add actual commands
         for cmd_str in cmd_strs:
+            obj.write('\n\n#---')
             obj.write('\n\n%s' % cmd_str)
 
         obj.write('\n')
