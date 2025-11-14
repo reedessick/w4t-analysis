@@ -19,6 +19,8 @@ methods=(dsf wsf)
 
 REF_SCALE=32
 
+MAX_NUM_SAMPLES=500
+
 #---
 
 for method in $methods
@@ -33,12 +35,13 @@ do
             for field in $fields
             do
 
-                # fit the full flow
+                # plot the full flow
 #                echo \
                 w4t-plot-structure-function-ansatz \
                     ${flow}/${snap}/${flow}_${snap}_${field}_${method}.hdf \
                     ${flow}/${snap}/${flow}_${snap}_${field}_${method}-ansatz.hdf \
                     $REF_SCALE \
+                    --max-num-samples $MAX_NUM_SAMPLES \
                     --title "${flow}_${snap}_${field}_${method}" \
                     --output-dir "${flow}/${snap}" \
                     --tag ${flow}_${snap}_${field}_${method} \
@@ -49,12 +52,13 @@ do
                 for thr in $thrs
                 do
 
-                    # fit the coherent structures
+                    # plot the coherent structures
 #                    echo \
                     w4t-plot-structure-function-ansatz \
                         ${flow}/${snap}/${flow}_${snap}_${field}_${method}_denoise-${thr}.hdf \
                         ${flow}/${snap}/${flow}_${snap}_${field}_${method}_denoise_${thr}-ansatz.hdf \
                         $REF_SCALE \
+                        --max-num-samples $MAX_NUM_SAMPLES \
                         --title "${flow}_${snap}_${field}_${method}-${thr}" \
                         --output-dir "${flow}/${snap}" \
                         --tag ${flow}_${snap}_${field}_${method}-${thr} \
@@ -64,18 +68,36 @@ do
 
                     #---
 
-                    # fit the incoherent flow
+                    # plot the incoherent flow
 #                    echo \
                     w4t-plot-structure-function-ansatz \
                         ${flow}/${snap}/${flow}_${snap}_${field}_${method}_denoise-${thr}-smooth.hdf \
                         ${flow}/${snap}/${flow}_${snap}_${field}_${method}_denoise_${thr}-smooth-ansatz.hdf \
                         $REF_SCALE \
+                        --max-num-samples $MAX_NUM_SAMPLES \
+                        --title "${flow}_${snap}_${field}_${method}-${thr}-smooth" \
+                        --output-dir "${flow}/${snap}" \
+                        --tag ${flow}_${snap}_${field}_${method}-${thr}-smooth \
+                        --figtype png --dpi 200 \
+                        --verbose \
+                    || exit 1 
+
+                    #---
+
+                    # compare violins
+#                    echo \
+                    w4t-compare-structure-function-ansatz-violin \
+                        ${flow}/${snap}/${flow}_${snap}_${field}_${method}-ansatz.hdf \
+                        ${flow}/${snap}/${flow}_${snap}_${field}_${method}_denoise_${thr}-ansatz.hdf \
+                        ${flow}/${snap}/${flow}_${snap}_${field}_${method}_denoise_${thr}-smooth-ansatz.hdf \
+                        --ref-scale $REF_SCALE \
+                        --max-num-samples $MAX_NUM_SAMPLES \
                         --title "${flow}_${snap}_${field}_${method}-${thr}" \
                         --output-dir "${flow}/${snap}" \
                         --tag ${flow}_${snap}_${field}_${method}-${thr} \
                         --figtype png --dpi 200 \
                         --verbose \
-                    || exit 1 
+                    || exit 1
 
                 done
 
