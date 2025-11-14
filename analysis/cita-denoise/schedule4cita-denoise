@@ -325,7 +325,7 @@ commands = dict()
 
 # add different fields
 for field in SCALARS:
-    commands[field] = [] # default map2scalar: the field's value
+    commands[field] = [dict()] # default map2scalar: the field's value
 
 for field in VECTORS:
     commands[field] = [dict(**map2scalar) for _, map2scalar in MAP2SCALARS]

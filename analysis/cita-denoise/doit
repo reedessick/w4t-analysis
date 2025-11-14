@@ -45,7 +45,5 @@ do
             --Verbose \
         || exit 1
 
-exit 1
-
     done
 done
