@@ -12,13 +12,13 @@ REF_SCALE=32
 
 #---
 
-#fields=(dens mag curr vel vort)
-fields=(mag)
+fields=(mag curr vel vort dens)
+
+thrs=(01d00 02d00 03d00 04d00 05d00 10d00)
 
 #---
 
-#methods=(dsf wsf)
-methods=(dsf)
+methods=(dsf wsf)
 
 #---
 
@@ -63,6 +63,47 @@ do
                     --seed $SEED \
                     --verbose \
                 || exit 1
+
+                #---
+
+                for thr in $thrs
+                do
+
+                    # fit the coherent flow
+
+#                    echo \
+                    w4t-sample-scaling-exponent-ansatz \
+                        ${flow}/${snap}/${flow}_${snap}_${field}_${method}_denoise-${thr}.hdf \
+                        ${flow}/${snap}/${flow}_${snap}_${field}_${method}_denoise-${thr}-SLansatz-${REF_SCALE}.hdf \
+                        $REF_SCALE \ 
+                        --min-scale $MIN_SCALE \
+                        --max-scale $MAX_SCALE \
+                        --num-warmup $NUM_WARMUP \
+                        --num-samples $NUM_SAMPLES \
+                        --num-retained $NUM_RETAINED \
+                        --seed $SEED \
+                        --verbose \
+                    || exit 1
+
+                    #---
+
+                    # fit the incoherent flow
+
+#                    echo \
+                    w4t-sample-scaling-exponent-ansatz \
+                        ${flow}/${snap}/${flow}_${snap}_${field}_${method}_denoise-${thr}-smooth.hdf \
+                        ${flow}/${snap}/${flow}_${snap}_${field}_${method}_denoise-${thr}-smooth-SLansatz-${REF_SCALE}.hdf \
+                        $REF_SCALE \ 
+                        --min-scale $MIN_SCALE \
+                        --max-scale $MAX_SCALE \
+                        --num-warmup $NUM_WARMUP \
+                        --num-samples $NUM_SAMPLES \
+                        --num-retained $NUM_RETAINED \
+                        --seed $SEED \
+                        --verbose \
+                    || exit 1
+
+                done
 
             done
 

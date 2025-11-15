@@ -5,15 +5,16 @@
 
 #-------------------------------------------------
 
-flows=(M05MA01)
+flows=(M05MA01	M05MA05	M05MA10	M10MA01)
 snaps=(0050)
 
 REF_SCALE=32
 
 #---
 
-#fields=(dens mag curr vel vort)
-fields=(mag)
+fields=(mag curr vel vort dens)
+
+thrs=(01d00 02d00 03d00 04d00 05d00 10d00)
 
 #---
 
@@ -37,7 +38,7 @@ do
             for field in $fields
             do
 
-                # fit the full flow
+                # plot the full flow
 
 #                echo \
                 w4t-corner \
@@ -95,6 +96,133 @@ do
                     --figtype png --dpi 200 \
                     --Verbose \
                 || exit 1 
+
+                #---------
+
+                for thr in $thrs
+                do
+
+                    # plot the coherent flow
+
+#                    echo \
+                    w4t-corner \
+                        ${flow}/${snap}/${flow}_${snap}_${field}_${method}_denoise-${thr}-SLansatz-${REF_SCALE}.hdf \
+                        --title ${flow}_${snap}_${field}_${method}_denoise-${thr}-SLansatz-${REF_SCALE} \
+                        --fields 'x' 'beta' 'C0' 'dlogSdlogs' \
+                        --label 'x' '$x$' \
+                        --label 'beta' '$\beta$' \
+                        --label 'C0' '$C_0$' \
+                        --label 'dlogSdlogs_0' "\$\xi(p=1, s=${REF_SCALE})\$" \
+                        --label 'dlogSdlogs_1' "\$\xi(p=2, s=${REF_SCALE})\$" \
+                        --label 'dlogSdlogs_2' "\$\xi(p=3, s=${REF_SCALE})\$" \
+                        --label 'dlogSdlogs_3' "\$\xi(p=4, s=${REF_SCALE})\$" \
+                        --label 'dlogSdlogs_4' "\$\xi(p=5, s=${REF_SCALE})\$" \
+                        --label 'dlogSdlogs_5' "\$\xi(p=6, s=${REF_SCALE})\$" \
+                        --root 'prior' \
+                        --output-dir ${flow}/${snap}/ \
+                        --tag ${flow}_${snap}_${field}_${method}_denoise-${thr}-SLansatz-${REF_SCALE}-prior \
+                        --figtype png --dpi 200 \
+                        --verbose \
+                    || exit 1
+
+#                    echo \
+                    w4t-corner \
+                        ${flow}/${snap}/${flow}_${snap}_${field}_${method}_denoise-${thr}-SLansatz-${REF_SCALE}.hdf \
+                        --title ${flow}_${snap}_${field}_${method}_denoise-${thr}-SLansatz-${REF_SCALE} \
+                        --fields 'x' 'beta' 'C0' 'dlogSdlogs' \
+                        --label 'x' '$x$' \
+                        --label 'beta' '$\beta$' \
+                        --label 'C0' '$C_0$' \
+                        --label 'dlogSdlogs_0' "\$\xi(p=1, s=${REF_SCALE})\$" \
+                        --label 'dlogSdlogs_1' "\$\xi(p=2, s=${REF_SCALE})\$" \
+                        --label 'dlogSdlogs_2' "\$\xi(p=3, s=${REF_SCALE})\$" \
+                        --label 'dlogSdlogs_3' "\$\xi(p=4, s=${REF_SCALE})\$" \
+                        --label 'dlogSdlogs_4' "\$\xi(p=5, s=${REF_SCALE})\$" \
+                        --label 'dlogSdlogs_5' "\$\xi(p=6, s=${REF_SCALE})\$" \
+                        --root 'posterior' \
+                        --output-dir ${flow}/${snap}/ \
+                        --tag ${flow}_${snap}_${field}_${method}_denoise-${thr}-SLansatz-${REF_SCALE} \
+                        --figtype png --dpi 200 \
+                        --verbose \
+                    || exit 1
+
+                    #---
+
+#                    echo \
+                    w4t-plot-scaling-exponent-ansatz \
+                        ${flow}/${snap}/${flow}_${snap}_${field}_${method}_denoise-${thr}.hdf \
+                        ${flow}/${snap}/${flow}_${snap}_${field}_${method}_denoise-${thr}-SLansatz-${REF_SCALE}.hdf \
+                        --structure-function-samples ${flow}/${snap}/${flow}_${snap}_${field}_${method}_denoise-${thr}-ansatz.hdf \
+                        --max-num-samples $MAX_NUM_SAMPLES \
+                        --title ${flow}_${snap}_${field}_${method}_denoise-${thr}-SLansatz-${REF_SCALE} \
+                        --output-dir ${flow}/${snap}/ \
+                        --tag ${flow}_${snap}_${field}_${method}_denoise-${thr}-SLansatz-${REF_SCALE} \
+                        --figtype png --dpi 200 \
+                        --Verbose \
+                    || exit 1
+
+                    #---------
+
+                    # plot the incoherent flow
+
+#                    echo \
+                    w4t-corner \
+                        ${flow}/${snap}/${flow}_${snap}_${field}_${method}_denoise-${thr}-smooth-SLansatz-${REF_SCALE}.hdf \
+                        --title ${flow}_${snap}_${field}_${method}_denoise-${thr}-smooth-SLansatz-${REF_SCALE} \
+                        --fields 'x' 'beta' 'C0' 'dlogSdlogs' \
+                        --label 'x' '$x$' \
+                        --label 'beta' '$\beta$' \
+                        --label 'C0' '$C_0$' \
+                        --label 'dlogSdlogs_0' "\$\xi(p=1, s=${REF_SCALE})\$" \
+                        --label 'dlogSdlogs_1' "\$\xi(p=2, s=${REF_SCALE})\$" \
+                        --label 'dlogSdlogs_2' "\$\xi(p=3, s=${REF_SCALE})\$" \
+                        --label 'dlogSdlogs_3' "\$\xi(p=4, s=${REF_SCALE})\$" \
+                        --label 'dlogSdlogs_4' "\$\xi(p=5, s=${REF_SCALE})\$" \
+                        --label 'dlogSdlogs_5' "\$\xi(p=6, s=${REF_SCALE})\$" \
+                        --root 'prior' \
+                        --output-dir ${flow}/${snap}/ \
+                        --tag ${flow}_${snap}_${field}_${method}_denoise-${thr}-smooth-SLansatz-${REF_SCALE}-prior \
+                        --figtype png --dpi 200 \
+                        --verbose \
+                    || exit 1
+
+#                    echo \
+                    w4t-corner \
+                        ${flow}/${snap}/${flow}_${snap}_${field}_${method}_denoise-${thr}-smooth-SLansatz-${REF_SCALE}.hdf \
+                        --title ${flow}_${snap}_${field}_${method}_denoise-${thr}-smooth-SLansatz-${REF_SCALE} \
+                        --fields 'x' 'beta' 'C0' 'dlogSdlogs' \
+                        --label 'x' '$x$' \
+                        --label 'beta' '$\beta$' \
+                        --label 'C0' '$C_0$' \
+                        --label 'dlogSdlogs_0' "\$\xi(p=1, s=${REF_SCALE})\$" \
+                        --label 'dlogSdlogs_1' "\$\xi(p=2, s=${REF_SCALE})\$" \
+                        --label 'dlogSdlogs_2' "\$\xi(p=3, s=${REF_SCALE})\$" \
+                        --label 'dlogSdlogs_3' "\$\xi(p=4, s=${REF_SCALE})\$" \
+                        --label 'dlogSdlogs_4' "\$\xi(p=5, s=${REF_SCALE})\$" \
+                        --label 'dlogSdlogs_5' "\$\xi(p=6, s=${REF_SCALE})\$" \
+                        --root 'posterior' \
+                        --output-dir ${flow}/${snap}/ \
+                        --tag ${flow}_${snap}_${field}_${method}_denoise-${thr}-smooth-SLansatz-${REF_SCALE} \
+                        --figtype png --dpi 200 \
+                        --verbose \
+                    || exit 1
+
+                    #---
+
+#                    echo \
+                    w4t-plot-scaling-exponent-ansatz \
+                        ${flow}/${snap}/${flow}_${snap}_${field}_${method}_denoise-${thr}-smooth.hdf \
+                        ${flow}/${snap}/${flow}_${snap}_${field}_${method}_denoise-${thr}-smooth-SLansatz-${REF_SCALE}.hdf \
+                        --structure-function-samples ${flow}/${snap}/${flow}_${snap}_${field}_${method}_denoise-${thr}-smooth-ansatz.hdf \
+                        --max-num-samples $MAX_NUM_SAMPLES \
+                        --title ${flow}_${snap}_${field}_${method}_denoise-${thr}-smooth-SLansatz-${REF_SCALE} \
+                        --output-dir ${flow}/${snap}/ \
+                        --tag ${flow}_${snap}_${field}_${method}_denoise-${thr}-smooth-SLansatz-${REF_SCALE} \
+                        --figtype png --dpi 200 \
+                        --Verbose \
+                    || exit 1
+
+                done
 
             done
 

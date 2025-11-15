@@ -2,12 +2,13 @@
 
 #---
 
-flows=(M05MA01)
+flows=(M05MA01  M05MA05 M05MA10 M10MA01)
 snaps=(0050)
 
 #---
 
 fields=(mag curr vel vort dens)
+
 #thrs=(00d00 01d00 02d00 03d00 04d00 05d00 10d00 99d00)
 thrs=(01d00 02d00 03d00 04d00 05d00 10d00)
 
