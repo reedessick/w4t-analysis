@@ -19,7 +19,7 @@ methods=(dsf wsf)
 
 REF_SCALE=32
 
-MAX_NUM_SAMPLES=500
+MAX_NUM_SAMPLES=250
 
 #---
 

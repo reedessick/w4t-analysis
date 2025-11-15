@@ -29,8 +29,8 @@ MAX_SCALE=256
 #---
 
 NUM_WARMUP=10000
-NUM_SAMPLES=50000
-NUM_RETAINED=5000
+NUM_SAMPLES=100000
+NUM_RETAINED=10000
 
 SEED=123
 
@@ -51,7 +51,7 @@ do
                 # fit the full flow
 
 #                echo \
-                $(which w4t-sample-scaling-exponent-ansatz) \
+                w4t-sample-scaling-exponent-ansatz \
                     ${flow}/${snap}/${flow}_${snap}_${field}_${method}.hdf \
                     ${flow}/${snap}/${flow}_${snap}_${field}_${method}-SLansatz-${REF_SCALE}.hdf \
                     $REF_SCALE \
