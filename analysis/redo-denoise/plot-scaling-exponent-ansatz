@@ -77,11 +77,12 @@ do
                     ${flow}/${snap}/${flow}_${snap}_${field}_${method}.hdf \
                     ${flow}/${snap}/${flow}_${snap}_${field}_${method}-SLansatz-${REF_SCALE}.hdf \
                     --structure-function-samples ${flow}/${snap}/${flow}_${snap}_${field}_${method}-ansatz.hdf \
+                    --max-num-samples 100 \
                     --title ${flow}_${snap}_${field}_${method}-SLansatz-${REF_SCALE} \
                     --output-dir ${flow}/${snap}/ \
                     --tag ${flow}_${snap}_${field}_${method}-SLansatz-${REF_SCALE} \
                     --figtype png --dpi 200 \
-                    --verbose \
+                    --Verbose \
                 || exit 1 
 
 exit 1

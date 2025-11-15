@@ -7,7 +7,7 @@ snaps=(0050)
 
 #---
 
-fields=(dens mag curr vel vort)
+fields=(mag curr vel vort dens)
 #thrs=(00d00 01d00 02d00 03d00 04d00 05d00 10d00 99d00)
 thrs=(01d00 02d00 03d00 04d00 05d00 10d00)
 
@@ -18,8 +18,8 @@ methods=(dsf wsf)
 #---
 
 # clip the scales to avoid extreme behavior that is a bad match to the ansatz
-MIN_SCALE=3
-MAX_SCALE=255
+MIN_SCALE=1
+MAX_SCALE=256
 
 #---
 
@@ -27,7 +27,7 @@ NUM_WARMUP=1000
 NUM_SAMPLES=5000
 NUM_RETAINED=5000
 
-SEED=123
+SEED=1234
 
 #---
 

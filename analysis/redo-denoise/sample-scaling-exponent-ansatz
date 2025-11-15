@@ -17,13 +17,14 @@ fields=(mag)
 
 #---
 
-methods=(dsf wsf)
+#methods=(dsf wsf)
+methods=(dsf)
 
 #---
 
 # clip the scales to avoid extreme behavior that is a bad match to the ansatz
-MIN_SCALE=3
-MAX_SCALE=255
+MIN_SCALE=1
+MAX_SCALE=256
 
 #---
 

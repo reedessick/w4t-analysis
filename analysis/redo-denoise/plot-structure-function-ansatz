@@ -7,7 +7,7 @@ snaps=(0050)
 
 #---
 
-fields=(dens mag curr vel vort)
+fields=(mag curr vel vort dens)
 #thrs=(00d00 01d00 02d00 03d00 04d00 05d00 10d00 99d00)
 thrs=(01d00 02d00 03d00 04d00 05d00 10d00)
 
