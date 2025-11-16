@@ -2,14 +2,13 @@
 
 #---
 
-flows=(M05MA01  M05MA05 M05MA10 M10MA01)
+flows=(M05MA01) # M05MA05 M05MA10 M10MA01)
 snaps=(0050)
 
 #---
 
 fields=(mag curr vel vort dens)
 
-#thrs=(00d00 01d00 02d00 03d00 04d00 05d00 10d00 99d00)
 thrs=(01d00 02d00 03d00 04d00 05d00 10d00)
 
 #---
@@ -65,7 +64,7 @@ do
 #                    echo \
                     w4t-sample-structure-function-ansatz \
                         ${flow}/${snap}/${flow}_${snap}_${field}_${method}_denoise-${thr}.hdf \
-                        ${flow}/${snap}/${flow}_${snap}_${field}_${method}_denoise_${thr}-ansatz.hdf \
+                        ${flow}/${snap}/${flow}_${snap}_${field}_${method}_denoise-${thr}-ansatz.hdf \
                         --min-scale $MIN_SCALE \
                         --max-scale $MAX_SCALE \
                         --num-warmup $NUM_WARMUP \
@@ -81,7 +80,7 @@ do
 #                    echo \
                     w4t-sample-structure-function-ansatz \
                         ${flow}/${snap}/${flow}_${snap}_${field}_${method}_denoise-${thr}-smooth.hdf \
-                        ${flow}/${snap}/${flow}_${snap}_${field}_${method}_denoise_${thr}-smooth-ansatz.hdf \
+                        ${flow}/${snap}/${flow}_${snap}_${field}_${method}_denoise-${thr}-smooth-ansatz.hdf \
                         --min-scale $MIN_SCALE \
                         --max-scale $MAX_SCALE \
                         --num-warmup $NUM_WARMUP \

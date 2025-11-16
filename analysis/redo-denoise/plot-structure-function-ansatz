@@ -2,14 +2,13 @@
 
 #---
 
-flows=(M05MA01	M05MA05	M05MA10	M10MA01)
+flows=(M05MA01) # M05MA05 M05MA10 M10MA01)
 snaps=(0050)
 
 #---
 
 fields=(mag curr vel vort dens)
 
-#thrs=(00d00 01d00 02d00 03d00 04d00 05d00 10d00 99d00)
 thrs=(01d00 02d00 03d00 04d00 05d00 10d00)
 
 #---
@@ -57,7 +56,7 @@ do
 #                    echo \
                     w4t-plot-structure-function-ansatz \
                         ${flow}/${snap}/${flow}_${snap}_${field}_${method}_denoise-${thr}.hdf \
-                        ${flow}/${snap}/${flow}_${snap}_${field}_${method}_denoise_${thr}-ansatz.hdf \
+                        ${flow}/${snap}/${flow}_${snap}_${field}_${method}_denoise-${thr}-ansatz.hdf \
                         $REF_SCALE \
                         --max-num-samples $MAX_NUM_SAMPLES \
                         --title "${flow}_${snap}_${field}_${method}-${thr}" \
@@ -73,7 +72,7 @@ do
 #                    echo \
                     w4t-plot-structure-function-ansatz \
                         ${flow}/${snap}/${flow}_${snap}_${field}_${method}_denoise-${thr}-smooth.hdf \
-                        ${flow}/${snap}/${flow}_${snap}_${field}_${method}_denoise_${thr}-smooth-ansatz.hdf \
+                        ${flow}/${snap}/${flow}_${snap}_${field}_${method}_denoise-${thr}-smooth-ansatz.hdf \
                         $REF_SCALE \
                         --max-num-samples $MAX_NUM_SAMPLES \
                         --title "${flow}_${snap}_${field}_${method}-${thr}-smooth" \
@@ -89,8 +88,8 @@ do
 #                    echo \
                     w4t-compare-structure-function-ansatz-violin \
                         ${flow}/${snap}/${flow}_${snap}_${field}_${method}-ansatz.hdf \
-                        ${flow}/${snap}/${flow}_${snap}_${field}_${method}_denoise_${thr}-ansatz.hdf \
-                        ${flow}/${snap}/${flow}_${snap}_${field}_${method}_denoise_${thr}-smooth-ansatz.hdf \
+                        ${flow}/${snap}/${flow}_${snap}_${field}_${method}_denoise-${thr}-ansatz.hdf \
+                        ${flow}/${snap}/${flow}_${snap}_${field}_${method}_denoise-${thr}-smooth-ansatz.hdf \
                         --ref-scale $REF_SCALE \
                         --max-num-samples $MAX_NUM_SAMPLES \
                         --title "${flow}_${snap}_${field}_${method}-${thr}" \

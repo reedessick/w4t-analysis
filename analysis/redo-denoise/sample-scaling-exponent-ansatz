@@ -5,7 +5,7 @@
 
 #-------------------------------------------------
 
-flows=(M05MA01)
+flows=(M05MA01) # M05MA05 M05MA10 M10MA01)
 snaps=(0050)
 
 REF_SCALE=32
@@ -75,7 +75,7 @@ do
                     w4t-sample-scaling-exponent-ansatz \
                         ${flow}/${snap}/${flow}_${snap}_${field}_${method}_denoise-${thr}.hdf \
                         ${flow}/${snap}/${flow}_${snap}_${field}_${method}_denoise-${thr}-SLansatz-${REF_SCALE}.hdf \
-                        $REF_SCALE \ 
+                        $REF_SCALE \
                         --min-scale $MIN_SCALE \
                         --max-scale $MAX_SCALE \
                         --num-warmup $NUM_WARMUP \
@@ -93,7 +93,7 @@ do
                     w4t-sample-scaling-exponent-ansatz \
                         ${flow}/${snap}/${flow}_${snap}_${field}_${method}_denoise-${thr}-smooth.hdf \
                         ${flow}/${snap}/${flow}_${snap}_${field}_${method}_denoise-${thr}-smooth-SLansatz-${REF_SCALE}.hdf \
-                        $REF_SCALE \ 
+                        $REF_SCALE \
                         --min-scale $MIN_SCALE \
                         --max-scale $MAX_SCALE \
                         --num-warmup $NUM_WARMUP \
