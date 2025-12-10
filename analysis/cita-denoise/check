@@ -1,0 +1,22 @@
+#!/bin/bash
+
+# a simple script to iterate over directories and check for output files
+# Reed Essick (reed.essick@gmail.com)
+
+#-------------------------------------------------
+
+for M in '05' '2' '4' '10'
+do
+    for MA in '01' '05' '1' '2' '4' '6' '8' '10'
+    do
+
+        FLOW="M${M}MA${MA}"
+
+        for SNAP in 0050 0060 0070 0080 0090 0100
+        do
+
+            ./check-hdf /fs/lustre/cita/essick $FLOW $SNAP
+
+        done
+    done
+done

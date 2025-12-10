@@ -37,13 +37,15 @@ do
             ${INPATH} --flash \
             ${FLOW} \
             ${SNAP} \
-            --output-dir ${PWD}/${FLOW}/${SNAP} \
+            --output-dir /fs/lustre/cita/essick/${FLOW}/${SNAP} \
             --max-edgelength 512 \
             --index 1 2 3 4 5 6 \
             --direct-increment 4 \
             --copy \
             --Verbose \
         || exit 1
+
+exit 1
 
     done
 done

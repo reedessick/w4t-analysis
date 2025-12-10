@@ -1,0 +1,52 @@
+#!/usr/bin/env python3
+
+"""a quick script to check whether any data is missing
+"""
+__author__ = "Reed Essick (reed.essick@gmail.com)"
+
+#-------------------------------------------------
+
+import os
+
+from argparse import ArgumentParser
+
+#-------------------------------------------------
+
+parser = ArgumentParser()
+
+parser.add_argument('basedir', type=str)
+parser.add_argument('flow', type=str)
+parser.add_argument('snap', type=int)
+
+args = parser.parse_args()
+
+#-------------------------------------------------
+
+print(args.basedir, args.flow, '%04d' % args.snap)
+
+present = []
+absent = []
+
+tmp = os.path.join(
+    args.basedir,
+    args.flow,
+    '%04d' % args.snap,
+    '%s_%04d_%s_%s_denoise-%02d%s.hdf',
+)
+
+for field in ['dens', 'mag', 'curr', 'vel', 'vort']:
+    for method in ['dsf', 'wsf']:
+        for thr in [1, 2, 3, 4, 5, 10]:
+            for smooth in ['', '-smooth']:
+                path = tmp % (args.flow, args.snap, field, method, thr, smooth)
+                if os.path.exists(path):
+                    present.append(path)
+                else:
+                    absent.append(path)
+
+if absent:
+    print('    missing the following files:')
+    for path in absent:
+        print('        '+path)
+else:
+    print('    all files found')

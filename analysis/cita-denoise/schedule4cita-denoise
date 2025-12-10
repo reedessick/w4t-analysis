@@ -113,7 +113,22 @@ def sf_cmds(
     # set up iteration over thrs, commands
     cmd_str = 'for THR in %s' % (' '.join(['%02d'%_ for _ in thrs]))
     cmd_str += '\ndo'
+
     for cmd in commands:
+
+        cmd_str += '\n\n'
+
+        # add logic to check whether output file already exists
+        o = sf_outpath(
+            base,
+            '${THR}',
+            field=field,
+            outdir=outdir,
+            **cmd
+        )
+
+        cmd_str += 'if [ ! -f  %s ]\nthen\n    ' % o
+
         c = sf_cmd(
             newpath,
             index,
@@ -127,7 +142,11 @@ def sf_cmds(
             verbose=verbose,
             **cmd
         )
-        cmd_str += '\n\n' + ' \\\n    '.join(c) + ' \\\n|| exit 1'
+        cmd_str +=' \\\n        '.join(c)
+
+        cmd_str += ' \\\n|| exit 1'
+
+        cmd_str += '\nelse\n    echo "%s already exists...skipping"\nfi' % o
 
     cmd_str += '\n\ndone'
 
