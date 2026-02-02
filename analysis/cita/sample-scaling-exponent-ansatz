@@ -51,16 +51,14 @@ do
 #                echo \
                 w4t-plot-scaling-exponent-ansatz \
                     $STRCFNC \
-                    $SF_SAMPLES \
+                    $SL_SAMPLES \
                     --structure-function-samples $SAMPLES \
                     --title "$FLOW $FIELD $METHOD" \
                     --max-num-samples 500 \
                     --output-dir ${FLOW} \
-                    --tag ${FLOW}_avrg_${FIELD}_${METHOD}_$REF_SCALE \
+                    --tag ${FLOW}_avrg_${FIELD}_${METHOD}_${REF_SCALE} \
                     --Verbose \
                 || exit 1
-
-exit 1 # remove after debugging
 
             done
         done
