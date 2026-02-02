@@ -28,7 +28,7 @@ do
             SAMPLES="${FLOW}/${FLOW}_avrg_${FIELD}_${METHOD}-ansatz.hdf"
 
 #            for REF_SCALE in 4 8 16 32 64 128 256
-            for REF_SCALE in 4 8 16 64 128 256
+            for REF_SCALE in 16 32 64 128
             do
 
                 SL_SAMPLES="${FLOW}/${FLOW}_avrg_${FIELD}_${METHOD}-scaling-ansatz-${REF_SCALE}.hdf"
