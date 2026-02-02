@@ -1,0 +1,68 @@
+#!/bin/bash
+
+# a quick script to fit the average structure functions
+# Reed Essick (reed.essick@gmail.com)
+
+#-------------------------------------------------
+
+FLOWS=()
+
+for M in "05" "2" "4" "10"
+do
+    for MA in "01" "05" "1" "2" "4" "6" "8" "10"
+    do
+        FLOWS+=(M${M}MA${MA})
+    done
+done
+
+#-------------------------------------------------
+
+for FLOW in ${FLOWS[@]}
+do
+    for FIELD in dens vel vort mag curr
+    do
+        for METHOD in dsf wsf
+        do
+
+            STRCFNC="${FLOW}/${FLOW}_avrg_${FIELD}_${METHOD}.hdf"
+            SAMPLES="${FLOW}/${FLOW}_avrg_${FIELD}_${METHOD}-ansatz.hdf"
+
+#            for REF_SCALE in 8 16 32 64 128
+            for REF_SCALE in 32
+            do
+
+                SL_SAMPLES="${FLOW}/${FLOW}_avrg_${FIELD}_${METHOD}-scaling-ansatz-${REF_SCALE}.hdf"
+
+#                echo \
+                w4t-sample-scaling-exponent-ansatz \
+                    $STRCFNC \
+                    $SL_SAMPLES \
+                    $REF_SCALE \
+                    --min-scale 1 \
+                    --max-scale 512 \
+                    --num-warmup 10000 \
+                    --num-samples 10000 \
+                    --seed 1234 \
+                    --verbose \
+                || exit 1
+
+                #---
+
+#                echo \
+                w4t-plot-scaling-exponent-ansatz \
+                    $STRCFNC \
+                    $SF_SAMPLES \
+                    --structure-function-samples $SAMPLES \
+                    --title "$FLOW $FIELD $METHOD" \
+                    --max-num-samples 500 \
+                    --output-dir ${FLOW} \
+                    --tag ${FLOW}_avrg_${FIELD}_${METHOD}_$REF_SCALE \
+                    --Verbose \
+                || exit 1
+
+exit 1 # remove after debugging
+
+            done
+        done
+    done
+done

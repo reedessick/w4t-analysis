@@ -28,6 +28,6 @@ popd
 pushd $SRCDIR
 git clone git@github.com:reedessick/wavelets4turbulence.git
 pushd wavelets4turbulence
-pip install . --prefix $OPTDIR
+pip3 install . --prefix $OPTDIR
 popd
 popd
