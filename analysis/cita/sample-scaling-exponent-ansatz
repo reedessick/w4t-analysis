@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# a quick script to fit the average structure functions
+# a quick script to fit the She-Leveque ansatz to scaline exponents extracted from the average structure functions
 # Reed Essick (reed.essick@gmail.com)
 
 #-------------------------------------------------
@@ -21,14 +21,14 @@ for FLOW in ${FLOWS[@]}
 do
     for FIELD in dens vel vort mag curr
     do
-        for METHOD in dsf wsf
+        for METHOD in dsf # wsf
         do
 
             STRCFNC="${FLOW}/${FLOW}_avrg_${FIELD}_${METHOD}.hdf"
             SAMPLES="${FLOW}/${FLOW}_avrg_${FIELD}_${METHOD}-ansatz.hdf"
 
-#            for REF_SCALE in 8 16 32 64 128
-            for REF_SCALE in 32
+#            for REF_SCALE in 4 8 16 32 64 128 256
+            for REF_SCALE in 4 8 16 64 128 256
             do
 
                 SL_SAMPLES="${FLOW}/${FLOW}_avrg_${FIELD}_${METHOD}-scaling-ansatz-${REF_SCALE}.hdf"
