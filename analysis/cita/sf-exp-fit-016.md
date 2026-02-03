@@ -14,7 +14,8 @@ The right-hand side of the vilins (filled) represent a simultaneous fit for all 
   \frac{d\log S^p_\tau}{d\log\tau} = \left(\frac{p}{3}\right)(1-x) + C_0 \left(1-\beta^{p/3}\right)
 ```
 which is based on Eq 7.64 of "Magnetohydrodynamic Turbulence" (Dieter Biskamp).
- 
+When fitting assuming this relation, we infer `x`, `C0`, and `beta` and use that to predict `dlog(S)/dlog(tau)` at all `p`.
+
 Structure functions are color-coded by their order as follows
 
   * 1st order : blue
