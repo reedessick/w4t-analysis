@@ -37,6 +37,15 @@ These results are for the scaling exponent extracted at a reference scale of `32
 
 ## Density
 
+### Posterior distributions over She-Leveque parameters
+
+|M/MA| 01 | 05 | 1 | 2 | 4 | 6 | 8 | 10 |
+|----|----|----|---|---|---|---|---|----|
+| 05 |<img src="M05MA01/w4t-corner_M05MA01_avrg_dens_dsf_scaling-ansatz-32.png">|<img src="M05MA05/w4t-corner_M05MA05_avrg_dens_dsf_scaling-ansatz-32.png">|<img src="M05MA1/w4t-corner_M05MA1_avrg_dens_dsf_scaling-ansatz-32.png">|<img src="M05MA2/w4t-corner_M05MA2_avrg_dens_dsf_scaling-ansatz-32.png">|<img src="M05MA4/w4t-corner_M05MA4_avrg_dens_dsf_scaling-ansatz-32.png">|<img src="M05MA6/w4t-corner_M05MA6_avrg_dens_dsf_scaling-ansatz-32.png">|<img src="M05MA8/w4t-corner_M05MA8_avrg_dens_dsf_scaling-ansatz-32.png">|<img src="M05MA10/w4t-corner_M05MA10_avrg_dens_dsf_scaling-ansatz-32.png">|
+| 2  |<img src="M2MA01/w4t-corner_M2MA01_avrg_dens_dsf_scaling-ansatz-32.png">|<img src="M2MA05/w4t-corner_M2MA05_avrg_dens_dsf_scaling-ansatz-32.png">|<img src="M2MA1/w4t-corner_M2MA1_avrg_dens_dsf_scaling-ansatz-32.png">|<img src="M2MA2/w4t-corner_M2MA2_avrg_dens_dsf_scaling-ansatz-32.png">|<img src="M2MA4/w4t-corner_M2MA4_avrg_dens_dsf_scaling-ansatz-32.png">|<img src="M2MA6/w4t-corner_M2MA6_avrg_dens_dsf_scaling-ansatz-32.png">|<img src="M2MA8/w4t-corner_M2MA8_avrg_dens_dsf_scaling-ansatz-32.png">|<img src="M2MA10/w4t-corner_M2MA10_avrg_dens_dsf_scaling-ansatz-32.png">|
+| 4  |<img src="M4MA01/w4t-corner_M4MA01_avrg_dens_dsf_scaling-ansatz-32.png">|<img src="M4MA05/w4t-corner_M4MA05_avrg_dens_dsf_scaling-ansatz-32.png">|<img src="M4MA1/w4t-corner_M4MA1_avrg_dens_dsf_scaling-ansatz-32.png">|<img src="M4MA2/w4t-corner_M4MA2_avrg_dens_dsf_scaling-ansatz-32.png">|<img src="M4MA4/w4t-corner_M4MA4_avrg_dens_dsf_scaling-ansatz-32.png">|<img src="M4MA6/w4t-corner_M4MA6_avrg_dens_dsf_scaling-ansatz-32.png">|<img src="M4MA8/w4t-corner_M4MA8_avrg_dens_dsf_scaling-ansatz-32.png">|<img src="M4MA10/w4t-corner_M4MA10_avrg_dens_dsf_scaling-ansatz-32.png">|
+| 10 |<img src="M10MA01/w4t-corner_M10MA01_avrg_dens_dsf_scaling-ansatz-32.png">|<img src="M10MA05/w4t-corner_M10MA05_avrg_dens_dsf_scaling-ansatz-32.png">|<img src="M10MA1/w4t-corner_M10MA1_avrg_dens_dsf_scaling-ansatz-32.png">|<img src="M10MA2/w4t-corner_M10MA2_avrg_dens_dsf_scaling-ansatz-32.png">|<img src="M10MA4/w4t-corner_M10MA4_avrg_dens_dsf_scaling-ansatz-32.png">|<img src="M10MA6/w4t-corner_M10MA6_avrg_dens_dsf_scaling-ansatz-32.png">|<img src="M10MA8/w4t-corner_M10MA8_avrg_dens_dsf_scaling-ansatz-32.png">|<img src="M10MA10/w4t-corner_M10MA10_avrg_dens_dsf_scaling-ansatz-32.png">|
+
 ### Violins for S vs p
 
 |M/MA| 01 | 05 | 1 | 2 | 4 | 6 | 8 | 10 |
@@ -56,6 +65,15 @@ These results are for the scaling exponent extracted at a reference scale of `32
 | 10 |<img src="M10MA01/w4t-plot-scaling-exponent-ansatz_M10MA01_avrg_dens_dsf_32.png">|<img src="M10MA05/w4t-plot-scaling-exponent-ansatz_M10MA05_avrg_dens_dsf_32.png">|<img src="M10MA1/w4t-plot-scaling-exponent-ansatz_M10MA1_avrg_dens_dsf_32.png">|<img src="M10MA2/w4t-plot-scaling-exponent-ansatz_M10MA2_avrg_dens_dsf_32.png">|<img src="M10MA4/w4t-plot-scaling-exponent-ansatz_M10MA4_avrg_dens_dsf_32.png">|<img src="M10MA6/w4t-plot-scaling-exponent-ansatz_M10MA6_avrg_dens_dsf_32.png">|<img src="M10MA8/w4t-plot-scaling-exponent-ansatz_M10MA8_avrg_dens_dsf_32.png">|<img src="M10MA10/w4t-plot-scaling-exponent-ansatz_M10MA10_avrg_dens_dsf_32.png">|
 
 ## Velocity
+
+### Posterior distributions over She-Leveque parameters
+
+|M/MA| 01 | 05 | 1 | 2 | 4 | 6 | 8 | 10 |
+|----|----|----|---|---|---|---|---|----|
+| 05 |<img src="M05MA01/w4t-corner_M05MA01_avrg_vel_dsf_scaling-ansatz-32.png">|<img src="M05MA05/w4t-corner_M05MA05_avrg_vel_dsf_scaling-ansatz-32.png">|<img src="M05MA1/w4t-corner_M05MA1_avrg_vel_dsf_scaling-ansatz-32.png">|<img src="M05MA2/w4t-corner_M05MA2_avrg_vel_dsf_scaling-ansatz-32.png">|<img src="M05MA4/w4t-corner_M05MA4_avrg_vel_dsf_scaling-ansatz-32.png">|<img src="M05MA6/w4t-corner_M05MA6_avrg_vel_dsf_scaling-ansatz-32.png">|<img src="M05MA8/w4t-corner_M05MA8_avrg_vel_dsf_scaling-ansatz-32.png">|<img src="M05MA10/w4t-corner_M05MA10_avrg_vel_dsf_scaling-ansatz-32.png">|
+| 2  |<img src="M2MA01/w4t-corner_M2MA01_avrg_vel_dsf_scaling-ansatz-32.png">|<img src="M2MA05/w4t-corner_M2MA05_avrg_vel_dsf_scaling-ansatz-32.png">|<img src="M2MA1/w4t-corner_M2MA1_avrg_vel_dsf_scaling-ansatz-32.png">|<img src="M2MA2/w4t-corner_M2MA2_avrg_vel_dsf_scaling-ansatz-32.png">|<img src="M2MA4/w4t-corner_M2MA4_avrg_vel_dsf_scaling-ansatz-32.png">|<img src="M2MA6/w4t-corner_M2MA6_avrg_vel_dsf_scaling-ansatz-32.png">|<img src="M2MA8/w4t-corner_M2MA8_avrg_vel_dsf_scaling-ansatz-32.png">|<img src="M2MA10/w4t-corner_M2MA10_avrg_vel_dsf_scaling-ansatz-32.png">|
+| 4  |<img src="M4MA01/w4t-corner_M4MA01_avrg_vel_dsf_scaling-ansatz-32.png">|<img src="M4MA05/w4t-corner_M4MA05_avrg_vel_dsf_scaling-ansatz-32.png">|<img src="M4MA1/w4t-corner_M4MA1_avrg_vel_dsf_scaling-ansatz-32.png">|<img src="M4MA2/w4t-corner_M4MA2_avrg_vel_dsf_scaling-ansatz-32.png">|<img src="M4MA4/w4t-corner_M4MA4_avrg_vel_dsf_scaling-ansatz-32.png">|<img src="M4MA6/w4t-corner_M4MA6_avrg_vel_dsf_scaling-ansatz-32.png">|<img src="M4MA8/w4t-corner_M4MA8_avrg_vel_dsf_scaling-ansatz-32.png">|<img src="M4MA10/w4t-corner_M4MA10_avrg_vel_dsf_scaling-ansatz-32.png">|
+| 10 |<img src="M10MA01/w4t-corner_M10MA01_avrg_vel_dsf_scaling-ansatz-32.png">|<img src="M10MA05/w4t-corner_M10MA05_avrg_vel_dsf_scaling-ansatz-32.png">|<img src="M10MA1/w4t-corner_M10MA1_avrg_vel_dsf_scaling-ansatz-32.png">|<img src="M10MA2/w4t-corner_M10MA2_avrg_vel_dsf_scaling-ansatz-32.png">|<img src="M10MA4/w4t-corner_M10MA4_avrg_vel_dsf_scaling-ansatz-32.png">|<img src="M10MA6/w4t-corner_M10MA6_avrg_vel_dsf_scaling-ansatz-32.png">|<img src="M10MA8/w4t-corner_M10MA8_avrg_vel_dsf_scaling-ansatz-32.png">|<img src="M10MA10/w4t-corner_M10MA10_avrg_vel_dsf_scaling-ansatz-32.png">|
 
 ### Violins for S vs p
 
@@ -77,6 +95,15 @@ These results are for the scaling exponent extracted at a reference scale of `32
 
 ## Vorticity
 
+### Posterior distributions over She-Leveque parameters
+
+|M/MA| 01 | 05 | 1 | 2 | 4 | 6 | 8 | 10 |
+|----|----|----|---|---|---|---|---|----|
+| 05 |<img src="M05MA01/w4t-corner_M05MA01_avrg_vort_dsf_scaling-ansatz-32.png">|<img src="M05MA05/w4t-corner_M05MA05_avrg_vort_dsf_scaling-ansatz-32.png">|<img src="M05MA1/w4t-corner_M05MA1_avrg_vort_dsf_scaling-ansatz-32.png">|<img src="M05MA2/w4t-corner_M05MA2_avrg_vort_dsf_scaling-ansatz-32.png">|<img src="M05MA4/w4t-corner_M05MA4_avrg_vort_dsf_scaling-ansatz-32.png">|<img src="M05MA6/w4t-corner_M05MA6_avrg_vort_dsf_scaling-ansatz-32.png">|<img src="M05MA8/w4t-corner_M05MA8_avrg_vort_dsf_scaling-ansatz-32.png">|<img src="M05MA10/w4t-corner_M05MA10_avrg_vort_dsf_scaling-ansatz-32.png">|
+| 2  |<img src="M2MA01/w4t-corner_M2MA01_avrg_vort_dsf_scaling-ansatz-32.png">|<img src="M2MA05/w4t-corner_M2MA05_avrg_vort_dsf_scaling-ansatz-32.png">|<img src="M2MA1/w4t-corner_M2MA1_avrg_vort_dsf_scaling-ansatz-32.png">|<img src="M2MA2/w4t-corner_M2MA2_avrg_vort_dsf_scaling-ansatz-32.png">|<img src="M2MA4/w4t-corner_M2MA4_avrg_vort_dsf_scaling-ansatz-32.png">|<img src="M2MA6/w4t-corner_M2MA6_avrg_vort_dsf_scaling-ansatz-32.png">|<img src="M2MA8/w4t-corner_M2MA8_avrg_vort_dsf_scaling-ansatz-32.png">|<img src="M2MA10/w4t-corner_M2MA10_avrg_vort_dsf_scaling-ansatz-32.png">|
+| 4  |<img src="M4MA01/w4t-corner_M4MA01_avrg_vort_dsf_scaling-ansatz-32.png">|<img src="M4MA05/w4t-corner_M4MA05_avrg_vort_dsf_scaling-ansatz-32.png">|<img src="M4MA1/w4t-corner_M4MA1_avrg_vort_dsf_scaling-ansatz-32.png">|<img src="M4MA2/w4t-corner_M4MA2_avrg_vort_dsf_scaling-ansatz-32.png">|<img src="M4MA4/w4t-corner_M4MA4_avrg_vort_dsf_scaling-ansatz-32.png">|<img src="M4MA6/w4t-corner_M4MA6_avrg_vort_dsf_scaling-ansatz-32.png">|<img src="M4MA8/w4t-corner_M4MA8_avrg_vort_dsf_scaling-ansatz-32.png">|<img src="M4MA10/w4t-corner_M4MA10_avrg_vort_dsf_scaling-ansatz-32.png">|
+| 10 |<img src="M10MA01/w4t-corner_M10MA01_avrg_vort_dsf_scaling-ansatz-32.png">|<img src="M10MA05/w4t-corner_M10MA05_avrg_vort_dsf_scaling-ansatz-32.png">|<img src="M10MA1/w4t-corner_M10MA1_avrg_vort_dsf_scaling-ansatz-32.png">|<img src="M10MA2/w4t-corner_M10MA2_avrg_vort_dsf_scaling-ansatz-32.png">|<img src="M10MA4/w4t-corner_M10MA4_avrg_vort_dsf_scaling-ansatz-32.png">|<img src="M10MA6/w4t-corner_M10MA6_avrg_vort_dsf_scaling-ansatz-32.png">|<img src="M10MA8/w4t-corner_M10MA8_avrg_vort_dsf_scaling-ansatz-32.png">|<img src="M10MA10/w4t-corner_M10MA10_avrg_vort_dsf_scaling-ansatz-32.png">|
+
 ### Violins for S vs p
 
 |M/MA| 01 | 05 | 1 | 2 | 4 | 6 | 8 | 10 |
@@ -97,6 +124,15 @@ These results are for the scaling exponent extracted at a reference scale of `32
 
 ## Magnetic Field
 
+### Posterior distributions over She-Leveque parameters
+
+|M/MA| 01 | 05 | 1 | 2 | 4 | 6 | 8 | 10 |
+|----|----|----|---|---|---|---|---|----|
+| 05 |<img src="M05MA01/w4t-corner_M05MA01_avrg_mag_dsf_scaling-ansatz-32.png">|<img src="M05MA05/w4t-corner_M05MA05_avrg_mag_dsf_scaling-ansatz-32.png">|<img src="M05MA1/w4t-corner_M05MA1_avrg_mag_dsf_scaling-ansatz-32.png">|<img src="M05MA2/w4t-corner_M05MA2_avrg_mag_dsf_scaling-ansatz-32.png">|<img src="M05MA4/w4t-corner_M05MA4_avrg_mag_dsf_scaling-ansatz-32.png">|<img src="M05MA6/w4t-corner_M05MA6_avrg_mag_dsf_scaling-ansatz-32.png">|<img src="M05MA8/w4t-corner_M05MA8_avrg_mag_dsf_scaling-ansatz-32.png">|<img src="M05MA10/w4t-corner_M05MA10_avrg_mag_dsf_scaling-ansatz-32.png">|
+| 2  |<img src="M2MA01/w4t-corner_M2MA01_avrg_mag_dsf_scaling-ansatz-32.png">|<img src="M2MA05/w4t-corner_M2MA05_avrg_mag_dsf_scaling-ansatz-32.png">|<img src="M2MA1/w4t-corner_M2MA1_avrg_mag_dsf_scaling-ansatz-32.png">|<img src="M2MA2/w4t-corner_M2MA2_avrg_mag_dsf_scaling-ansatz-32.png">|<img src="M2MA4/w4t-corner_M2MA4_avrg_mag_dsf_scaling-ansatz-32.png">|<img src="M2MA6/w4t-corner_M2MA6_avrg_mag_dsf_scaling-ansatz-32.png">|<img src="M2MA8/w4t-corner_M2MA8_avrg_mag_dsf_scaling-ansatz-32.png">|<img src="M2MA10/w4t-corner_M2MA10_avrg_mag_dsf_scaling-ansatz-32.png">|
+| 4  |<img src="M4MA01/w4t-corner_M4MA01_avrg_mag_dsf_scaling-ansatz-32.png">|<img src="M4MA05/w4t-corner_M4MA05_avrg_mag_dsf_scaling-ansatz-32.png">|<img src="M4MA1/w4t-corner_M4MA1_avrg_mag_dsf_scaling-ansatz-32.png">|<img src="M4MA2/w4t-corner_M4MA2_avrg_mag_dsf_scaling-ansatz-32.png">|<img src="M4MA4/w4t-corner_M4MA4_avrg_mag_dsf_scaling-ansatz-32.png">|<img src="M4MA6/w4t-corner_M4MA6_avrg_mag_dsf_scaling-ansatz-32.png">|<img src="M4MA8/w4t-corner_M4MA8_avrg_mag_dsf_scaling-ansatz-32.png">|<img src="M4MA10/w4t-corner_M4MA10_avrg_mag_dsf_scaling-ansatz-32.png">|
+| 10 |<img src="M10MA01/w4t-corner_M10MA01_avrg_mag_dsf_scaling-ansatz-32.png">|<img src="M10MA05/w4t-corner_M10MA05_avrg_mag_dsf_scaling-ansatz-32.png">|<img src="M10MA1/w4t-corner_M10MA1_avrg_mag_dsf_scaling-ansatz-32.png">|<img src="M10MA2/w4t-corner_M10MA2_avrg_mag_dsf_scaling-ansatz-32.png">|<img src="M10MA4/w4t-corner_M10MA4_avrg_mag_dsf_scaling-ansatz-32.png">|<img src="M10MA6/w4t-corner_M10MA6_avrg_mag_dsf_scaling-ansatz-32.png">|<img src="M10MA8/w4t-corner_M10MA8_avrg_mag_dsf_scaling-ansatz-32.png">|<img src="M10MA10/w4t-corner_M10MA10_avrg_mag_dsf_scaling-ansatz-32.png">|
+
 ### Violins for S vs p
 
 |M/MA| 01 | 05 | 1 | 2 | 4 | 6 | 8 | 10 |
@@ -116,6 +152,15 @@ These results are for the scaling exponent extracted at a reference scale of `32
 | 10 |<img src="M10MA01/w4t-plot-scaling-exponent-ansatz_M10MA01_avrg_mag_dsf_32.png">|<img src="M10MA05/w4t-plot-scaling-exponent-ansatz_M10MA05_avrg_mag_dsf_32.png">|<img src="M10MA1/w4t-plot-scaling-exponent-ansatz_M10MA1_avrg_mag_dsf_32.png">|<img src="M10MA2/w4t-plot-scaling-exponent-ansatz_M10MA2_avrg_mag_dsf_32.png">|<img src="M10MA4/w4t-plot-scaling-exponent-ansatz_M10MA4_avrg_mag_dsf_32.png">|<img src="M10MA6/w4t-plot-scaling-exponent-ansatz_M10MA6_avrg_mag_dsf_32.png">|<img src="M10MA8/w4t-plot-scaling-exponent-ansatz_M10MA8_avrg_mag_dsf_32.png">|<img src="M10MA10/w4t-plot-scaling-exponent-ansatz_M10MA10_avrg_mag_dsf_32.png">|
 
 ## Current Density
+
+### Posterior distributions over She-Leveque parameters
+
+|M/MA| 01 | 05 | 1 | 2 | 4 | 6 | 8 | 10 |
+|----|----|----|---|---|---|---|---|----|
+| 05 |<img src="M05MA01/w4t-corner_M05MA01_avrg_curr_dsf_scaling-ansatz-32.png">|<img src="M05MA05/w4t-corner_M05MA05_avrg_curr_dsf_scaling-ansatz-32.png">|<img src="M05MA1/w4t-corner_M05MA1_avrg_curr_dsf_scaling-ansatz-32.png">|<img src="M05MA2/w4t-corner_M05MA2_avrg_curr_dsf_scaling-ansatz-32.png">|<img src="M05MA4/w4t-corner_M05MA4_avrg_curr_dsf_scaling-ansatz-32.png">|<img src="M05MA6/w4t-corner_M05MA6_avrg_curr_dsf_scaling-ansatz-32.png">|<img src="M05MA8/w4t-corner_M05MA8_avrg_curr_dsf_scaling-ansatz-32.png">|<img src="M05MA10/w4t-corner_M05MA10_avrg_curr_dsf_scaling-ansatz-32.png">|
+| 2  |<img src="M2MA01/w4t-corner_M2MA01_avrg_curr_dsf_scaling-ansatz-32.png">|<img src="M2MA05/w4t-corner_M2MA05_avrg_curr_dsf_scaling-ansatz-32.png">|<img src="M2MA1/w4t-corner_M2MA1_avrg_curr_dsf_scaling-ansatz-32.png">|<img src="M2MA2/w4t-corner_M2MA2_avrg_curr_dsf_scaling-ansatz-32.png">|<img src="M2MA4/w4t-corner_M2MA4_avrg_curr_dsf_scaling-ansatz-32.png">|<img src="M2MA6/w4t-corner_M2MA6_avrg_curr_dsf_scaling-ansatz-32.png">|<img src="M2MA8/w4t-corner_M2MA8_avrg_curr_dsf_scaling-ansatz-32.png">|<img src="M2MA10/w4t-corner_M2MA10_avrg_curr_dsf_scaling-ansatz-32.png">|
+| 4  |<img src="M4MA01/w4t-corner_M4MA01_avrg_curr_dsf_scaling-ansatz-32.png">|<img src="M4MA05/w4t-corner_M4MA05_avrg_curr_dsf_scaling-ansatz-32.png">|<img src="M4MA1/w4t-corner_M4MA1_avrg_curr_dsf_scaling-ansatz-32.png">|<img src="M4MA2/w4t-corner_M4MA2_avrg_curr_dsf_scaling-ansatz-32.png">|<img src="M4MA4/w4t-corner_M4MA4_avrg_curr_dsf_scaling-ansatz-32.png">|<img src="M4MA6/w4t-corner_M4MA6_avrg_curr_dsf_scaling-ansatz-32.png">|<img src="M4MA8/w4t-corner_M4MA8_avrg_curr_dsf_scaling-ansatz-32.png">|<img src="M4MA10/w4t-corner_M4MA10_avrg_curr_dsf_scaling-ansatz-32.png">|
+| 10 |<img src="M10MA01/w4t-corner_M10MA01_avrg_curr_dsf_scaling-ansatz-32.png">|<img src="M10MA05/w4t-corner_M10MA05_avrg_curr_dsf_scaling-ansatz-32.png">|<img src="M10MA1/w4t-corner_M10MA1_avrg_curr_dsf_scaling-ansatz-32.png">|<img src="M10MA2/w4t-corner_M10MA2_avrg_curr_dsf_scaling-ansatz-32.png">|<img src="M10MA4/w4t-corner_M10MA4_avrg_curr_dsf_scaling-ansatz-32.png">|<img src="M10MA6/w4t-corner_M10MA6_avrg_curr_dsf_scaling-ansatz-32.png">|<img src="M10MA8/w4t-corner_M10MA8_avrg_curr_dsf_scaling-ansatz-32.png">|<img src="M10MA10/w4t-corner_M10MA10_avrg_curr_dsf_scaling-ansatz-32.png">|
 
 ### Violins for S vs p
 
