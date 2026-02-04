@@ -22,13 +22,24 @@ from w4t.utils import io
 
 #-------------------------------------------------
 
-def heatmap(Mgrid, MAgrid, Zgrid, cmap='Reds', clabel=None):
+def heatmap(Ms, MAs, Zgrid, cmap='Reds', clabel=None):
     """make a heatmap of Z with corresponding colorbar
     """
     fig = plt.figure()
     ax = fig.gca()
 
-    raise NotImplementedError('make a heatmap of Zgrid')
+    #---
+
+    ax.imshow(np.transpose(Zgrid))
+
+    for i in range(Zgrid.shape[0]):
+        for j in range(Zgrid.shape[1]):
+            ax.text(i, j, '%.3f' % Zgrid[i,j], ha='center', va='center', color='w')
+
+    ax.set_xticks(range(len(Ms)), labels=['%.1f'%_ for _ in Ms])
+    ax.set_xticks(range(len(MAs)), labels=['%.1f'%_ for _ in MAs])
+
+    #---
 
     return fig
 
@@ -36,7 +47,7 @@ def heatmap(Mgrid, MAgrid, Zgrid, cmap='Reds', clabel=None):
 
 parser = ArgumentParser()
 
-parser.add_argument('-p', '--posterior', nargs='3', type=str,
+parser.add_argument('-p', '--posterior', nargs=3, type=str,
     help='e.g., -p M MA path/to/samples.hdf')
 
 parser.add_argument('-v', '--verbose', default=False, action='store_true')
@@ -80,16 +91,11 @@ for M, MA, path in args.sl_posteriors:
 Ms = np.array(sorted(Ms), dtype=float)
 MAs = np.array(sorted(MAs), dtype=float)
 
-Mgrid, MAgrid = np.meshgrid(Ms, MAs, indexing='ij')
-
-Mgrid_flat = np.ravel(Mgrid)
-MAgrid_flat = np.ravel(MAgrid)
-
 #------------------------
 
 # iterate over keys and compute/plot some basic properties
 
-Zgrid = np.empty_like(Mgrid, dtype=float) # use this to generate plots
+Zgrid = np.empty((len(Ms), len(MAs)), dtype=float) # use this to generate plots
 
 figtmp = os.path.join(args.output_dir, os.path.basename(__file__)+'_%s_%s'+args.tag+'.png')
 
@@ -103,9 +109,11 @@ for key in ['C0', 'beta', 'x']:
     if args.verbose:
         print('    mean a posterior')
 
+    Zgrid[:] = np.nan # make sure we don't plot garbage data
+
     for i, M in enumerate(Ms):
         for j, MA in enumerate(MAs):
-            Zgrid_flat[i,j] = np.mean(data[(M,MA)]['posterior'][key])
+            Zgrid[i,j] = np.mean(data[(M,MA)]['posterior'][key])
 
     fig = heatmap(Mgrid, MAgrid, Zgrid, clabel='mean %s' % key)
     figname = figtmp % (key, 'mean')
@@ -120,9 +128,11 @@ for key in ['C0', 'beta', 'x']:
     if args.verbose:
         print('    median a posterior')
 
+    Zgrid[:] = np.nan # make sure we don't plot garbage data
+
     for i, M in enumerate(Ms):
         for j, MA in enumerate(MAs):
-            Zgrid_flat[i,j] = np.median(data[(M,MA)]['posterior'][key])
+            Zgrid[i,j] = np.median(data[(M,MA)]['posterior'][key])
 
     fig = heatmap(Mgrid, MAgrid, Zgrid, clabel='median %s' % key)
     figname = figtmp % (key, 'mediaan')
@@ -142,9 +152,11 @@ for key in ['C0', 'beta', 'x']:
     if args.verbose:
         print('    stdv a posterior')
 
+    Zgrid[:] = np.nan # make sure we don't plot garbage data
+
     for i, M in enumerate(Ms):
         for j, MA in enumerate(MAs):
-            Zgrid_flat[i,j] = np.stdv(data[(M,MA)]['posterior'][key])
+            Zgrid[i,j] = np.stdv(data[(M,MA)]['posterior'][key])
 
     fig = heatmap(Mgrid, MAgrid, Zgrid, clabel='stdv %s' % key)
     figname = figtmp % (key, 'stdv')
