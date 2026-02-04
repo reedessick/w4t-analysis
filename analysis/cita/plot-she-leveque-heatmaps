@@ -24,7 +24,10 @@ from w4t.utils import io
 
 parser = ArgumentParser()
 
-parser.add_argument('sl_posteriors', nargs='+', type=str)
+parser.add_argument('-p', '--posterior', nargs='3', type=str,
+    help='e.g., -p M MA path/to/samples.hdf')
+
+parser.add_argument('-v', '--verbose', default=False, action='store_true')
 
 parser.add_argument('-o', '--output-dir', default='.', type=str)
 parser.add_argument('-t', '--tag', default='', type=str)
@@ -36,17 +39,44 @@ os.makedirs(args.output_dir, exist_ok=True)
 if args.tag:
     args.tag = "_"+args.tag
 
+args.posterior = [(float(M), float(MA), path) for M, MA, path in args.posterior]
+
 #-------------------------------------------------
 
-raise NotImplementedError('''
-iterate through sl_posteriors and load data
-compute a bunch of statistics from each posterior at each (M, MA) combination
-    mean
-    median
-    map
-    stdv
-    90% credible region
-    else?
+# loading posterior and prior samples
+data = dict()
 
-plot these as heat maps vs (M, MA)
-''')
+for M, MA, path in args.sl_posteriors:
+    if args.verbose:
+        print("loading posterior samples for M=%.1f, MA=%1.f from %s" % (M, MA, path))
+
+    posterior, _, scales, index, ref_scale, kwargs = io.load_scaling_exponent_ansatz_samples(path)
+    data[(M, MA)] = dict(
+        posterior=posterior,
+        scales=scales,
+        index=index,
+        ref_sale=ref_scale,
+        **kwargs
+    )
+
+#------------------------
+
+# iterate over keys and compute/plot some basic properties
+for key in ['C0', 'beta', 'x']:
+    if args.verbose:
+        print('plotting: '+key)
+
+    # plot mean a posteriori
+    raise NotImplementedError
+
+    # plot median a posterior
+    raise NotImplementedError
+
+    # plot max/mode a posterior
+    raise NotImplementedError
+
+    # plot standard deviation a posterior
+    raise NotImplementedError
+
+    # plot 90% credible region
+    raise NotImplementedError
