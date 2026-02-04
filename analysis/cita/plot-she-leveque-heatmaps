@@ -1,0 +1,52 @@
+#!/usr/bin/env python3
+
+"""a quick script to plot heatmaps of inferred She-Leveque parameters on a grid of flow parameters
+"""
+__author__ = "Reed Essick (reed.essick@gmail.com)"
+
+#-------------------------------------------------
+
+import os
+
+import numpy as np
+
+import matplotlib
+matplotlib.use("Agg")
+from matplotlib import pyplot as plt
+plt.rcParams['text.usetex'] = True
+
+from argparse import ArgumentParser
+
+### non-standard libraries
+from w4t.utils import io
+
+#-------------------------------------------------
+
+parser = ArgumentParser()
+
+parser.add_argument('sl_posteriors', nargs='+', type=str)
+
+parser.add_argument('-o', '--output-dir', default='.', type=str)
+parser.add_argument('-t', '--tag', default='', type=str)
+
+args = parser.parse_args()
+
+os.makedirs(args.output_dir, exist_ok=True)
+
+if args.tag:
+    args.tag = "_"+args.tag
+
+#-------------------------------------------------
+
+raise NotImplementedError('''
+iterate through sl_posteriors and load data
+compute a bunch of statistics from each posterior at each (M, MA) combination
+    mean
+    median
+    map
+    stdv
+    90% credible region
+    else?
+
+plot these as heat maps vs (M, MA)
+''')
