@@ -1,0 +1,222 @@
+#!/usr/bin/env python3
+
+"""a quick script to plot heatmaps of inferred She-Leveque parameters on a grid of flow parameters
+"""
+__author__ = "Reed Essick (reed.essick@gmail.com)"
+
+#-------------------------------------------------
+
+import os
+
+import numpy as np
+
+import matplotlib
+matplotlib.use("Agg")
+from matplotlib import pyplot as plt
+plt.rcParams['text.usetex'] = True
+
+from argparse import ArgumentParser
+
+### non-standard libraries
+from w4t.utils import io
+
+#-------------------------------------------------
+
+def heatmap(Ms, MAs, Zgrid, anno, clabel=None, title=None, **kwargs):
+    """make a heatmap of Z with corresponding colorbar
+    """
+    fig = plt.figure()
+    ax = fig.gca()
+
+    #---
+
+    ax.imshow(Zgrid, **kwargs)
+
+    for i in range(Zgrid.shape[0]):
+        for j in range(Zgrid.shape[1]):
+            ax.text(j, i, anno[i][j], ha='center', va='center', color='k')
+
+    #---
+
+#    raise NotImplementedError('add colorbar')
+
+    ax.set_ylabel('$\mathcal{M}$')
+    ax.set_xlabel('$\mathcal{M}_A$')
+
+    ax.set_yticks(range(len(Ms)), labels=['%.1f'%_ for _ in Ms])
+    ax.set_xticks(range(len(MAs)), labels=['%.1f'%_ for _ in MAs])
+
+    ax.set_title(title)
+
+    ax.tick_params(
+        left=True,
+        right=True,
+        top=True,
+        bottom=True,
+        which='both',
+        direction='in',
+    )
+
+    #---
+
+    return fig
+
+#-------------------------------------------------
+
+parser = ArgumentParser()
+
+parser.add_argument('-p', '--posterior', nargs=3, type=str, default=[], action='append',
+    help='e.g., -p M MA path/to/samples.hdf')
+
+parser.add_argument('-v', '--verbose', default=False, action='store_true')
+
+parser.add_argument('-o', '--output-dir', default='.', type=str)
+parser.add_argument('-t', '--tag', default='', type=str)
+
+parser.add_argument('--figtype', default=[], type=str, action='append')
+parser.add_argument('--dpi', default=200, type=float)
+
+args = parser.parse_args()
+
+os.makedirs(args.output_dir, exist_ok=True)
+
+if args.tag:
+    args.tag = "_"+args.tag
+
+args.posterior = [(float(M), float(MA), path) for M, MA, path in args.posterior]
+
+if not args.figtype:
+    args.figtype.append('png')
+
+#-------------------------------------------------
+
+# loading posterior and prior samples
+data = dict()
+
+Ms = set()
+MAs = set()
+
+scale = None
+
+for M, MA, path in args.posterior:
+    if args.verbose:
+        print("loading posterior samples for M=%.1f, MA=%.1f from %s" % (M, MA, path))
+
+    posterior, _, scales, index, ref_scale, kwargs = io.load_scaling_exponent_ansatz_samples(path)
+
+    if scale is None:
+        scale = ref_scale
+    else:
+        assert scale == ref_scale, 'mismatch in reference scale!'
+
+    data[(M, MA)] = dict(
+        posterior=posterior,
+        scales=scales,
+        index=index,
+        ref_sale=ref_scale,
+        **kwargs
+    )
+
+    Ms.add(M)
+    MAs.add(MA)
+
+Ms = np.array(sorted(Ms), dtype=float)
+MAs = np.array(sorted(MAs), dtype=float)
+
+#------------------------
+
+# iterate over keys and compute/plot some basic properties
+
+Zgrid = np.empty((len(Ms), len(MAs)), dtype=float) # use this to generate plots
+anno = [[[] for _ in range(len(MAs))] for _ in range(len(Ms))]
+
+figtmp = os.path.join(args.output_dir, os.path.basename(__file__)+'_%s_%s'+args.tag+'.%s')
+
+for key, label, kwargs in [
+        ('C0',   r'$C_0$',   dict(vmin=0, vmax=3, cmap='Reds')),
+        ('beta', r'$\beta$', dict(vmin=None, vmax=None, cmap='Blues')),
+        ('x',    r'$x$',     dict(vmin=None, vmax=None, cmap='Greens')),
+    ]:
+    if args.verbose:
+        print('plotting: '+key) 
+
+    #---
+
+    # plot mean a posteriori
+    if args.verbose:
+        print('    mean a posterior')
+
+    Zgrid[:] = np.nan # make sure we don't plot garbage data
+
+    for i, M in enumerate(Ms):
+        for j, MA in enumerate(MAs):
+            m = np.mean(data[(M,MA)]['posterior'][key])
+            Zgrid[i,j] = m
+            anno[i][j] = '%.2f\n$\pm$\n%.2f' % (m, np.std(data[(M,MA)]['posterior'][key]))
+
+    fig = heatmap(Ms, MAs, Zgrid, anno, title='ref_scale = %d\nmean %s' % (scale, label), **kwargs)
+
+    for figtype in args.figtype:
+        figname = figtmp % (key, 'mean', figtype)
+        if args.verbose:
+            print('        saving: '+figname)
+        fig.savefig(figname, dpi=args.dpi)
+    plt.close(fig)
+
+    #---
+
+    # plot median a posterior
+    if args.verbose:
+        print('    median a posterior')
+
+    Zgrid[:] = np.nan # make sure we don't plot garbage data
+
+    for i, M in enumerate(Ms):
+        for j, MA in enumerate(MAs):
+            m = np.median(data[(M,MA)]['posterior'][key])
+            Zgrid[i,j] = m
+            anno[i][j] = '$%.2f^{+%.2f}_{-%.2f}$' % (
+                m,
+                np.percentile(data[(M,MA)]['posterior'][key], 95)-m,
+                m-np.percentile(data[(M,MA)]['posterior'][key], 5),
+            )
+            
+    fig = heatmap(Ms, MAs, Zgrid, anno, title='ref_scale = %d\nmedian %s' % (scale, label), **kwargs)
+
+    for figtype in args.figtype:
+        figname = figtmp % (key, 'median', figtype)
+        if args.verbose:
+            print('        saving: '+figname)
+        fig.savefig(figname, dpi=args.dpi)
+    plt.close(fig)
+
+    #---
+
+    # plot mode a posterior
+    if args.verbose:
+        print('    mode a posterior')
+    
+    Zgrid[:] = np.nan # make sure we don't plot garbage data
+    
+    for i, M in enumerate(Ms):
+        for j, MA in enumerate(MAs):
+
+            # FIXME!
+            raise NotImplementedError('estimate max a posteriori and 90% symmetric credible regions')
+            m = np.median(data[(M,MA)]['posterior'][key])
+
+            Zgrid[i,j] = m
+            anno[i][j] = '$%.2f^{+%.2f}_{-%.2f}$' % (
+                m,
+                np.percentile(data[(M,MA)]['posterior'][key], 95)-m,
+                m-np.percentile(data[(M,MA)]['posterior'][key], 5),
+            )
+
+    fig = heatmap(Ms, MAs, Zgrid, anno, title='ref_scale = %d\nmode %s' % (scale, label), **kwargs)
+
+    for figtype in args.figtype:
+        figname = figtmp % (key, 'mode', figtype)
+        if args.verbose:
+            print('        saving: '+figname)
+        fig.savefig(figname, dpi=args.dpi)
+    plt.close(fig)
