@@ -22,6 +22,18 @@ from w4t.utils import io
 
 #-------------------------------------------------
 
+def heatmap(Mgrid, MAgrid, Zgrid, cmap='Reds', clabel=None):
+    """make a heatmap of Z with corresponding colorbar
+    """
+    fig = plt.figure()
+    ax = fig.gca()
+
+    raise NotImplementedError('make a heatmap of Zgrid')
+
+    return fig
+
+#-------------------------------------------------
+
 parser = ArgumentParser()
 
 parser.add_argument('-p', '--posterior', nargs='3', type=str,
@@ -46,6 +58,9 @@ args.posterior = [(float(M), float(MA), path) for M, MA, path in args.posterior]
 # loading posterior and prior samples
 data = dict()
 
+Ms = set()
+MAs = set()
+
 for M, MA, path in args.sl_posteriors:
     if args.verbose:
         print("loading posterior samples for M=%.1f, MA=%1.f from %s" % (M, MA, path))
@@ -59,24 +74,86 @@ for M, MA, path in args.sl_posteriors:
         **kwargs
     )
 
+    Ms.add(M)
+    MAs.add(MA)
+
+Ms = np.array(sorted(Ms), dtype=float)
+MAs = np.array(sorted(MAs), dtype=float)
+
+Mgrid, MAgrid = np.meshgrid(Ms, MAs, indexing='ij')
+
+Mgrid_flat = np.ravel(Mgrid)
+MAgrid_flat = np.ravel(MAgrid)
+
 #------------------------
 
 # iterate over keys and compute/plot some basic properties
+
+Zgrid = np.empty_like(Mgrid, dtype=float) # use this to generate plots
+
+figtmp = os.path.join(args.output_dir, os.path.basename(__file__)+'_%s_%s'+args.tag+'.png')
+
 for key in ['C0', 'beta', 'x']:
     if args.verbose:
-        print('plotting: '+key)
+        print('plotting: '+key) 
+
+    #---
 
     # plot mean a posteriori
-    raise NotImplementedError
+    if args.verbose:
+        print('    mean a posterior')
+
+    for i, M in enumerate(Ms):
+        for j, MA in enumerate(MAs):
+            Zgrid_flat[i,j] = np.mean(data[(M,MA)]['posterior'][key])
+
+    fig = heatmap(Mgrid, MAgrid, Zgrid, clabel='mean %s' % key)
+    figname = figtmp % (key, 'mean')
+    if args.verbose:
+        print('        saving: '+figname)
+    fig.savefig(figname)
+    plt.close(fig)
+
+    #---
 
     # plot median a posterior
-    raise NotImplementedError
+    if args.verbose:
+        print('    median a posterior')
+
+    for i, M in enumerate(Ms):
+        for j, MA in enumerate(MAs):
+            Zgrid_flat[i,j] = np.median(data[(M,MA)]['posterior'][key])
+
+    fig = heatmap(Mgrid, MAgrid, Zgrid, clabel='median %s' % key)
+    figname = figtmp % (key, 'mediaan')
+    if args.verbose:
+        print('        saving: '+figname)
+    fig.savefig(figname)
+    plt.close(fig)
+
+    #---
 
     # plot max/mode a posterior
-    raise NotImplementedError
+#    raise NotImplementedError
+
+    #---
 
     # plot standard deviation a posterior
-    raise NotImplementedError
+    if args.verbose:
+        print('    stdv a posterior')
+
+    for i, M in enumerate(Ms):
+        for j, MA in enumerate(MAs):
+            Zgrid_flat[i,j] = np.stdv(data[(M,MA)]['posterior'][key])
+
+    fig = heatmap(Mgrid, MAgrid, Zgrid, clabel='stdv %s' % key)
+    figname = figtmp % (key, 'stdv')
+    if args.verbose:
+        print('        saving: '+figname)
+    fig.savefig(figname)
+    plt.close(fig)
+
+    #---
 
     # plot 90% credible region
-    raise NotImplementedError
+#    raise NotImplementedError
