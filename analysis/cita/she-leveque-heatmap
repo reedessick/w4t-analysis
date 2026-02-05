@@ -99,6 +99,11 @@ MAs = set()
 scale = None
 
 for M, MA, path in args.posterior:
+    if not os.path.exists(path):
+        if args.verbose:
+            print('could not load posterior samples for M=%.1f, MA=%.1f from %s (does not exists)' % (M, MA, path))
+        continue
+
     if args.verbose:
         print("loading posterior samples for M=%.1f, MA=%.1f from %s" % (M, MA, path))
 
@@ -107,7 +112,7 @@ for M, MA, path in args.posterior:
     if scale is None:
         scale = ref_scale
     else:
-        assert scale == ref_scale, 'mismatch in reference scale!'
+        assert np.all(scale == ref_scale), 'mismatch in reference scale!'
 
     data[(M, MA)] = dict(
         posterior=posterior,
@@ -150,11 +155,14 @@ for key, label, kwargs in [
 
     for i, M in enumerate(Ms):
         for j, MA in enumerate(MAs):
-            m = np.mean(data[(M,MA)]['posterior'][key])
-            Zgrid[i,j] = m
-            anno[i][j] = '%.2f\n$\pm$\n%.2f' % (m, np.std(data[(M,MA)]['posterior'][key]))
+            if (M, MA) in data:
+                m = np.mean(data[(M,MA)]['posterior'][key])
+                Zgrid[i,j] = m
+                anno[i][j] = '%.2f\n$\pm$\n%.2f' % (m, np.std(data[(M,MA)]['posterior'][key]))
+            else:
+                anno[i][j] = ''
 
-    fig = heatmap(Ms, MAs, Zgrid, anno, title='ref_scale = %d\nmean %s' % (scale, label), **kwargs)
+    fig = heatmap(Ms, MAs, Zgrid, anno, title='ref_scale = %s\nmean %s' % (scale, label), **kwargs)
 
     for figtype in args.figtype:
         figname = figtmp % (key, 'mean', figtype)
@@ -173,15 +181,18 @@ for key, label, kwargs in [
 
     for i, M in enumerate(Ms):
         for j, MA in enumerate(MAs):
-            m = np.median(data[(M,MA)]['posterior'][key])
-            Zgrid[i,j] = m
-            anno[i][j] = '$%.2f^{+%.2f}_{-%.2f}$' % (
-                m,
-                np.percentile(data[(M,MA)]['posterior'][key], 95)-m,
-                m-np.percentile(data[(M,MA)]['posterior'][key], 5),
-            )
+            if (M, MA) in data:
+                m = np.median(data[(M,MA)]['posterior'][key])
+                Zgrid[i,j] = m
+                anno[i][j] = '$%.2f^{+%.2f}_{-%.2f}$' % (
+                    m,
+                    np.percentile(data[(M,MA)]['posterior'][key], 95)-m,
+                    m-np.percentile(data[(M,MA)]['posterior'][key], 5),
+                )
+            else:
+                anno[i][j] = ''
             
-    fig = heatmap(Ms, MAs, Zgrid, anno, title='ref_scale = %d\nmedian %s' % (scale, label), **kwargs)
+    fig = heatmap(Ms, MAs, Zgrid, anno, title='ref_scale = %s\nmedian %s' % (scale, label), **kwargs)
 
     for figtype in args.figtype:
         figname = figtmp % (key, 'median', figtype)
@@ -202,19 +213,22 @@ for key, label, kwargs in [
     
     for i, M in enumerate(Ms):
         for j, MA in enumerate(MAs):
+            if (M, MA) in data:
+                # FIXME!
+                raise NotImplementedError('estimate max a posteriori and 90% symmetric credible regions')
+                m = np.median(data[(M,MA)]['posterior'][key])
 
-            # FIXME!
-            raise NotImplementedError('estimate max a posteriori and 90% symmetric credible regions')
-            m = np.median(data[(M,MA)]['posterior'][key])
+                Zgrid[i,j] = m
+                anno[i][j] = '$%.2f^{+%.2f}_{-%.2f}$' % (
+                    m,
+                    np.percentile(data[(M,MA)]['posterior'][key], 95)-m,
+                    m-np.percentile(data[(M,MA)]['posterior'][key], 5),
+                )
 
-            Zgrid[i,j] = m
-            anno[i][j] = '$%.2f^{+%.2f}_{-%.2f}$' % (
-                m,
-                np.percentile(data[(M,MA)]['posterior'][key], 95)-m,
-                m-np.percentile(data[(M,MA)]['posterior'][key], 5),
-            )
+            else:
+                anno[i][j] = ''
 
-    fig = heatmap(Ms, MAs, Zgrid, anno, title='ref_scale = %d\nmode %s' % (scale, label), **kwargs)
+    fig = heatmap(Ms, MAs, Zgrid, anno, title='ref_scale = %s\nmode %s' % (scale, label), **kwargs)
 
     for figtype in args.figtype:
         figname = figtmp % (key, 'mode', figtype)

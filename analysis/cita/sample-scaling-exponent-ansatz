@@ -33,7 +33,8 @@ done
 
 for FLOW in ${FLOWS[@]}
 do
-    for FIELD in dens vel vort mag curr
+#    for FIELD in dens vel vort mag curr
+    for FIELD in vel mag
     do
         for METHOD in dsf # wsf
         do
@@ -65,7 +66,7 @@ do
 
             #---
 
-#            echo \
+            echo \
             w4t-corner \
                 $SL_SAMPLES \
                 --fields "C0" "beta" "x" \
@@ -83,25 +84,26 @@ do
                 $STRCFNC \
                 $SL_SAMPLES \
                 --structure-function-samples $SAMPLES \
-                --dlogSdlogs-ylim 0.0 5.0 \
+                --dlogSdlogs-ylim -1.0 5.0 \
+                --max-num-samples 1000 \
                 --title "$FLOW $FIELD $METHOD $REF_SCALE" \
                 --output-dir ${FLOW} \
                 --tag ${FLOW}_avrg_${FIELD}_${METHOD}_${REF_SCALE} \
                 --Verbose \
             || exit 1
 
-#                --max-num-samples 5000 \
 
             #------------
 
             # process for individual reference scales
 
-            for REF_SCALE in 16 32 64 128
+#            for REF_SCALE in 16 32 64 128
+            for REF_SCALE in
             do
 
                 SL_SAMPLES="${FLOW}/${FLOW}_avrg_${FIELD}_${METHOD}-scaling-ansatz-${REF_SCALE}.hdf"
 
-#                echo \
+                echo \
                 w4t-sample-scaling-exponent-ansatz \
                     $STRCFNC \
                     $SL_SAMPLES \
@@ -117,7 +119,7 @@ do
 
                 #---
 
-#                echo \
+                echo \
                 w4t-corner \
                     $SL_SAMPLES \
                     --fields "C0" "beta" "x" \
@@ -135,14 +137,13 @@ do
                     $STRCFNC \
                     $SL_SAMPLES \
                     --structure-function-samples $SAMPLES \
-                    --dlogSdlogs-ylim 0.0 5.0 \
+                    --dlogSdlogs-ylim -1.0 5.0 \
+                    --max-num-samples 1000 \
                     --title "$FLOW $FIELD $METHOD $REF_SCALE" \
                     --output-dir ${FLOW} \
                     --tag ${FLOW}_avrg_${FIELD}_${METHOD}_${REF_SCALE} \
                     --Verbose \
                 || exit 1
-
-#                    --max-num-samples 5000 \
 
             done
         done

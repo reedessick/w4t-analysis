@@ -24,13 +24,15 @@ SCALE_TAG[16]="016"
 SCALE_TAG[32]="032"
 SCALE_TAG[64]="064"
 SCALE_TAG[128]="128"
+SCALE_TAG[16-64]="016-064"
 
 #------------------------
 
 for FIELD in "dens" "vel" "vort" "mag" "curr"
 do
 
-    for SCALE in 16 32 64 128
+#    for SCALE in 16 32 64 128
+    for SCALE in 16-64
     do
 
         POST=()

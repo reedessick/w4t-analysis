@@ -84,6 +84,12 @@ These results are for the averagd scaling exponent computed between reference sc
 
 ### Posterior distributions over She-Leveque parameters
 
+posterior medians and 90% symmetric credible regions
+
+| C0 | beta | x |
+|----|------|---|
+|<img src="heatmaps/she-leveque-heatmap_C0_median_vel_016-064.png">|<img src="heatmaps/she-leveque-heatmap_beta_median_vel_016-064.png">|<img src="heatmaps/she-leveque-heatmap_x_median_vel_016-064.png">|
+
 |M/MA| 01 | 05 | 1 | 2 | 4 | 6 | 8 | 10 |
 |----|----|----|---|---|---|---|---|----|
 | 05 |<img src="M05MA01/w4t-corner_M05MA01_avrg_vel_dsf_scaling-ansatz-16-64.png">|<img src="M05MA05/w4t-corner_M05MA05_avrg_vel_dsf_scaling-ansatz-16-64.png">|<img src="M05MA1/w4t-corner_M05MA1_avrg_vel_dsf_scaling-ansatz-16-64.png">|<img src="M05MA2/w4t-corner_M05MA2_avrg_vel_dsf_scaling-ansatz-16-64.png">|<img src="M05MA4/w4t-corner_M05MA4_avrg_vel_dsf_scaling-ansatz-16-64.png">|<img src="M05MA6/w4t-corner_M05MA6_avrg_vel_dsf_scaling-ansatz-16-64.png">|<img src="M05MA8/w4t-corner_M05MA8_avrg_vel_dsf_scaling-ansatz-16-64.png">|<img src="M05MA10/w4t-corner_M05MA10_avrg_vel_dsf_scaling-ansatz-16-64.png">|
