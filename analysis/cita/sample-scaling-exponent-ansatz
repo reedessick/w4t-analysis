@@ -34,7 +34,7 @@ done
 for FLOW in ${FLOWS[@]}
 do
 #    for FIELD in dens vel vort mag curr
-    for FIELD in vel mag
+    for FIELD in dens vort curr
     do
         for METHOD in dsf # wsf
         do
@@ -50,7 +50,7 @@ do
 
             SL_SAMPLES="${FLOW}/${FLOW}_avrg_${FIELD}_${METHOD}-scaling-ansatz-${REF_SCALE}.hdf"
 
-            echo \
+#            echo \
             w4t-sample-scaling-exponent-ansatz \
                 $STRCFNC \
                 $SL_SAMPLES \
@@ -79,7 +79,7 @@ do
 
             #---
 
-            echo \
+#            echo \
             w4t-plot-scaling-exponent-ansatz \
                 $STRCFNC \
                 $SL_SAMPLES \
