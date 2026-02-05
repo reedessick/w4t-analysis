@@ -29,12 +29,16 @@ do
     done
 done
 
+FLOWS=(M05MA6 M05MA8 M05MA10)
+SEED=12345
+INDEX=(1 2 3)
+
 #-------------------------------------------------
 
 for FLOW in ${FLOWS[@]}
 do
 #    for FIELD in dens vel vort mag curr
-    for FIELD in dens vort curr
+    for FIELD in mag
     do
         for METHOD in dsf # wsf
         do
