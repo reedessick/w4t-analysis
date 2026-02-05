@@ -1,7 +1,21 @@
-#!/bin/bash
+#!/bin/zsh
 
 # a quick script to fit the She-Leveque ansatz to scaline exponents extracted from the average structure functions
 # Reed Essick (reed.essick@gmail.com)
+
+#-------------------------------------------------
+
+INDEX="1 2 3 4 5 6"
+
+MIN_SCALE=1
+MAX_SCALE=512
+
+NUM_WARMUP=10000
+NUM_SAMPLES=25000
+SEED=1234567890
+
+REF_SCALE_MIN=16
+REF_SCALE_MAX=64
 
 #-------------------------------------------------
 
@@ -31,8 +45,6 @@ do
 
             # process for an averaged dlogS/dlogs
 
-            REF_SCALE_MIN=16
-            REF_SCALE_MAX=64
             REF_SCALE="${REF_SCALE_MIN}-${REF_SCALE_MAX}"
 
             SL_SAMPLES="${FLOW}/${FLOW}_avrg_${FIELD}_${METHOD}-scaling-ansatz-${REF_SCALE}.hdf"
@@ -42,12 +54,12 @@ do
                 $STRCFNC \
                 $SL_SAMPLES \
                 $REF_SCALE_MIN $REF_SCALE_MAX \
-                --index 1 2 3 4 5 6 \
-                --min-scale 1 \
-                --max-scale 512 \
-                --num-warmup  10000 \
-                --num-samples 50000 \
-                --seed 1234567890 \
+                --index ${=INDEX} \
+                --min-scale $MIN_SCALE \
+                --max-scale $MAX_SCALE \
+                --num-warmup  $NUM_WARMUP \
+                --num-samples $NUM_SAMPLES \
+                --seed $SEED \
                 --verbose \
             || exit 1
 
@@ -71,16 +83,14 @@ do
                 $STRCFNC \
                 $SL_SAMPLES \
                 --structure-function-samples $SAMPLES \
+                --dlogSdlogs-ylim 0.0 5.0 \
                 --title "$FLOW $FIELD $METHOD $REF_SCALE" \
-                --max-num-samples 5000 \
                 --output-dir ${FLOW} \
                 --tag ${FLOW}_avrg_${FIELD}_${METHOD}_${REF_SCALE} \
                 --Verbose \
             || exit 1
 
-#                --dlogSdlogs-ylim 0.0 5.0 \
-
-exit 1
+#                --max-num-samples 5000 \
 
             #------------
 
@@ -96,12 +106,12 @@ exit 1
                     $STRCFNC \
                     $SL_SAMPLES \
                     $REF_SCALE \
-                    --index 1 2 3 4 5 6 \
-                    --min-scale 1 \
-                    --max-scale 512 \
-                    --num-warmup  10000 \
-                    --num-samples 50000 \
-                    --seed 1234567890 \
+                    --index ${=INDEX} \
+                    --min-scale $MIN_SCALE \
+                    --max-scale $MAX_SCALE \
+                    --num-warmup  $NUM_WARMUP \
+                    --num-samples $NUM_SAMPLES \
+                    --seed $SEED \
                     --verbose \
                 || exit 1
 
@@ -125,14 +135,14 @@ exit 1
                     $STRCFNC \
                     $SL_SAMPLES \
                     --structure-function-samples $SAMPLES \
+                    --dlogSdlogs-ylim 0.0 5.0 \
                     --title "$FLOW $FIELD $METHOD $REF_SCALE" \
-                    --max-num-samples 5000 \
                     --output-dir ${FLOW} \
                     --tag ${FLOW}_avrg_${FIELD}_${METHOD}_${REF_SCALE} \
                     --Verbose \
                 || exit 1
 
-#                    --dlogSdlogs-ylim 0.0 5.0 \
+#                    --max-num-samples 5000 \
 
             done
         done
