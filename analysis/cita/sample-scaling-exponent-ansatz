@@ -21,15 +21,21 @@ REF_SCALE_MAX=64
 
 FLOWS=()
 
-for M in "05" "2" "4" "10"
-do
-    for MA in "01" "05" "1" "2" "4" "6" "8" "10"
-    do
-        FLOWS+=(M${M}MA${MA})
-    done
-done
+#for M in "05" "2" "4" "10"
+#do
+#    for MA in "01" "05" "1" "2" "4" "6" "8" "10"
+#    do
+#        FLOWS+=(M${M}MA${MA})
+#    done
+#done
 
-FLOWS=(M05MA6 M05MA8 M05MA10)
+# trying this to see if we can get reasonable fits based on low p that extrapolate well "by eye" to higher p
+
+FLOWS+=(M05MA6 M05MA8 M05MA10)
+FLOWS+=(M2MA4 M2MA6 M2MA8 M2MA10)
+FLOWS+=(M4MA1 M4MA4 M4MA6 M4MA8 M4MA10)
+FLOWS+=(M10MA05 M10MA2 M10MA4 M10MA6 M10MA8)
+
 SEED=12345
 INDEX=(1 2 3)
 
