@@ -27,8 +27,7 @@ SCALE_TAG[128]="128"
 
 #------------------------
 
-#for FIELD in "dens" "vel" "vort" "mag" "curr"
-for FIELD in "vel"
+for FIELD in "dens" "vel" "vort" "mag" "curr"
 do
 
     for SCALE in 16 32 64 128

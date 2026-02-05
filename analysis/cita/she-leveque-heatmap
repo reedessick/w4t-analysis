@@ -192,6 +192,8 @@ for key, label, kwargs in [
 
     #---
 
+    '''
+
     # plot mode a posterior
     if args.verbose:
         print('    mode a posterior')
@@ -220,3 +222,5 @@ for key, label, kwargs in [
             print('        saving: '+figname)
         fig.savefig(figname, dpi=args.dpi)
     plt.close(fig)
+
+    '''

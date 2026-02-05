@@ -27,12 +27,71 @@ do
             STRCFNC="${FLOW}/${FLOW}_avrg_${FIELD}_${METHOD}.hdf"
             SAMPLES="${FLOW}/${FLOW}_avrg_${FIELD}_${METHOD}-ansatz.hdf"
 
+            #------------
+
+            # process for an averaged dlogS/dlogs
+
+            REF_SCALE_MIN=16
+            REF_SCALE_MAX=64
+            REF_SCALE="${REF_SCALE_MIN}-${REF_SCALE_MAX}"
+
+            SL_SAMPLES="${FLOW}/${FLOW}_avrg_${FIELD}_${METHOD}-scaling-ansatz-${REF_SCALE}.hdf"
+
+#            echo \
+            w4t-sample-scaling-exponent-ansatz \
+                $STRCFNC \
+                $SL_SAMPLES \
+                $REF_SCALE_MIN $REF_SCALE_MAX \
+                --index 1 2 3 4 5 6 \
+                --min-scale 1 \
+                --max-scale 512 \
+                --num-warmup  10000 \
+                --num-samples 50000 \
+                --seed 1234567890 \
+                --verbose \
+            || exit 1
+
+            #---
+
+#            echo \
+            w4t-corner \
+                $SL_SAMPLES \
+                --fields "C0" "beta" "x" \
+                --root posterior \
+                --title "$FLOW $FIELD $METHOD $REF_SCALE" \
+                --output-dir ${FLOW} \
+                --tag ${FLOW}_avrg_${FIELD}_${METHOD}_scaling-ansatz-${REF_SCALE} \
+                --verbose \
+            || exit 1
+
+            #---
+
+#            echo \
+            w4t-plot-scaling-exponent-ansatz \
+                $STRCFNC \
+                $SL_SAMPLES \
+                --structure-function-samples $SAMPLES \
+                --title "$FLOW $FIELD $METHOD $REF_SCALE" \
+                --max-num-samples 5000 \
+                --output-dir ${FLOW} \
+                --tag ${FLOW}_avrg_${FIELD}_${METHOD}_${REF_SCALE} \
+                --Verbose \
+            || exit 1
+
+#                --dlogSdlogs-ylim 0.0 5.0 \
+
+exit 1
+
+            #------------
+
+            # process for individual reference scales
+
             for REF_SCALE in 16 32 64 128
             do
 
                 SL_SAMPLES="${FLOW}/${FLOW}_avrg_${FIELD}_${METHOD}-scaling-ansatz-${REF_SCALE}.hdf"
 
-                echo \
+#                echo \
                 w4t-sample-scaling-exponent-ansatz \
                     $STRCFNC \
                     $SL_SAMPLES \
@@ -48,7 +107,7 @@ do
 
                 #---
 
-                echo \
+#                echo \
                 w4t-corner \
                     $SL_SAMPLES \
                     --fields "C0" "beta" "x" \
@@ -67,11 +126,13 @@ do
                     $SL_SAMPLES \
                     --structure-function-samples $SAMPLES \
                     --title "$FLOW $FIELD $METHOD $REF_SCALE" \
-                    --max-num-samples 25000 \
+                    --max-num-samples 5000 \
                     --output-dir ${FLOW} \
                     --tag ${FLOW}_avrg_${FIELD}_${METHOD}_${REF_SCALE} \
                     --Verbose \
                 || exit 1
+
+#                    --dlogSdlogs-ylim 0.0 5.0 \
 
             done
         done
