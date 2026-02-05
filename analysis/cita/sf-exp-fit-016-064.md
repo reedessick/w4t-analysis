@@ -19,7 +19,7 @@ When fitting assuming this relation, we infer `x`, `C0`, and `beta` and use that
 *Additionally*, we use the She-Leveque ansatz to relate the averaged scaling exponent rather than the logarithmic derivative at a specific value.
 The averaged exponent is defined as
 ```math
-    \left< \frac{d\log S_\tau^P}{d\log \tau} \right> = \frac{1}{\log(\tau_max/\tau_min}} \int\limits_{\log \tau_min}^{\log \tau_\max} d(\log \tau) \frac{d\log S_\tau^p}{\d \log \tau}
+    \left< \frac{d\log S_\tau^p}{d\log \tau} \right> = \frac{1}{\log(\tau_max/\tau_min)} \int\limits_{\log \tau_min}^{\log \tau_\max} d(\log \tau) \frac{d\log S_\tau^p}{\d \log \tau}
 ```
 which is the integral of a total derivative and easy to evaluate analytically.
  
