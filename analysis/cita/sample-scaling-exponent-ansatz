@@ -33,12 +33,17 @@ do
     done
 done
 
+# retry with different seeds
+FLOWS=(M2MA01 M4MA05 M4MA8 M10MA05 M10MA1 M10MA8 M10MA10)
+
+SEED=123
+
 #-------------------------------------------------
 
 for FLOW in ${FLOWS[@]}
 do
 #    for FIELD in dens vel vort mag curr
-    for FIELD in dens vort curr
+    for FIELD in vel
     do
         for METHOD in dsf # wsf
         do
