@@ -25,20 +25,19 @@ REF_SCALE_MAX=64
 
 FLOWS=()
 
-#for M in "05" "2" "4" "10"
-#do
-#    for MA in "01" "05" "1" "2" "4" "6" "8" "10"
-#    do
-#        FLOWS+=(M${M}MA${MA})
-#    done
-#done
+for M in "05" "2" "4" "10"
+do
+    for MA in "01" "05" "1" "2" "4" "6" "8" "10"
+    do
+        FLOWS+=(M${M}MA${MA})
+    done
+done
 
 #-------------------------------------------------
 
 for FLOW in ${FLOWS[@]}
 do
-#    for FIELD in dens vel vort mag curr
-    for FIELD in mag
+    for FIELD in dens vel vort mag curr
     do
         for METHOD in dsf # wsf
         do
@@ -54,7 +53,7 @@ do
 
             SL_SAMPLES="${FLOW}/${FLOW}_avrg_${FIELD}_${METHOD}-scaling-ansatz-${REF_SCALE}.hdf"
 
-#            echo \
+            echo \
             w4t-sample-scaling-exponent-ansatz \
                 $STRCFNC \
                 $SL_SAMPLES \
@@ -94,7 +93,7 @@ do
 
             #---
 
-#            echo \
+            echo \
             w4t-plot-scaling-exponent-ansatz \
                 $STRCFNC \
                 $SL_SAMPLES \
