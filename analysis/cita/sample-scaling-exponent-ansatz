@@ -34,10 +34,9 @@ FLOWS=()
 #done
 
 # retry with different seeds
-FLOWS+=(M10MA1 M10MA4 M10MA6 M10MA10)
-#FLOWS+=(M10MA05)
+FLOWS+=(M10MA05 M10MA6)
 
-SEED=123
+SEED=1234
 
 #-------------------------------------------------
 
