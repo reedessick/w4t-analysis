@@ -25,25 +25,27 @@ REF_SCALE_MAX=64
 
 FLOWS=()
 
-for M in "05" "2" "4" "10"
-do
-    for MA in "01" "05" "1" "2" "4" "6" "8" "10"
-    do
-        FLOWS+=(M${M}MA${MA})
-    done
-done
+#for M in "05" "2" "4" "10"
+#do
+#    for MA in "01" "05" "1" "2" "4" "6" "8" "10"
+#    do
+#        FLOWS+=(M${M}MA${MA})
+#    done
+#done
 
 # retry with different seeds
-FLOWS=(M4MA05 M10MA8 M10MA10)
+#FLOWS+=(M2MA01 M2MA1 M2MA2 M2MA4 M2MA6 M2MA8 M2MA10)
+FLOWS+=(M4MA01 M4MA05 M4MA2 M4MA4 M4MA6 M4MA8 M4MA10)
+#FLOWS+=(M10MA1 M10MA4 M10MA6 M10MA10)
 
-SEED=1234
+SEED=123
 
 #-------------------------------------------------
 
 for FLOW in ${FLOWS[@]}
 do
 #    for FIELD in dens vel vort mag curr
-    for FIELD in vel
+    for FIELD in mag
     do
         for METHOD in dsf # wsf
         do
