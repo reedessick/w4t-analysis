@@ -33,11 +33,6 @@ FLOWS=()
 #    done
 #done
 
-# retry with different seeds
-FLOWS+=(M10MA05 M10MA6)
-
-SEED=1234
-
 #-------------------------------------------------
 
 for FLOW in ${FLOWS[@]}
