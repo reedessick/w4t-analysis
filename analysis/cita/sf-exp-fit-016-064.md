@@ -104,7 +104,7 @@ These results are for the averagd scaling exponent computed between reference sc
 
 |M/MA| 01 | 05 | 1 | 2 | 4 | 6 | 8 | 10 |
 |----|----|----|---|---|---|---|---|----|
-| 05 |<img src="M05MA01/w4t-corner-C0_M05MA01_avrg_mag_dsf_scaling-ansatz-16-64.png">|
+| 05 |<img src="M05MA01/w4t-corner-C0_M05MA01_avrg_mag_dsf_scaling-ansatz-16-64.png">|<img src="M05MA05/w4t-corner-C0_M05MA05_avrg_mag_dsf_scaling-ansatz-16-64.png">|<img src="M05MA1/w4t-corner-C0_M05MA1_avrg_mag_dsf_scaling-ansatz-16-64.png">|<img src="M05MA2/w4t-corner-C0_M05MA2_avrg_mag_dsf_scaling-ansatz-16-64.png">|<img src="M05MA4/w4t-corner-C0_M05MA4_avrg_mag_dsf_scaling-ansatz-16-64.png">|<img src="M05MA6/w4t-corner-C0_M05MA6_avrg_mag_dsf_scaling-ansatz-16-64.png">|<img src="M05MA8/w4t-corner-C0_M05MA8_avrg_mag_dsf_scaling-ansatz-16-64.png">|<img src="M05MA10/w4t-corner-C0_M05MA10_avrg_mag_dsf_scaling-ansatz-16-64.png">|
 
 
 
