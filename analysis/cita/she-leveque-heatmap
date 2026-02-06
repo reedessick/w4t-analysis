@@ -101,11 +101,11 @@ scale = None
 for M, MA, path in args.posterior:
     if not os.path.exists(path):
         if args.verbose:
-            print('could not load posterior samples for M=%.1f, MA=%.1f from %s (does not exists)' % (M, MA, path))
+            print('could not load posterior samples for M=%4.1f, MA=%4.1f from %s (does not exists)' % (M, MA, path))
         continue
 
     if args.verbose:
-        print("loading posterior samples for M=%.1f, MA=%.1f from %s" % (M, MA, path))
+        print("loading posterior samples for M=%4.1f, MA=%4.1f from %s" % (M, MA, path))
 
     posterior, _, scales, index, ref_scale, kwargs = io.load_scaling_exponent_ansatz_samples(path)
 
