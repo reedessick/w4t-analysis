@@ -226,7 +226,7 @@ for key, label, kwargs in [
             else:
                 anno[i][j] = ''
 
-    fig = heatmap(Ms, MAs, Zgrid, anno, title='ref_scale = %s\nmode %s' % (scale, label), **kwargs)
+    fig = heatmap(Ms, MAs, Zgrid, anno, title='ref_scale = %s\nmaximum-likelihood %s' % (scale, label), **kwargs)
 
     for figtype in args.figtype:
         figname = figtmp % (key, 'mle', figtype)
