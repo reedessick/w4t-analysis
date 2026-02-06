@@ -203,20 +203,18 @@ for key, label, kwargs in [
 
     #---
 
-    '''
-
-    # plot mode a posterior
+    # plot max likelihood
     if args.verbose:
-        print('    mode a posterior')
+        print('    max likelihood')
     
     Zgrid[:] = np.nan # make sure we don't plot garbage data
     
     for i, M in enumerate(Ms):
         for j, MA in enumerate(MAs):
             if (M, MA) in data:
-                # FIXME!
-                raise NotImplementedError('estimate max a posteriori and 90% symmetric credible regions')
-                m = np.median(data[(M,MA)]['posterior'][key])
+                # find the max likelihood sample
+                like = np.sum(np.sum(data[(M,MA)]['posterior']['mom'], axis=2), axis=1)
+                m = data[(M,MA)]['posterior'][key][np.argmax(like)]
 
                 Zgrid[i,j] = m
                 anno[i][j] = '$%.2f^{+%.2f}_{-%.2f}$' % (
@@ -231,10 +229,8 @@ for key, label, kwargs in [
     fig = heatmap(Ms, MAs, Zgrid, anno, title='ref_scale = %s\nmode %s' % (scale, label), **kwargs)
 
     for figtype in args.figtype:
-        figname = figtmp % (key, 'mode', figtype)
+        figname = figtmp % (key, 'mle', figtype)
         if args.verbose:
             print('        saving: '+figname)
         fig.savefig(figname, dpi=args.dpi)
     plt.close(fig)
-
-    '''

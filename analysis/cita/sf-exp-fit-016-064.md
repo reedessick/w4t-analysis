@@ -73,11 +73,11 @@ These results are for the averagd scaling exponent computed between reference sc
 
 ### Posterior distributions over She-Leveque parameters
 
-#### posterior medians and 90% symmetric credible regions
+#### maximum likelihood and 90% symmetric posterior credible regions
 
 | C0 | beta | x |
 |----|------|---|
-|<img src="heatmaps/she-leveque-heatmap_C0_median_vel_016-064.png">|<img src="heatmaps/she-leveque-heatmap_beta_median_vel_016-064.png">|<img src="heatmaps/she-leveque-heatmap_x_median_vel_016-064.png">|
+|<img src="heatmaps/she-leveque-heatmap_C0_mle_vel_016-064.png">|<img src="heatmaps/she-leveque-heatmap_beta_mle_vel_016-064.png">|<img src="heatmaps/she-leveque-heatmap_x_mle_vel_016-064.png">|
 
 #### corner plots
 
@@ -148,11 +148,11 @@ These results are for the averagd scaling exponent computed between reference sc
 
 ### Posterior distributions over She-Leveque parameters
 
-#### posterior medians and 90% symmetric credible regions
+#### maximum likelihood and 90% symmetric posterior credible regions
 
 | C0 | beta | x |
 |----|------|---|
-|<img src="heatmaps/she-leveque-heatmap_C0_median_mag_016-064.png">|<img src="heatmaps/she-leveque-heatmap_beta_median_mag_016-064.png">|<img src="heatmaps/she-leveque-heatmap_x_median_mag_016-064.png">|
+|<img src="heatmaps/she-leveque-heatmap_C0_mle_mag_016-064.png">|<img src="heatmaps/she-leveque-heatmap_beta_mle_mag_016-064.png">|<img src="heatmaps/she-leveque-heatmap_x_mle_mag_016-064.png">|
 
 #### corner plots
 
