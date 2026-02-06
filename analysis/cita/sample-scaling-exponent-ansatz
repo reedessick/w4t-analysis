@@ -10,9 +10,13 @@ INDEX="1 2 3 4 5 6"
 MIN_SCALE=1
 MAX_SCALE=512
 
-NUM_WARMUP=10000
+NUM_WARMUP=5000
 NUM_SAMPLES=25000
-SEED=1234567890
+
+#SEED=1234567890
+SEED=123456
+
+#---
 
 REF_SCALE_MIN=16
 REF_SCALE_MAX=64
@@ -21,32 +25,20 @@ REF_SCALE_MAX=64
 
 FLOWS=()
 
-#for M in "05" "2" "4" "10"
-#do
-#    for MA in "01" "05" "1" "2" "4" "6" "8" "10"
-#    do
-#        FLOWS+=(M${M}MA${MA})
-#    done
-#done
-
-# trying this to see if we can get reasonable fits based on low p that extrapolate well "by eye" to higher p
-
-#FLOWS+=(M05MA6 M05MA8 M05MA10)
-#FLOWS+=(M2MA4 M2MA6 M2MA8 M2MA10)
-#FLOWS+=(M4MA1 M4MA4 M4MA6 M4MA8 M4MA10)
-#FLOWS+=(M10MA05 M10MA2 M10MA4 M10MA6 M10MA8)
-
-FLOWS=(M05MA6)
-
-SEED=12345
-INDEX=(1 2 3)
+for M in "05" "2" "4" "10"
+do
+    for MA in "01" "05" "1" "2" "4" "6" "8" "10"
+    do
+        FLOWS+=(M${M}MA${MA})
+    done
+done
 
 #-------------------------------------------------
 
 for FLOW in ${FLOWS[@]}
 do
 #    for FIELD in dens vel vort mag curr
-    for FIELD in mag
+    for FIELD in vel mag
     do
         for METHOD in dsf # wsf
         do
@@ -77,6 +69,17 @@ do
             || exit 1
 
             #---
+
+#            echo \
+            w4t-corner \
+                $SL_SAMPLES \
+                --fields "C0" "beta" "x" \
+                --root prior \
+                --title "$FLOW $FIELD $METHOD $REF_SCALE" \
+                --output-dir ${FLOW} \
+                --tag ${FLOW}_avrg_${FIELD}_${METHOD}_scaling-ansatz-prior-${REF_SCALE} \
+                --verbose \
+            || exit 1
 
 #            echo \
             w4t-corner \
@@ -130,6 +133,17 @@ do
                 || exit 1
 
                 #---
+
+                echo \
+                w4t-corner \
+                    $SL_SAMPLES \
+                    --fields "C0" "beta" "x" \
+                    --root prior \
+                    --title "$FLOW $FIELD $METHOD $REF_SCALE" \
+                    --output-dir ${FLOW} \
+                    --tag ${FLOW}_avrg_${FIELD}_${METHOD}_scaling-ansatz-prior-${REF_SCALE} \
+                    --verbose \
+                || exit 1
 
                 echo \
                 w4t-corner \
