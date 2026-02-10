@@ -71,10 +71,16 @@ def xcb_prior(
 
 #---
 
-def xcb_posterior(index, mean, stdv, **prior_kwargs):
+def xcb_posterior_gaussian(index, mean, stdv, **prior_kwargs):
     x, C0, beta = xcb_prior(**prior_kwargs)                 # sample from prior
     xi = infer.scaling_exponent_ansatz(index, x, C0, beta)  # compute means
     numpyro.sample('data', dist.Normal(xi, stdv), obs=mean) # condition on data
+
+def xcb_posterior_kde(index, grids, kdes, **prior_kwargs):
+    x, C0, beta = xcb_prior(**prior_kwargs)                 # sample from prior
+    xi = infer.scaling_exponent_ansatz(index, x, C0, beta)  # compute means
+    for ind, i in enumerate(index): # this shouldn't be too bad, but may need to vmap
+        numpyro.factor('data_%d'%i, jnp.log(jnp.interp(xi[ind], grids[ind], kdes[ind])))
 
 #-------------------------------------------------          
 
@@ -94,6 +100,9 @@ for inpath in inpaths:
     # come up with approximations for marginal likelihoods
     mean = []
     stdv = []
+
+    grids = []
+    kdes = []
 
     fig = plt.figure(figsize=(4,2*len(index)))
     plt.subplots_adjust(
@@ -125,23 +134,39 @@ for inpath in inpaths:
         w = 1./(np.exp(0.5*(input_post[i]['xi']-0)**2/3**2) / (2*np.pi * 3**2)**0.5)
         w /= np.sum(w)
 
+        ### simple Gaussian approximation
         m = np.sum(w*samp)             # sample mean
         s = np.sum(w*(samp-m)**2)**0.5 # sample stdv (sorta)
 
-        # compute averaged scaling exponent
         mean.append(m)
         stdv.append(s)
+
+        ### KDE of samples
+        kde_stdv = 1.06 * s / len(samp)**0.2 # rule of thumb for optimal KDE bandwidth w/r/t IMSE
+
+        grid = np.min(samp), np.max(samp)
+        d = 0.5*(grid[1]-grid[0])
+        grid = np.linspace(grid[0]-d, grid[1]+d, 101)
+        kde = np.sum(
+            [W*np.exp(-0.5*(S-grid)**2/kde_stdv**2)/(2*np.pi*kde_stdv**2)**0.5 for W, S in zip(w, samp)],
+            axis=0,
+        )
+
+        grids.append(grid)
+        kdes.append(kde)
 
         # add to sanity-check plot
         ax = plt.subplot(len(index), 1, 1+ind)
 
         nbins = min(100, max(10, int(0.5*len(samp)**0.5)))
-        ax.hist(samp, bins=nbins, histtype='step', density=True, weights=w, label='indep')
+        ax.hist(samp, bins=nbins, histtype='step', density=True, weights=w, alpha=0.50, label='indep')
 
         xlim = np.max(np.abs(mean[-1]-np.array(ax.get_xlim())))
         x = np.linspace(-xlim+mean[-1], +xlim+mean[-1], 1001)
-        ax.plot(x, np.exp(-0.5*(x-mean[-1])**2/stdv[-1]**2)/(2*np.pi*stdv[-1]**2)**0.5, label='model')
+        ax.plot(x, np.exp(-0.5*(x-mean[-1])**2/stdv[-1]**2)/(2*np.pi*stdv[-1]**2)**0.5, alpha=0.50, label='model')
         ax.set_xlim(xmin=x[0], xmax=x[-1])
+
+        ax.plot(grid, kde, marker='.', alpha=0.50, label='kde')
 
         ax.set_xlabel(r'$\left<\frac{d \log S_\tau^{p=%d}}{d\log\tau}\right>$' % i)
 
@@ -172,15 +197,20 @@ for inpath in inpaths:
 
         print('running sampler for posterior with seed=%d for %d warmup and %d samples' % (seed, num_warmup, num_samples))
 
+#        xcb_posterior = xcb_posterior_gaussian
+#        xcb_args = (index, mean, stdv)
+        xcb_posterior = xcb_posterior_kde
+        xcb_args = (index, grids, kdes)
+
         mcmc = MCMC(
             NUTS(xcb_posterior),
             num_warmup=num_warmup,
             num_samples=num_samples,
         )
-        mcmc.run(random.PRNGKey(seed), index, mean, stdv, **prior_kwargs)
+        mcmc.run(random.PRNGKey(seed), *xcb_args, **prior_kwargs)
         posterior = mcmc.get_samples()
 
-        posterior.update(numpyro.infer.log_likelihood(xcb_posterior, posterior, index, mean, stdv, **prior_kwargs))
+        posterior.update(numpyro.infer.log_likelihood(xcb_posterior, posterior, *xcb_args, **prior_kwargs))
 
         mcmc.print_summary(exclude_deterministic=False)
 
@@ -240,7 +270,7 @@ for inpath in inpaths:
             ax = fig.axes[ind]
             xi = infer.scaling_exponent_ansatz(i, posterior['x'], posterior['C0'], posterior['beta'])
             nbins = min(100, max(10, int(0.5*len(xi)**0.5)))
-            ax.hist(xi, bins=nbins, histtype='step', density=True, label='seed=%d'%seed)
+            ax.hist(xi, bins=nbins, histtype='step', density=True, alpha=0.50, label='seed=%d'%seed)
 
         ### full chains
         for k in keys:
@@ -257,7 +287,7 @@ for inpath in inpaths:
             FIG.savefig(figname)
             plt.close(FIG)
 
-    fig.axes[0].legend(loc='best')
+    fig.axes[0].legend(loc='best', ncol=2)
 
     for ax in list(fig.axes) + list(figc.axes):
         ax.tick_params(
