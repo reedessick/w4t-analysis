@@ -43,8 +43,8 @@ prior_kwargs = dict()
 
 #---
 
-num_warmup  =  1000 # used to configure sampler
-num_samples = 50000
+num_warmup  =   5000 # used to configure sampler
+num_samples = 100000
 
 seeds = [
     (123, 'b', 'r'),
@@ -86,9 +86,9 @@ def xcb_posterior_kde(index, grids, kdes, **prior_kwargs):
 
 inpaths = []
 
-fields = ['vel'] # ['vel', 'mag']
-Ms = ['4'] # ['05', '2', '4', '10']
-MAs = ['4'] # ['01', '05', '1', '2', '4', '6', '8', '10']
+fields = ['vel', 'mag']
+Ms = ['05', '2', '4', '10']
+MAs = ['01', '05', '1', '2', '4', '6', '8', '10']
 
 for field in fields:
     for M in Ms:
