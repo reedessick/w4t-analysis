@@ -26,6 +26,7 @@ from jax import numpy as jnp
 import numpyro
 import numpyro.distributions as dist
 from numpyro.infer import (MCMC, NUTS, init_to_value)
+from numpyro.diagnostics import effective_sample_size
 
 numpyro.enable_x64() # improve default numerical precision
 
@@ -36,6 +37,8 @@ from w4t.utils import infer
 
 #-------------------------------------------------
 
+keys = ['C0', 'beta', 'x']
+
 min_scale = 16 # used to define bounds of averaged scaling exponent integral
 max_scale = 64
 
@@ -44,13 +47,31 @@ prior_kwargs = dict()
 #---
 
 num_warmup  =   5000 # used to configure sampler
-num_samples = 100000
+num_samples = 200000
 
 seeds = [
     (123, 'b', 'r'),
     (456, 'c', 'm'),
     (789, 'cornflowerblue', 'orange'),
 ]
+
+#-------------------------------------------------
+
+def thin(samples, keys, verbose=True):
+    min_neff = np.inf
+    for k in keys:
+        num_samples = len(samples[k])
+        neff = effective_sample_size(samples[k].reshape((1,num_samples)))
+        if verbose:
+            print('>>> neff(%s) = %.3f' % (k, neff))
+        min_neff = min(neff, min_neff)
+    if verbose:
+        print('min neff = %.3f' % min_neff)
+
+    skip = int(np.ceil(num_samples/min_neff))
+    if verbose:
+        print('retaining 1 out of every %d steps --> %d samples' % (skip, num_samples/skip))
+    return dict((k, v[::-skip][::-1]) for k, v in samples.items()) # do this fancy indexing to prefer later samples over earlier samples
 
 #-------------------------------------------------
 
@@ -86,9 +107,13 @@ def xcb_posterior_kde(index, grids, kdes, **prior_kwargs):
 
 inpaths = []
 
-fields = ['vel', 'mag']
-Ms = ['05', '2', '4', '10']
-MAs = ['01', '05', '1', '2', '4', '6', '8', '10']
+#fields = ['vel', 'mag']
+#Ms = ['05', '2', '4', '10']
+#MAs = ['01', '05', '1', '2', '4', '6', '8', '10']
+
+fields = ['vel']
+Ms = ['10']
+MAs = ['2']
 
 for field in fields:
     for M in Ms:
@@ -186,6 +211,9 @@ for inpath, title in inpaths:
 
     figc = None
 
+    combined_prior = dict((k, []) for k in keys)
+    combined_posterior = dict((k, []) for k in keys)
+
     for snd, (seed, prior_color, posterior_color) in enumerate(seeds):
 
         # sample from model
@@ -197,9 +225,13 @@ for inpath, title in inpaths:
             num_samples=num_samples,
         )
         mcmc.run(random.PRNGKey(seed), **prior_kwargs)
-        prior = mcmc.get_samples()
-
         mcmc.print_summary(exclude_deterministic=False)
+
+        prior = mcmc.get_samples()
+        prior = thin(prior, keys)
+
+        for k in keys:
+            combined_prior[k].append(prior[k])
 
         #---
 
@@ -216,11 +248,15 @@ for inpath, title in inpaths:
             num_samples=num_samples,
         )
         mcmc.run(random.PRNGKey(seed), *xcb_args, **prior_kwargs)
+        mcmc.print_summary(exclude_deterministic=False)
+
         posterior = mcmc.get_samples()
+        posterior = thin(posterior, keys)
 
         posterior.update(numpyro.infer.log_likelihood(xcb_posterior, posterior, *xcb_args, **prior_kwargs))
 
-        mcmc.print_summary(exclude_deterministic=False)
+        for k in keys:
+            combined_posterior[k].append(posterior[k])
 
         #---
 
@@ -250,8 +286,6 @@ for inpath, title in inpaths:
         # plot results
 
         ### corner plot
-        keys = ['C0', 'beta', 'x']
-
         figc = corner.corner(
             np.transpose([prior[k] for k in keys]),
             color=prior_color,
@@ -270,15 +304,15 @@ for inpath, title in inpaths:
             fig=figc,
         )
 
-        figc.text(0.75, 0.90-0.05*snd, 'seed=%s' % seed, color=prior_color, ha='center', va='top')        
-        figc.text(0.90, 0.90-0.05*snd, 'seed=%s' % seed, color=posterior_color, ha='center', va='top')        
+        figc.text(0.75, 0.90-0.05*snd, 'seed=%s\n%d samples' % (seed, len(prior[keys[0]])), color=prior_color, ha='center', va='top')
+        figc.text(0.90, 0.90-0.05*snd, 'seed=%s\n%d samples' % (seed, len(posterior[keys[0]])), color=posterior_color, ha='center', va='top')
 
         ### inferred values of xi(p)
         for ind, i in enumerate(index):
             ax = fig.axes[ind]
             xi = infer.scaling_exponent_ansatz(i, posterior['x'], posterior['C0'], posterior['beta'])
             nbins = min(100, max(10, int(0.5*len(xi)**0.5)))
-            ax.hist(xi, bins=nbins, histtype='step', density=True, alpha=0.50, label='seed=%d'%seed)
+            ax.hist(xi, bins=nbins, histtype='step', density=True, alpha=0.50, label='seed=%d\n%d samples'%(seed,len(xi)))
 
         ### full chains
         for k in keys:
@@ -297,7 +331,43 @@ for inpath, title in inpaths:
             FIG.savefig(figname)
             plt.close(FIG)
 
-    fig.axes[0].legend(loc='upper left', ncol=2)
+    for k in keys:
+        combined_prior[k] = np.concatenate(tuple(combined_prior[k]))
+        combined_posterior[k] = np.concatenate(tuple(combined_posterior[k]))
+
+    # add combined prior and posterior to corner plot
+    figc = corner.corner(
+        np.transpose([combined_prior[k] for k in keys]),
+        color='g',
+        labels=keys,
+        show_titles=True,
+        hist_kwargs=dict(density=True),
+        fig=figc,
+    )
+
+    figc = corner.corner(
+        np.transpose([combined_posterior[k] for k in keys]),
+        color='k',
+        labels=keys,
+        show_titles=True,
+        hist_kwargs=dict(density=True),
+        fig=figc,
+    )
+
+    # add combined posterior for xi
+    for ind, i in enumerate(index):
+        ax = fig.axes[ind]
+        xi = infer.scaling_exponent_ansatz(
+            i,
+            combined_posterior['x'],
+            combined_posterior['C0'],
+            combined_posterior['beta'],
+        )
+        nbins = min(100, max(10, int(0.5*len(xi)**0.5)))
+        ax.hist(xi, bins=nbins, histtype='step', density=True, alpha=0.50, label='combined\n%d samples'%(seed,len(xi)))
+
+    # decorate and save
+    fig.axes[0].legend(loc='upper left', ncol=3)
 
     for ax in list(fig.axes) + list(figc.axes):
         ax.tick_params(
