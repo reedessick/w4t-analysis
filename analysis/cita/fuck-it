@@ -107,13 +107,9 @@ def xcb_posterior_kde(index, grids, kdes, **prior_kwargs):
 
 inpaths = []
 
-#fields = ['vel', 'mag']
-#Ms = ['05', '2', '4', '10']
-#MAs = ['01', '05', '1', '2', '4', '6', '8', '10']
-
-fields = ['vel']
-Ms = ['10']
-MAs = ['2']
+fields = ['vel', 'mag']
+Ms = ['05', '2', '4', '10']
+MAs = ['01', '05', '1', '2', '4', '6', '8', '10']
 
 for field in fields:
     for M in Ms:
@@ -335,6 +331,26 @@ for inpath, title in inpaths:
         combined_prior[k] = np.concatenate(tuple(combined_prior[k]))
         combined_posterior[k] = np.concatenate(tuple(combined_posterior[k]))
 
+    # save results
+    outpath = inpath[:-4]+'-fi-combined.hdf'
+            
+    print('writing samples to: '+outpath)
+            
+    with h5py.File(outpath, 'w') as obj:
+        obj.attrs.create('inpath', inpath)
+        obj.attrs.create('num_warmup', num_warmup)
+        obj.attrs.create('num_samples', num_samples)
+        for k, v in prior_kwargs.items():
+            obj.attrs.create(k, v)
+    
+        grp = obj.create_group('prior')
+        for k, v in combined_prior.items():
+            grp.create_dataset(k, data=v)
+            
+        grp = obj.create_group('posterior')
+        for k, v in combined_posterior.items():
+            grp.create_dataset(k, data=v)
+
     # add combined prior and posterior to corner plot
     figc = corner.corner(
         np.transpose([combined_prior[k] for k in keys]),
@@ -364,7 +380,7 @@ for inpath, title in inpaths:
             combined_posterior['beta'],
         )
         nbins = min(100, max(10, int(0.5*len(xi)**0.5)))
-        ax.hist(xi, bins=nbins, histtype='step', density=True, alpha=0.50, label='combined\n%d samples'%(seed,len(xi)))
+        ax.hist(xi, bins=nbins, histtype='step', density=True, color='k', label='combined\n%d samples'%(len(xi)))
 
     # decorate and save
     fig.axes[0].legend(loc='upper left', ncol=3)
