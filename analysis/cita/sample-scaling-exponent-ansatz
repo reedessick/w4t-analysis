@@ -10,11 +10,11 @@ INDEX="1 2 3 4 5 6"
 MIN_SCALE=1
 MAX_SCALE=512
 
-NUM_WARMUP=5000
-NUM_SAMPLES=25000
+NUM_WARMUP=10000
+NUM_SAMPLES=500000
+#NUM_SAMPLES=50000
 
-#SEED=1234567890
-SEED=123456
+SEED=1234567890
 
 #---
 
@@ -25,7 +25,8 @@ REF_SCALE_MAX=64
 
 FLOWS=()
 
-for M in "05" "2" "4" "10"
+#for M in "05" "2" "4" "10"
+for M in "10"
 do
     for MA in "01" "05" "1" "2" "4" "6" "8" "10"
     do
@@ -33,11 +34,15 @@ do
     done
 done
 
+FLOWS=(M10MA2)
+SEED=123456
+
 #-------------------------------------------------
 
 for FLOW in ${FLOWS[@]}
 do
-    for FIELD in dens vel vort mag curr
+#    for FIELD in dens vel vort mag curr
+    for FIELD in vel
     do
         for METHOD in dsf # wsf
         do
@@ -53,7 +58,7 @@ do
 
             SL_SAMPLES="${FLOW}/${FLOW}_avrg_${FIELD}_${METHOD}-scaling-ansatz-${REF_SCALE}.hdf"
 
-            echo \
+#            echo \
             w4t-sample-scaling-exponent-ansatz \
                 $STRCFNC \
                 $SL_SAMPLES \
@@ -91,9 +96,21 @@ do
                 --verbose \
             || exit 1
 
+
+#            echo \
+            w4t-corner \
+                $SL_SAMPLES \
+                --fields "C0" "beta" "x" "x3i" "r6" \
+                --root posterior \
+                --title "$FLOW $FIELD $METHOD $REF_SCALE" \
+                --output-dir ${FLOW} \
+                --tag ${FLOW}_avrg_${FIELD}_${METHOD}_scaling-ansatz-everything-${REF_SCALE} \
+                --verbose \
+            || exit 1
+
             #---
 
-            echo \
+#            echo \
             w4t-plot-scaling-exponent-ansatz \
                 $STRCFNC \
                 $SL_SAMPLES \

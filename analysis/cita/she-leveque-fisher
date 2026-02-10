@@ -1,0 +1,56 @@
+"""a quick script to examine the Fisher information matrix for simple She-Leveque fits
+"""
+__author__ = "Reed Essick (reed.essick@gmail.com)"
+
+#-------------------------------------------------
+
+import numpy as np
+
+from argparse import ArgumentParser
+
+#-------------------------------------------------
+
+parser = ArgumentParser()
+
+parser.add_argument('C0', type=float)
+parser.add_argument('beta', type=float)
+parser.add_argument('x', type=float)
+
+parser.add_argument('-i', '--index', nargs='+', type=int)
+
+parser.add_argument('-s', '--sigma', default=0.1, type=float)
+
+parser.add_argument('-v', '--verbose', default=False, action='store_true')
+
+args = parser.parse_args()
+
+#-------------------------------------------------
+
+# compute fisher matrix elements
+# order matrix by C0, beta, x
+Gamma = np.zeros((3,3), dtype=float)
+
+for p in args.index:
+    dxidC = 1 - args.beta**(p/3.)
+    dxidb = -(p/3.)*args.C0*args.beta**(-1 + p/3.)
+    dxidx = -p/3.
+
+    dxi = [dxidC, dxidb, dxidx]
+
+    # compute elements
+    for i in range(3):
+        Gamma[i,i] += dxi[i]**2
+        for j in range(i):
+            Gamma[i,j] += dxi[i]*dxi[j]
+
+    # symmetrize
+    for i in range(3):
+        for j in range(i):
+            Gamma[j,i] = Gamma[i,j]
+
+Gamma /= args.sigma**2
+Cov = np.linalg.inv(Gamma)
+
+#------------------------
+
+# FIXME? plot uncertainty envelopes?

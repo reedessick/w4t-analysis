@@ -1,0 +1,280 @@
+#!/usr/bin/env python3
+
+"""a quick script to set up an inference that approximates scaling exponent uncertainty with a Gaussian
+"""
+__author__ = "Reed Essick (reed.essick@gmail.com)"
+
+#-------------------------------------------------
+
+import numpy as np
+
+import h5py
+
+import matplotlib
+matplotlib.use("Agg")
+from matplotlib import pyplot as plt
+plt.rcParams['text.usetex'] = True
+
+import corner
+
+#-----------
+
+import jax
+from jax import random
+from jax import numpy as jnp
+    
+import numpyro
+import numpyro.distributions as dist
+from numpyro.infer import (MCMC, NUTS, init_to_value)
+
+numpyro.enable_x64() # improve default numerical precision
+
+#------------
+
+from w4t.utils import io
+from w4t.utils import infer
+
+#-------------------------------------------------
+
+min_scale = 16 # used to define bounds of averaged scaling exponent integral
+max_scale = 64
+
+prior_kwargs = dict()
+
+#---
+
+num_warmup  =  1000 # used to configure sampler
+num_samples = 50000
+
+seeds = [
+    (123, 'b', 'r'),
+    (456, 'c', 'm'),
+    (789, 'cornflowerblue', 'orange'),
+]
+
+#-------------------------------------------------
+
+# set up model
+def xcb_prior(
+        min_C0=-1.0,
+        max_C0=+4.0,
+        min_x=-1.0,
+        max_x=+3.0,
+        min_beta=+0.0,
+        max_beta=+1.0,
+        **ignored
+    ):
+    x = numpyro.sample('x', dist.Uniform(min_x, max_x))
+    C0 = numpyro.sample('C0', dist.Uniform(min_C0, max_C0))
+    beta = numpyro.sample('beta', dist.Uniform(min_beta, max_beta))
+    return x, C0, beta
+
+#---
+
+def xcb_posterior(index, mean, stdv, **prior_kwargs):
+    x, C0, beta = xcb_prior(**prior_kwargs)                 # sample from prior
+    xi = infer.scaling_exponent_ansatz(index, x, C0, beta)  # compute means
+    numpyro.sample('data', dist.Normal(xi, stdv), obs=mean) # condition on data
+
+#-------------------------------------------------          
+
+inpaths = []
+
+for M in ['05', '2', '4', '10']:
+    for MA in ['01', '05', '1', '2', '4', '6', '8', '10']:
+        inpaths.append( 'M%sMA%s/M%sMA%s_avrg_vel_dsf-ansatz.hdf' % (M, MA, M, MA) )
+
+#------------------------
+
+for inpath in inpaths:
+
+    # load data
+    input_post, input_prior, scales, index, kwargs = io.load_structure_function_ansatz_samples(inpath, verbose=True)
+
+    # come up with approximations for marginal likelihoods
+    mean = []
+    stdv = []
+
+    fig = plt.figure(figsize=(4,2*len(index)))
+    plt.subplots_adjust(
+        left=0.10,
+        right=0.95,
+        bottom=0.05,
+        top=0.98,
+        hspace=0.50,
+    )
+
+    for ind, i in enumerate(index):
+        print('    computing posterior mean, stdv for index=%d with %d samples' % (i, len(input_post[i]['amp'])))
+    
+        samp = infer.averaged_logarithmic_derivative_ansatz(
+            min_scale,
+            max_scale,
+            input_post[i]['amp'],
+            input_post[i]['xi'],
+            input_post[i]['sl'],
+            input_post[i]['bl'],
+            input_post[i]['nl'],
+            input_post[i]['sh'],
+            input_post[i]['bh'],
+            input_post[i]['nh'],
+        )
+
+        # prior for xi that we're going to undo
+        # in practice, xi is constrained well compared to the mean so that weights are all about the same
+        w = 1./(np.exp(0.5*(input_post[i]['xi']-0)**2/3**2) / (2*np.pi * 3**2)**0.5)
+        w /= np.sum(w)
+
+        m = np.sum(w*samp)             # sample mean
+        s = np.sum(w*(samp-m)**2)**0.5 # sample stdv (sorta)
+
+        # compute averaged scaling exponent
+        mean.append(m)
+        stdv.append(s)
+
+        # add to sanity-check plot
+        ax = plt.subplot(len(index), 1, 1+ind)
+
+        nbins = min(100, max(10, int(0.5*len(samp)**0.5)))
+        ax.hist(samp, bins=nbins, histtype='step', density=True, weights=w, label='indep')
+
+        xlim = np.max(np.abs(mean[-1]-np.array(ax.get_xlim())))
+        x = np.linspace(-xlim+mean[-1], +xlim+mean[-1], 1001)
+        ax.plot(x, np.exp(-0.5*(x-mean[-1])**2/stdv[-1]**2)/(2*np.pi*stdv[-1]**2)**0.5, label='model')
+        ax.set_xlim(xmin=x[0], xmax=x[-1])
+
+        ax.set_xlabel(r'$\left<\frac{d \log S_\tau^{p=%d}}{d\log\tau}\right>$' % i)
+
+    # cast to arrays
+    mean = jnp.array(mean, dtype=float)
+    stdv = jnp.array(stdv, dtype=float)
+
+    #------------------------
+
+    figc = None
+
+    for snd, (seed, prior_color, posterior_color) in enumerate(seeds):
+
+        # sample from model
+        print('running sampler for prior with seed=%d for %d warmup and %d samples' % (seed, num_warmup, num_samples))
+
+        mcmc = MCMC(
+            NUTS(xcb_prior),
+            num_warmup=num_warmup,
+            num_samples=num_samples,
+        )
+        mcmc.run(random.PRNGKey(seed), **prior_kwargs)
+        prior = mcmc.get_samples()
+
+        mcmc.print_summary(exclude_deterministic=False)
+
+        #---
+
+        print('running sampler for posterior with seed=%d for %d warmup and %d samples' % (seed, num_warmup, num_samples))
+
+        mcmc = MCMC(
+            NUTS(xcb_posterior),
+            num_warmup=num_warmup,
+            num_samples=num_samples,
+        )
+        mcmc.run(random.PRNGKey(seed), index, mean, stdv, **prior_kwargs)
+        posterior = mcmc.get_samples()
+
+        posterior.update(numpyro.infer.log_likelihood(xcb_posterior, posterior, index, mean, stdv, **prior_kwargs))
+
+        mcmc.print_summary(exclude_deterministic=False)
+
+        #---
+
+        # save results
+        outpath = inpath[:-4]+'-fi-%d.hdf' % seed
+
+        print('writing samples to: '+outpath)
+
+        with h5py.File(outpath, 'w') as obj:
+            obj.attrs.create('inpath', inpath)
+            obj.attrs.create('num_warmup', num_warmup)
+            obj.attrs.create('num_samples', num_samples)
+            obj.attrs.create('seed', seed)
+            for k, v in prior_kwargs.items():
+                obj.attrs.create(k, v)
+
+            grp = obj.create_group('prior')
+            for k, v in prior.items():
+                grp.create_dataset(k, data=v)
+
+            grp = obj.create_group('posterior')
+            for k, v in posterior.items():
+                grp.create_dataset(k, data=v)
+
+        #------------------------
+
+        # plot results
+
+        ### corner plot
+        keys = ['C0', 'beta', 'x']
+
+        figc = corner.corner(
+            np.transpose([prior[k] for k in keys]),
+            color=prior_color,
+            labels=keys,
+            show_titles=True,
+            hist_kwargs=dict(density=True),
+            fig=figc,
+        )
+
+        figc = corner.corner(
+            np.transpose([posterior[k] for k in keys]),
+            color=posterior_color,
+            labels=keys,
+            show_titles=True,
+            hist_kwargs=dict(density=True),
+            fig=figc,
+        )
+
+        figc.text(0.75, 0.90-0.05*snd, 'seed=%s' % seed, color=prior_color, ha='center', va='top')        
+        figc.text(0.90, 0.90-0.05*snd, 'seed=%s' % seed, color=posterior_color, ha='center', va='top')        
+
+        ### inferred values of xi(p)
+        for ind, i in enumerate(index):
+            ax = fig.axes[ind]
+            xi = infer.scaling_exponent_ansatz(i, posterior['x'], posterior['C0'], posterior['beta'])
+            nbins = min(100, max(10, int(0.5*len(xi)**0.5)))
+            ax.hist(xi, bins=nbins, histtype='step', density=True, label='seed=%d'%seed)
+
+        ### full chains
+        for k in keys:
+            FIG = plt.figure()
+            ax = FIG.gca()
+
+            ax.plot(posterior[k], alpha=0.75)
+
+            ax.set_xlim(xmin=0, xmax=len(posterior[k]))
+            ax.set_ylabel(k)
+
+            figname = outpath[:-4]+'-%s.png' % k
+            print('saving: '+figname)
+            FIG.savefig(figname)
+            plt.close(FIG)
+
+    fig.axes[0].legend(loc='best')
+
+    for ax in list(fig.axes) + list(figc.axes):
+        ax.tick_params(
+            left=True,
+            right=True,
+            top=True,
+            bottom=True,
+            direction='in',
+            which='both',
+        )
+
+    figname = inpath[:-4]+'-fi-xi.png'
+    print('saving: '+figname)
+    fig.savefig(figname)
+    plt.close(fig)
+
+    figname = inpath[:-4]+'-%s.png' % ('-'.join('%d'%seed for seed,_,_ in seeds))
+    print('saving: '+figname)
+    figc.savefig(figname)
+    plt.close(figc)
