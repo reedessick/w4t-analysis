@@ -22,7 +22,8 @@ do
 #    for FIELD in dens vel vort mag curr
     for FIELD in vel mag
     do
-        for METHOD in dsf wsf
+#        for METHOD in dsf wsf
+        for METHOD in dsf
         do
 
             STRCFNC="${FLOW}/${FLOW}_avrg_${FIELD}_${METHOD}.hdf"
