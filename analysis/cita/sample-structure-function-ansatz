@@ -19,25 +19,27 @@ done
 
 for FLOW in ${FLOWS[@]}
 do
-    for FIELD in dens vel vort mag curr
+#    for FIELD in dens vel vort mag curr
+    for FIELD in vel mag
     do
         for METHOD in dsf wsf
         do
 
             STRCFNC="${FLOW}/${FLOW}_avrg_${FIELD}_${METHOD}.hdf"
-            SAMPLES="${FLOW}/${FLOW}_avrg_${FIELD}_${METHOD}-ansatz.hdf"
+            SAMPLES="${FLOW}/${FLOW}_avrg_${FIELD}_${METHOD}-ansatz-thinned.hdf"
 
             #---
 
-            echo \
+#            echo \
             w4t-sample-structure-function-ansatz \
                 $STRCFNC \
                 $SAMPLES \
                 --min-scale 1 \
                 --max-scale 512 \
-                --num-warmup 10000 \
-                --num-samples 10000 \
-                --seed 1234 \
+                --num-warmup    10000 \
+                --num-samples  100000 \
+                --seed 12 --seed 34 --seed 56 --seed 78 --seed 90 \
+                --num-segs 4 \
                 --verbose \
             || exit 1
 
@@ -51,7 +53,7 @@ do
                 --title "$FLOW $FIELD $METHOD" \
                 --max-num-samples 500 \
                 --output-dir ${FLOW} \
-                --tag ${FLOW}_avrg_${FIELD}_${METHOD} \
+                --tag ${FLOW}_avrg_${FIELD}_${METHOD}-thinned \
                 --Verbose \
             || exit 1
 

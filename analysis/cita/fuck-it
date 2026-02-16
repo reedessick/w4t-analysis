@@ -107,7 +107,9 @@ def xcb_posterior_kde(index, grids, kdes, **prior_kwargs):
 
 inpaths = []
 
-fields = ['vel', 'mag']
+#fields = ['vel', 'mag']
+fields = ['dens', 'vort', 'curr']
+
 Ms = ['05', '2', '4', '10']
 MAs = ['01', '05', '1', '2', '4', '6', '8', '10']
 

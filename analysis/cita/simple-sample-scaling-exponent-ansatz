@@ -1,0 +1,183 @@
+#!/bin/zsh
+
+# a quick script to fit the She-Leveque ansatz to scaline exponents extracted from the average structure functions
+# Reed Essick (reed.essick@gmail.com)
+
+#-------------------------------------------------
+
+INDEX="1 2 3 4 5 6"
+
+NUM_WARMUP=  1000
+NUM_SAMPLES=50000
+
+#---
+
+REF_SCALE_MIN=16
+REF_SCALE_MAX=64
+
+#-------------------------------------------------
+
+FLOWS=()
+
+for M in "05" "2" "4" "10"
+do
+    for MA in "01" "05" "1" "2" "4" "6" "8" "10"
+    do
+        FLOWS+=(M${M}MA${MA})
+    done
+done
+
+FLOWS=(M10MA2)
+
+#-------------------------------------------------
+
+for FLOW in ${FLOWS[@]}
+do
+#    for FIELD in dens vel vort mag curr
+    for FIELD in vel mag
+    do
+        for METHOD in dsf # wsf
+        do
+
+            STRCFNC="${FLOW}/${FLOW}_avrg_${FIELD}_${METHOD}.hdf"
+            SAMPLES="${FLOW}/${FLOW}_avrg_${FIELD}_${METHOD}-ansatz-thinned.hdf"
+
+            #------------
+
+            # process for an averaged dlogS/dlogs
+
+            REF_SCALE="${REF_SCALE_MIN}-${REF_SCALE_MAX}"
+
+            SL_SAMPLES="${FLOW}/${FLOW}_avrg_${FIELD}_${METHOD}-scaling-ansatz-${REF_SCALE}-thinned.hdf"
+
+#            echo \
+            w4t-simple-sample-scaling-exponent-ansatz \
+                $SAMPLES \
+                $SL_SAMPLES \
+                $REF_SCALE_MIN $REF_SCALE_MAX \
+                --index ${=INDEX} \
+                --num-warmup  $NUM_WARMUP \
+                --num-samples $NUM_SAMPLES \
+                --seed 12 --seed 34 --seed 56 --seed 78 --seed 90 \
+                --num-segs 4 \
+                --verbose \
+            || exit 1
+
+            #---
+
+#            echo \
+            w4t-corner \
+                $SL_SAMPLES \
+                --fields "C0" "beta" "x" \
+                --root prior \
+                --title "$FLOW $FIELD $METHOD $REF_SCALE" \
+                --output-dir ${FLOW} \
+                --tag ${FLOW}_avrg_${FIELD}_${METHOD}-thinned_scaling-ansatz-prior-${REF_SCALE} \
+                --verbose \
+            || exit 1
+
+#            echo \
+            w4t-corner \
+                $SL_SAMPLES \
+                --fields "C0" "beta" "x" \
+                --root posterior \
+                --title "$FLOW $FIELD $METHOD $REF_SCALE" \
+                --output-dir ${FLOW} \
+                --tag ${FLOW}_avrg_${FIELD}_${METHOD}-thinned_scaling-ansatz-${REF_SCALE} \
+                --verbose \
+            || exit 1
+
+
+#            echo \
+            w4t-corner \
+                $SL_SAMPLES \
+                --fields "C0" "beta" "x" "x3i" "r6" \
+                --root posterior \
+                --title "$FLOW $FIELD $METHOD $REF_SCALE" \
+                --output-dir ${FLOW} \
+                --tag ${FLOW}_avrg_${FIELD}_${METHOD}-thinned_scaling-ansatz-everything-${REF_SCALE} \
+                --verbose \
+            || exit 1
+
+            #---
+
+#            echo \
+            w4t-plot-scaling-exponent-ansatz \
+                $STRCFNC \
+                $SL_SAMPLES \
+                --structure-function-samples $SAMPLES \
+                --dlogSdlogs-ylim -1.0 5.0 \
+                --max-num-samples 1000 \
+                --title "$FLOW $FIELD $METHOD $REF_SCALE" \
+                --output-dir ${FLOW} \
+                --tag ${FLOW}_avrg_${FIELD}_${METHOD}_${REF_SCALE}-thinned \
+                --Verbose \
+            || exit 1
+
+
+            #------------
+
+            # process for individual reference scales
+
+#            for REF_SCALE in 16 32 64 128
+            for REF_SCALE in
+            do
+
+                SL_SAMPLES="${FLOW}/${FLOW}_avrg_${FIELD}_${METHOD}-scaling-ansatz-${REF_SCALE}-thinned.hdf"
+
+                echo \
+                w4t-simple-sample-scaling-exponent-ansatz \
+                    $SAMPLES \
+                    $SL_SAMPLES \
+                    $REF_SCALE \
+                    --index ${=INDEX} \
+                    --num-warmup  $NUM_WARMUP \
+                    --num-samples $NUM_SAMPLES \
+                    --seed 12 --seed 34 --seed 56 --seed 78 --seed 90 \
+                    --num-segs 4 \
+                    --verbose \
+                || exit 1
+
+                #---
+
+                echo \
+                w4t-corner \
+                    $SL_SAMPLES \
+                    --fields "C0" "beta" "x" \
+                    --root prior \
+                    --title "$FLOW $FIELD $METHOD $REF_SCALE" \
+                    --output-dir ${FLOW} \
+                    --tag ${FLOW}_avrg_${FIELD}_${METHOD}-thinned_scaling-ansatz-prior-${REF_SCALE} \
+                    --verbose \
+                || exit 1
+
+                echo \
+                w4t-corner \
+                    $SL_SAMPLES \
+                    --fields "C0" "beta" "x" \
+                    --root posterior \
+                    --title "$FLOW $FIELD $METHOD $REF_SCALE" \
+                    --output-dir ${FLOW} \
+                    --tag ${FLOW}_avrg_${FIELD}_${METHOD}-thinned_scaling-ansatz-${REF_SCALE} \
+                    --verbose \
+                || exit 1
+
+                #---
+
+#                echo \
+                w4t-plot-scaling-exponent-ansatz \
+                    $STRCFNC \
+                    $SL_SAMPLES \
+                    --structure-function-samples $SAMPLES \
+                    --dlogSdlogs-ylim -1.0 5.0 \
+                    --max-num-samples 1000 \
+                    --title "$FLOW $FIELD $METHOD $REF_SCALE" \
+                    --output-dir ${FLOW} \
+                    --tag ${FLOW}_avrg_${FIELD}_${METHOD}_${REF_SCALE}-thinned \
+                    --Verbose \
+                || exit 1
+
+            done
+        done
+    done
+done
