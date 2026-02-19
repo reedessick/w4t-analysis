@@ -91,6 +91,14 @@ These results are for the averagd scaling exponent computed between reference sc
 | 4  |<img src="M4MA01/w4t-corner_M4MA01_avrg_vel_dsf-thinned_scaling-ansatz-16-64.png">|<img src="M4MA05/w4t-corner_M4MA05_avrg_vel_dsf-thinned_scaling-ansatz-16-64.png">|<img src="M4MA1/w4t-corner_M4MA1_avrg_vel_dsf-thinned_scaling-ansatz-16-64.png">|<img src="M4MA2/w4t-corner_M4MA2_avrg_vel_dsf-thinned_scaling-ansatz-16-64.png">|<img src="M4MA4/w4t-corner_M4MA4_avrg_vel_dsf-thinned_scaling-ansatz-16-64.png">|<img src="M4MA6/w4t-corner_M4MA6_avrg_vel_dsf-thinned_scaling-ansatz-16-64.png">|<img src="M4MA8/w4t-corner_M4MA8_avrg_vel_dsf-thinned_scaling-ansatz-16-64.png">|<img src="M4MA10/w4t-corner_M4MA10_avrg_vel_dsf-thinned_scaling-ansatz-16-64.png">|
 | 10 |<img src="M10MA01/w4t-corner_M10MA01_avrg_vel_dsf-thinned_scaling-ansatz-16-64.png">|<img src="M10MA05/w4t-corner_M10MA05_avrg_vel_dsf-thinned_scaling-ansatz-16-64.png">|<img src="M10MA1/w4t-corner_M10MA1_avrg_vel_dsf-thinned_scaling-ansatz-16-64.png">|<img src="M10MA2/w4t-corner_M10MA2_avrg_vel_dsf-thinned_scaling-ansatz-16-64.png">|<img src="M10MA4/w4t-corner_M10MA4_avrg_vel_dsf-thinned_scaling-ansatz-16-64.png">|<img src="M10MA6/w4t-corner_M10MA6_avrg_vel_dsf-thinned_scaling-ansatz-16-64.png">|<img src="M10MA8/w4t-corner_M10MA8_avrg_vel_dsf-thinned_scaling-ansatz-16-64.png">|<img src="M10MA10/w4t-corner_M10MA10_avrg_vel_dsf-thinned_scaling-ansatz-16-64.png">|
 
+| M | 05 | 2  | 4  | 10 |
+|---|----|----|----|----|
+|<img src="heatmaps/she-leveque-heatmap_corner-M0.5_vel_016-064-thinned.png">|<img src="heatmaps/she-leveque-heatmap_corner-M2.0_vel_016-064-thinned.png">|<img src="heatmaps/she-leveque-heatmap_corner-M4.0_vel_016-064-thinned.png">|<img src="heatmaps/she-leveque-heatmap_corner-M10.0_vel_016-064-thinned.png">|
+
+| MA | 01 | 05 | 1 | 2 | 4 | 6 | 8 | 10 |
+|----|----|----|---|---|---|---|---|----|
+|<img src="heatmaps/she-leveque-heatmap_corner-MA0.1_vel_016-064-thinned.png">|<img src="heatmaps/she-leveque-heatmap_corner-MA0.5_vel_016-064-thinned.png">|<img src="heatmaps/she-leveque-heatmap_corner-MA1.0_vel_016-064-thinned.png">|<img src="heatmaps/she-leveque-heatmap_corner-MA2.0_vel_016-064-thinned.png">|<img src="heatmaps/she-leveque-heatmap_corner-MA4.0_vel_016-064-thinned.png">|<img src="heatmaps/she-leveque-heatmap_corner-MA6.0_vel_016-064-thinned.png">|<img src="heatmaps/she-leveque-heatmap_corner-MA8.0_vel_016-064-thinned.png">|<img src="heatmaps/she-leveque-heatmap_corner-MA10.0_vel_016-064-thinned.png">|
+
 #### chains 
 
 ##### C0
@@ -167,11 +175,11 @@ These results are for the averagd scaling exponent computed between reference sc
 
 | M | 05 | 2  | 4  | 10 |
 |---|----|----|----|----|
-|<img src="heatmaps/she-leveque-heatmap_corner-M0.5_mag_016-064-thinned.png">|
+|<img src="heatmaps/she-leveque-heatmap_corner-M0.5_mag_016-064-thinned.png">|<img src="heatmaps/she-leveque-heatmap_corner-M2.0_mag_016-064-thinned.png">|<img src="heatmaps/she-leveque-heatmap_corner-M4.0_mag_016-064-thinned.png">|<img src="heatmaps/she-leveque-heatmap_corner-M10.0_mag_016-064-thinned.png">|
 
 | MA | 01 | 05 | 1 | 2 | 4 | 6 | 8 | 10 |
 |----|----|----|---|---|---|---|---|----|
-|<img src="heatmaps/she-leveque-heatmap_corner-MA0.1_mag_016-064-thinned.png">|
+|<img src="heatmaps/she-leveque-heatmap_corner-MA0.1_mag_016-064-thinned.png">|<img src="heatmaps/she-leveque-heatmap_corner-MA0.5_mag_016-064-thinned.png">|<img src="heatmaps/she-leveque-heatmap_corner-MA1.0_mag_016-064-thinned.png">|<img src="heatmaps/she-leveque-heatmap_corner-MA2.0_mag_016-064-thinned.png">|<img src="heatmaps/she-leveque-heatmap_corner-MA4.0_mag_016-064-thinned.png">|<img src="heatmaps/she-leveque-heatmap_corner-MA6.0_mag_016-064-thinned.png">|<img src="heatmaps/she-leveque-heatmap_corner-MA8.0_mag_016-064-thinned.png">|<img src="heatmaps/she-leveque-heatmap_corner-MA10.0_mag_016-064-thinned.png">|
 
 #### chains 
 
