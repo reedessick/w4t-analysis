@@ -48,6 +48,7 @@ do
 #        echo \
         ./she-leveque-heatmap \
             ${=POST} \
+            --title $FIELD \
             --output-dir "heatmaps" \
             --tag ${FIELD}_${SCALE_TAG[$SCALE]} \
             --verbose \

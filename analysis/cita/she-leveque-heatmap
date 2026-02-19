@@ -15,6 +15,8 @@ matplotlib.use("Agg")
 from matplotlib import pyplot as plt
 plt.rcParams['text.usetex'] = True
 
+import corner
+
 from argparse import ArgumentParser
 
 ### non-standard libraries
@@ -68,6 +70,8 @@ parser = ArgumentParser()
 parser.add_argument('-p', '--posterior', nargs=3, type=str, default=[], action='append',
     help='e.g., -p M MA path/to/samples.hdf')
 
+parser.add_argument('--title', default='', type=str)
+
 parser.add_argument('-v', '--verbose', default=False, action='store_true')
 
 parser.add_argument('-o', '--output-dir', default='.', type=str)
@@ -115,8 +119,11 @@ for M, MA, path in args.posterior:
     else:
         assert np.all(scale == ref_scale), 'mismatch in reference scale!'
 
+    sel = (0 <= posterior['C0']) * (posterior['C0'] <= 3)
+
     data[(M, MA)] = dict(
-        posterior=posterior,
+        posterior=dict((k, v[sel]) for k, v in posterior.items()),
+        sel=sel,
 #        scales=scales,
         index=index,
         ref_sale=ref_scale,
@@ -164,7 +171,7 @@ for key, label, kwargs in [
             else:
                 anno[i][j] = ''
 
-    fig = heatmap(Ms, MAs, Zgrid, anno, title='ref_scale = %s\nmean %s' % (scale, label), **kwargs)
+    fig = heatmap(Ms, MAs, Zgrid, anno, title='%s\nref_scale = %s\nmean %s' % (args.title, scale, label), **kwargs)
 
     for figtype in args.figtype:
         figname = figtmp % (key, 'mean', figtype)
@@ -194,7 +201,7 @@ for key, label, kwargs in [
             else:
                 anno[i][j] = ''
             
-    fig = heatmap(Ms, MAs, Zgrid, anno, title='ref_scale = %s\nmedian %s' % (scale, label), **kwargs)
+    fig = heatmap(Ms, MAs, Zgrid, anno, title='%s\nref_scale = %s\nmedian %s' % (args.title, scale, label), **kwargs)
 
     for figtype in args.figtype:
         figname = figtmp % (key, 'median', figtype)
@@ -229,10 +236,97 @@ for key, label, kwargs in [
             else:
                 anno[i][j] = ''
 
-    fig = heatmap(Ms, MAs, Zgrid, anno, title='ref_scale = %s\nmaximum-likelihood %s' % (scale, label), **kwargs)
+    fig = heatmap(Ms, MAs, Zgrid, anno, title='%s\nref_scale = %s\nmaximum-likelihood %s' % (args.title, scale, label), **kwargs)
 
     for figtype in args.figtype:
         figname = figtmp % (key, 'mle', figtype)
+        if args.verbose:
+            print('        saving: '+figname)
+        fig.savefig(figname, dpi=args.dpi)
+    plt.close(fig)
+
+#------------------------
+
+    # make a corner plot with all the data overlaid
+if args.verbose:
+    print('plotting overlaid corner plot')
+
+keys = ['C0', 'beta', 'x']
+labels = ['$C_0$', '$\\beta$', '$x$']
+#ranges = [(0, 3), (0, 1), (0, 2)]
+ranges = None
+
+for M in Ms:
+    ind = 0
+    fig = None
+
+    for MA in MAs:
+        fig = corner.corner(
+            np.transpose([data[(M,MA)]['posterior'][key] for key in keys]),
+            labels=labels,
+            range=ranges,
+            color='C%d'%ind,
+            hist_kwargs=dict(density=True),
+            fig=fig,
+        )
+        fig.text(0.90, 0.90-0.03*ind, '$\mathcal{M}_A = %s$' % MA, color='C%d'%ind, ha='right', va='top')
+        ind += 1
+
+    fig.suptitle('%s\n$\mathcal{M} = %s$' % (args.title, M))
+
+    for ax in fig.axes:
+        ax.tick_params(
+            left=True,
+            right=True,
+            top=True,
+            bottom=True,
+            direction='in',
+            which='both',
+        )
+
+    figtmp = os.path.join(args.output_dir, os.path.basename(__file__)+'_corner-M%s'%(M)+args.tag+'-thinned.%s')
+
+    for figtype in args.figtype:
+        figname = figtmp % (figtype)
+        if args.verbose:
+            print('        saving: '+figname)
+        fig.savefig(figname, dpi=args.dpi)
+    plt.close(fig)
+
+#---
+
+for MA in MAs:
+    ind = 0
+    fig = None
+        
+    for M in Ms:
+        fig = corner.corner(
+            np.transpose([data[(M,MA)]['posterior'][key] for key in keys]),
+            labels=labels,
+            range=ranges,
+            color='C%d'%ind,
+            hist_kwargs=dict(density=True),
+            fig=fig,
+        )
+        fig.text(0.90, 0.90-0.03*ind, '$\mathcal{M} = %s$' % M, color='C%d'%ind, ha='right', va='top')
+        ind += 1
+    
+    fig.suptitle('%s\n$\mathcal{M}_A = %s$' % (args.title, MA)) 
+
+    for ax in fig.axes:
+        ax.tick_params(
+            left=True,
+            right=True,
+            top=True,
+            bottom=True,
+            direction='in',
+            which='both',
+        )
+    
+    figtmp = os.path.join(args.output_dir, os.path.basename(__file__)+'_corner-MA%s'%(MA)+args.tag+'-thinned.%s')
+    
+    for figtype in args.figtype:
+        figname = figtmp % (figtype)
         if args.verbose:
             print('        saving: '+figname)
         fig.savefig(figname, dpi=args.dpi)
