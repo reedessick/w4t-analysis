@@ -27,8 +27,6 @@ do
     done
 done
 
-FLOWS=(M05MA01)
-
 #-------------------------------------------------
 
 for FLOW in ${FLOWS[@]}
@@ -106,13 +104,12 @@ do
 
             # process for individual reference scales
 
-#            for REF_SCALE in 16 32 64 128
-            for REF_SCALE in
+            for REF_SCALE in 16 32 64 128
             do
 
                 SL_SAMPLES="${FLOW}/${FLOW}_avrg_${FIELD}_${METHOD}-scaling-ansatz-${REF_SCALE}-thinned.hdf"
 
-                echo \
+#                echo \
                 w4t-simple-sample-scaling-exponent-ansatz \
                     $SAMPLES \
                     $SL_SAMPLES \
@@ -151,7 +148,7 @@ do
 
                 #---
 
-                echo \
+#                echo \
                 w4t-plot-simple-scaling-exponent-ansatz \
                     $SL_SAMPLES \
                     --structure-function-samples $SAMPLES \
