@@ -107,7 +107,8 @@ for M, MA, path in args.posterior:
     if args.verbose:
         print("loading posterior samples for M=%4.1f, MA=%4.1f from %s" % (M, MA, path))
 
-    posterior, _, scales, index, ref_scale, kwargs = io.load_scaling_exponent_ansatz_samples(path)
+#    posterior, _, scales, index, ref_scale, kwargs = io.load_scaling_exponent_ansatz_samples(path)
+    posterior, _, index, ref_scale, kwargs = io.load_simple_scaling_exponent_ansatz_samples(path)
 
     if scale is None:
         scale = ref_scale
@@ -116,7 +117,7 @@ for M, MA, path in args.posterior:
 
     data[(M, MA)] = dict(
         posterior=posterior,
-        scales=scales,
+#        scales=scales,
         index=index,
         ref_sale=ref_scale,
         **kwargs
@@ -135,7 +136,8 @@ MAs = np.array(sorted(MAs), dtype=float)
 Zgrid = np.empty((len(Ms), len(MAs)), dtype=float) # use this to generate plots
 anno = [[[] for _ in range(len(MAs))] for _ in range(len(Ms))]
 
-figtmp = os.path.join(args.output_dir, os.path.basename(__file__)+'_%s_%s'+args.tag+'.%s')
+#figtmp = os.path.join(args.output_dir, os.path.basename(__file__)+'_%s_%s'+args.tag+'.%s')
+figtmp = os.path.join(args.output_dir, os.path.basename(__file__)+'_%s_%s'+args.tag+'-thinned.%s')
 
 for key, label, kwargs in [
         ('C0',   r'$C_0$',   dict(vmin=0, vmax=3, cmap='Reds')),
@@ -213,7 +215,8 @@ for key, label, kwargs in [
         for j, MA in enumerate(MAs):
             if (M, MA) in data:
                 # find the max likelihood sample
-                like = np.sum(np.sum(data[(M,MA)]['posterior']['mom'], axis=2), axis=1)
+#                like = np.sum(np.sum(data[(M,MA)]['posterior']['mom'], axis=2), axis=1)
+                like = np.sum([data[(M,MA)]['posterior']['data_%d'%ind] for ind in data[(M,MA)]['index']], axis=0)
                 m = data[(M,MA)]['posterior'][key][np.argmax(like)]
 
                 Zgrid[i,j] = m
