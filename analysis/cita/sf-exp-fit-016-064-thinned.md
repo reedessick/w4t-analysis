@@ -9,7 +9,7 @@ Violin plots are the posterior distributions of the logarithmic derivative of ou
 
 *Importantly*, fits are conducted in 2 ways.
 The left-hand side of the violins (unfilled) represent separate fits for the scaling exponent at each order `p`.
-The right-hand side of the vilins (filled) represent a simultaneous fit for all scaling exponents for all orders `p` based on the She-Leveque ansatz
+The right-hand side of the violins (filled) represent a simultaneous fit for all scaling exponents for all orders `p` based on the She-Leveque ansatz
 ```math
   \frac{d\log S^p_\tau}{d\log\tau} = \left(\frac{p}{3}\right)(1-x) + C_0 \left(1-\beta^{p/3}\right)
 ```
