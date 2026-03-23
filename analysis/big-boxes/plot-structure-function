@@ -26,8 +26,9 @@ parser = ArgumentParser()
 parser.add_argument('dat', nargs='+', type=str,
     help='paths to .dat files that contain structure functions')
 
-parser.add_argument('--index', type=int, required=True,
+parser.add_argument('--index', type=int, required=True, default=[], action='append',
     help='fit structure functions for this index')
+
 parser.add_argument('--long-or-trsv', type=str, required=True,
     help='must be one of either "long" or "trsv"')
 
@@ -39,9 +40,11 @@ parser.add_argument('--min-scale', default=0.0, type=float)
 parser.add_argument('--max-scale', default=0.5, type=float)
 
 parser.add_argument('-v', '--verbose', default=False, action='store_true')
+parser.add_argument('-V', '--Verbose', default=False, action='store_true')
 
 parser.add_argument('-o', '--output-dir', default='.', type=str)
 parser.add_argument('-t', '--tag', default='', type=str)
+parser.add_argument('--title', default=None, type=str)
 
 args = parser.parse_args()
 
@@ -50,28 +53,45 @@ os.makedirs(args.output_dir, exist_ok=True)
 if args.tag:
     args.tag = "_"+args.tag
 
+args.verbose |= args.Verbose
+
 #-------------------------------------------------
-
-# load data
-scales, mom, stdv = utils.load_structure_function_dat(
-    args.dat,
-    args.index,
-    args.long_or_trsv,
-    min_rtol=args.min_rtol,
-    min_atol=args.min_atol,
-    min_scale=args.min_scale,
-    max_scale=args.max_scale,
-    verbose=args.verbose,
-)
-
-#------------------------
 
 fig = plt.figure()
 ax = fig.gca()
 
-ax.plot(scales, mom, color='k', marker='.')
-for S in [1, 2, 3]:
-    ax.fill_between(scales, mom-S*stdv, mom+S*stdv, color='k', alpha=0.10)
+for index in args.index:
+
+    if args.verbose:
+        print('processing index=%d' % index)
+
+    # load data
+    scales, mom, stdv = utils.load_structure_function_dat(
+        args.dat,
+        index,
+        args.long_or_trsv,
+        min_rtol=args.min_rtol,
+        min_atol=args.min_atol,
+        min_scale=args.min_scale,
+        max_scale=args.max_scale,
+        verbose=args.Verbose,
+    )
+
+    #--------------------
+
+    color = 'C%d' % index
+
+    ax.plot(scales, mom, color=color, alpha=0.75, linewidth=1, label='$p=%d$' % index)
+
+#    for l, m, s in zip(scales, mom, stdv):
+#        ax.plot([l]*2, [m-3*s, m+3*s], color=color, linewidth=1)
+
+    for S in [1, 2, 3]:
+        ax.fill_between(scales, mom-S*stdv, mom+S*stdv, color=color, alpha=0.10)
+
+# decorate
+
+ax.legend(loc='best', ncol=2)
 
 ax.set_xscale('log')
 ax.set_yscale('log')
@@ -79,7 +99,10 @@ ax.set_yscale('log')
 ax.set_xlim(xmin=np.min(scales), xmax=np.max(scales))
 
 ax.set_xlabel('scales')
-ax.set_ylabel('SF(%s, order=%02d)' % (args.long_or_trsv, args.index))
+ax.set_ylabel('$S^p_\mathrm{%s}$' % (args.long_or_trsv))
+
+if args.title is not None:
+    ax.set_title(args.title)
 
 ax.tick_params(
     left=True,
@@ -91,6 +114,13 @@ ax.tick_params(
 )
 
 ax.grid(True, which='both')
+
+plt.subplots_adjust(
+    left=0.10,
+    right=0.95,
+    bottom=0.10,
+    top=0.90,
+)
 
 figname = os.path.join(args.output_dir, 'plot-structure-function%s.png' % args.tag)
 if args.verbose:

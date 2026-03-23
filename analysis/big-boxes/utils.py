@@ -50,17 +50,19 @@ def load_structure_function_dat(
 
     for path in paths:
         if verbose:
-            print('loading structure function estimates from: '+path)
-            data = np.genfromtxt(path, names=True)
-            if scales is None:
-                scales = data['01_GridStag']
-            else:
-                assert np.all(scales == data['01_GridStag']), 'mismatch in increments'
-            key = [key for key in data.dtype.names if (tmp in key)]
-            assert len(key) == 1
-            key = key[0]
+            print('loading structure function estimates for (%s, order=%d) from: %s' & \
+                (long_or_trsv, index, path))
 
-            mom.append(data[key])
+        data = np.genfromtxt(path, names=True)
+        if scales is None:
+            scales = data['01_GridStag']
+        else:
+            assert np.all(scales == data['01_GridStag']), 'mismatch in increments'
+        key = [key for key in data.dtype.names if (tmp in key)]
+        assert len(key) == 1
+        key = key[0]
+
+        mom.append(data[key])
 
     # compute stdv
     if len(paths) > 1:
@@ -71,12 +73,18 @@ def load_structure_function_dat(
         stdv = np.zeros_like(scales, dtype=float)
 
     if min_rtol > 0: # set a lower limit on the relative uncertainty
+        if verbose:
+            print('limitting stdv to rtol >= %.3e' % min_rtol)
         stdv = np.where(stdv < min_rtol*mom, min_rtol*mom, stdv)
 
     if min_atol > 0:
+        if verbose:
+            print('limitting stdv to atol >= %.3e' % min_atol)
         stdv = np.where(stdv < min_atol, min_atol, stdv)
 
     # return
+    if verbose:
+        print('downselecting to scales between %.3e - %.3e' % (min_scale, max_scale))
     sel = (min_scale <= scales) * (scales < max_scale)
     return scales[sel], mom[sel], stdv[sel]
 

@@ -40,12 +40,15 @@ parser.add_argument('--num-segs', default=1, type=int)
 parser.add_argument('--prior-kwarg', nargs=2, type=str, default=[], action='append')
 
 parser.add_argument('-v', '--verbose', default=False, action='store_true')
+parser.add_argument('-V', '--Verbose', default=False, action='store_true')
 
 parser.add_argument('--outpath', default='sample-structure-function.hdf', type=str)
 
 args = parser.parse_args()
 
 args.prior_kwarg = dict((k, float(v)) for k, v in args.prior_kwarg)
+
+args.verbose |= args.Verbose
 
 #-------------------------------------------------
 
@@ -58,7 +61,7 @@ scales, mom, stdv = utils.load_structure_function_dat(
     min_atol=args.min_atol,
     min_scale=args.min_scale,
     max_scale=args.max_scale,
-    verbose=args.verbose,
+    verbose=args.Verbose,
 )
 
 #------------------------
