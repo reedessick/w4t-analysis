@@ -7,13 +7,27 @@
 
 INDEX="1 2 3 4 5 6"
 
-NUM_WARMUP=1000
-NUM_SAMPLES=50000
+NUM_WARMUP=5000
+NUM_SAMPLES=100000
 
 #---
 
-REF_SCALE_MIN=16
-REF_SCALE_MAX=64
+#REF_SCALE_MIN=8
+#REF_SCALE_MAX=32
+
+#REF_SCALE_MIN=16
+#REF_SCALE_MAX=64
+
+REF_SCALE_MIN=32
+REF_SCALE_MAX=128
+
+#---
+
+#EXTRA_TAG=""
+#EXTRA_ARG=""
+
+EXTRA_TAG="_wideprior"
+EXTRA_ARG="--prior-kwarg max_C0 10.0 --prior-kwarg max_x 5.0"
 
 #-------------------------------------------------
 
@@ -44,7 +58,7 @@ do
 
             # process for an averaged dlogS/dlogs
 
-            REF_SCALE="${REF_SCALE_MIN}-${REF_SCALE_MAX}"
+            REF_SCALE="${REF_SCALE_MIN}-${REF_SCALE_MAX}${EXTRA_TAG}"
 
             SL_SAMPLES="${FLOW}/${FLOW}_avrg_${FIELD}_${METHOD}-scaling-ansatz-${REF_SCALE}-thinned.hdf"
 
@@ -54,10 +68,11 @@ do
                 $SL_SAMPLES \
                 $REF_SCALE_MIN $REF_SCALE_MAX \
                 --index ${=INDEX} \
+                ${=EXTRA_ARG} \
                 --num-warmup  $NUM_WARMUP \
                 --num-samples $NUM_SAMPLES \
                 --seed 12 --seed 34 --seed 56 --seed 78 --seed 90 \
-                --num-segs 4 \
+                --num-segs 10 \
                 --verbose \
             || exit 1
 
@@ -107,14 +122,15 @@ do
             for REF_SCALE in 16 32 64 128
             do
 
-                SL_SAMPLES="${FLOW}/${FLOW}_avrg_${FIELD}_${METHOD}-scaling-ansatz-${REF_SCALE}-thinned.hdf"
+                SL_SAMPLES="${FLOW}/${FLOW}_avrg_${FIELD}_${METHOD}-scaling-ansatz-${REF_SCALE}${EXTRA_TAG}-thinned.hdf"
 
-#                echo \
+                echo \
                 w4t-simple-sample-scaling-exponent-ansatz \
                     $SAMPLES \
                     $SL_SAMPLES \
                     $REF_SCALE \
                     --index ${=INDEX} \
+                    ${=EXTRA_ARG} \
                     --num-warmup  $NUM_WARMUP \
                     --num-samples $NUM_SAMPLES \
                     --seed 12 --seed 34 --seed 56 --seed 78 --seed 90 \
@@ -131,7 +147,7 @@ do
                     --root prior \
                     --title "$FLOW $FIELD $METHOD $REF_SCALE" \
                     --output-dir ${FLOW} \
-                    --tag ${FLOW}_avrg_${FIELD}_${METHOD}-thinned_scaling-ansatz-prior-${REF_SCALE} \
+                    --tag ${FLOW}_avrg_${FIELD}_${METHOD}-thinned_scaling-ansatz-prior-${REF_SCALE}${EXTRA_TAG} \
                     --verbose \
                 || exit 1
 
@@ -142,13 +158,13 @@ do
                     --root posterior \
                     --title "$FLOW $FIELD $METHOD $REF_SCALE" \
                     --output-dir ${FLOW} \
-                    --tag ${FLOW}_avrg_${FIELD}_${METHOD}-thinned_scaling-ansatz-${REF_SCALE} \
+                    --tag ${FLOW}_avrg_${FIELD}_${METHOD}-thinned_scaling-ansatz-${REF_SCALE}${EXTRA_TAG} \
                     --verbose \
                 || exit 1
 
                 #---
 
-#                echo \
+                echo \
                 w4t-plot-simple-scaling-exponent-ansatz \
                     $SL_SAMPLES \
                     --structure-function-samples $SAMPLES \
@@ -156,7 +172,7 @@ do
                     --max-num-samples 1000 \
                     --title "$FLOW $FIELD $METHOD $REF_SCALE" \
                     --output-dir ${FLOW} \
-                    --tag ${FLOW}_avrg_${FIELD}_${METHOD}_${REF_SCALE}-thinned \
+                    --tag ${FLOW}_avrg_${FIELD}_${METHOD}_${REF_SCALE}${EXTRA_TAG}-thinned \
                     --Verbose \
                 || exit 1
 
