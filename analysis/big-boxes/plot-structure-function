@@ -1,12 +1,18 @@
 #!/usr/bin/env python3
 
-"""a quick script to sample a structure function ansatz for data based on a very big box
+"""plot the structure function data
 """
 __author__ = "Reed Essick (reed.essick@gmail.com)"
 
 #-------------------------------------------------
 
+import os
+
 import numpy as np
+
+import matplotlib
+matplotlib.use("Agg")
+from matplotlib import pyplot as plt
 
 from argparse import ArgumentParser
 
@@ -32,20 +38,17 @@ parser.add_argument('--min-atol', default=1e-3, type=float)
 parser.add_argument('--min-scale', default=0.0, type=float)
 parser.add_argument('--max-scale', default=0.5, type=float)
 
-parser.add_argument('--num-warmup', default=1000, type=int)
-parser.add_argument('--num-samples', default=10000, type=int)
-parser.add_argument('--seed', default=[], type=int, action='append', required=True)
-parser.add_argument('--num-segs', default=1, type=int)
-
-parser.add_argument('--prior-kwarg', nargs=2, type=str, default=[], action='append')
-
 parser.add_argument('-v', '--verbose', default=False, action='store_true')
 
-parser.add_argument('--outpath', default='sample-structure-function.hdf', type=str)
+parser.add_argument('-o', '--output-dir', default='.', type=str)
+parser.add_argument('-t', '--tag', default='', type=str)
 
 args = parser.parse_args()
 
-args.prior_kwarg = dict((k, float(v)) for k, v in args.prior_kwarg)
+os.makedirs(args.output_dir, exist_ok=True)
+
+if args.tag:
+    args.tag = "_"+args.tag
 
 #-------------------------------------------------
 
@@ -63,34 +66,34 @@ scales, mom, stdv = utils.load_structure_function_dat(
 
 #------------------------
 
-# sample from posterior
-posterior, prior = utils.sample_structure_function_ansatz(
-    scales,
-    mom,
-    stdv,
-    num_warmup=args.num_warmup,
-    num_samples=args.num_samples,
-    seed=args.seed,
-    num_segs=args.num_segs,
-    verbose=args.verbose,
-    **args.prior_kwarg
+fig = plt.figure()
+ax = fig.gca()
+
+ax.plot(scales, mom, color='k', marker='.')
+for S in [1, 2, 3]:
+    ax.fill_between(scales, mom-S*stdv, mom+S*stdv, color='k', alpha=0.10)
+
+ax.set_xscale('log')
+ax.set_yscale('log')
+
+ax.set_xlim(xmin=np.min(scales), xmax=np.max(scales))
+
+ax.set_xlabel('scales')
+ax.set_ylabel('SF(%s, order=%02d)' % (args.long_or_trsv, args.index))
+
+ax.tick_params(
+    left=True,
+    right=True,
+    top=True,
+    bottom=True,
+    which='both',
+    direction='in',
 )
 
-#------------------------
+ax.grid(True, which='both')
 
-# save data
-utils.write_structure_function_samples(
-    args.outpath,
-    posterior,
-    prior,
-    index=args.index,
-    long_or_trsv=args.long_or_trsv,
-    dat=args.dat,
-    min_rtol=args.min_rtol,
-    min_atol=args.min_atol,
-    num_warmup=args.num_warmup,
-    num_samples=args.num_samples,
-    seed=args.seed,
-    num_segs=args.num_segs,
-    verbose=args.verbose,
-)
+figname = os.path.join(args.output_dir, 'plot-structure-function%s.png' % args.tag)
+if args.verbose:
+    print('saving: '+figname)
+fig.savefig(figname, dpi=200)
+plt.close(fig)

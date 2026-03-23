@@ -1,0 +1,21 @@
+#!/bin/zsh
+
+for field in vel mag
+do
+
+    echo \
+    ./plot-structure-function \
+        strufu_10k/${field}/EXTREME_Turb_hdf5_plt_cnt_0016_downsampled_sf_${field}s.dat \
+        --index 1 \
+        --long-or-trsv trsv \
+        --min-scale 0.0 \
+        --max-scale 0.5 \
+        --tag ${field}-trsv-01 \
+        --verbose \
+    || exit 1
+
+    echo \
+    ./sample-structure-function-ansatz EXTREME_Turb_hdf5_plt_cnt_0005_downsampled_sf_vels.dat --index 1 --seed 123 -v --long-or-trsv trsv \
+    || exit 1
+
+done

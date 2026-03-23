@@ -8,6 +8,8 @@ __author__ = "Reed Essick (reed.essick@gmail.com)"
 
 import numpy as np
 
+import h5py
+
 import jax
 from jax import random
 from jax import numpy as jnp
@@ -23,8 +25,85 @@ from w4t.utils.infer import thin
 
 #-------------------------------------------------
 
+DEFAULT_NUM_WARMUP = 1000
+DEFAULT_NUM_SAMPLES = 1000
+DEFAULT_NUM_RETAINED = np.inf
+
+DEFAULT_SEED = 123
+
+#-------------------------------------------------
+
+def load_structure_function_dat(
+        paths,
+        index,
+        long_or_trsv,
+        min_rtol=0.0,
+        min_atol=0.0,
+        min_scale=0.0,
+        max_scale=0.5,
+        verbose=False,
+    ):
+    scales = None
+    mom = []
+
+    tmp = 'SF%sorder%02d' % (long_or_trsv, index)
+
+    for path in paths:
+        if verbose:
+            print('loading structure function estimates from: '+path)
+            data = np.genfromtxt(path, names=True)
+            if scales is None:
+                scales = data['01_GridStag']
+            else:
+                assert np.all(scales == data['01_GridStag']), 'mismatch in increments'
+            key = [key for key in data.dtype.names if (tmp in key)]
+            assert len(key) == 1
+            key = key[0]
+
+            mom.append(data[key])
+
+    # compute stdv
+    if len(paths) > 1:
+        stdv = np.std(mom, axis=0) / len(paths)**0.5 # stdv between files scaled by the number of files
+        mom = np.mean(mom, axis=0)
+    else:
+        mom = mom[0]
+        stdv = np.zeros_like(scales, dtype=float)
+
+    if min_rtol > 0: # set a lower limit on the relative uncertainty
+        stdv = np.where(stdv < min_rtol*mom, min_rtol*mom, stdv)
+
+    if min_atol > 0:
+        stdv = np.where(stdv < min_atol, min_atol, stdv)
+
+    # return
+    sel = (min_scale <= scales) * (scales < max_scale)
+    return scales[sel], mom[sel], stdv[sel]
+
+#------------------------
+
+def write_structure_function_samples(
+        path,
+        posterior,
+        prior,
+        verbose=False,
+        **meta
+    ):
+    if verbose:
+        print('writing samples to: '+path)
+
+    with h5py.File(path, 'w') as obj:
+        for k, v in meta.items():
+            obj.attrs.create(k, v)
+
+        for grp, data in [(obj.create_group('posterior'), posterior), (obj.create_group('prior'), prior)]:
+            for k, v in data.items():
+                grp.create_dataset(k, data=v)
+
+#-------------------------------------------------
+
 def structure_function_ansatz(scales, amp, xi, s1, b1, n1, s2, b2, n2, s3, b3, n3):
-    return amp * scales**xi * (1 + (s1/scales)**n1)**(b1/n1) * (1 + (s2/scales)**n2)**(b2/n2) * (1 + (s3/scales)**n3))**(b3/n3)
+    return amp * scales**xi * (1 + (s1/scales)**n1)**(b1/n1) * (1 + (s2/scales)**n2)**(b2/n2) * (1 + (s3/scales)**n3)**(b3/n3)
 
 #------------------------
 
@@ -155,9 +234,10 @@ def sample_structure_function_ansatz(
         try:
             mcmc = MCMC(NUTS(_sample_sfa_prior), num_warmup=num_warmup, num_samples=num_samples)
             mcmc.run(random.PRNGKey(s), **prior_kwargs)
-        except:
+        except Exception as e:
             if verbose:
                 print('>>> sampler failed!')
+                print(e)
             continue
 
         if verbose:
@@ -191,9 +271,10 @@ def sample_structure_function_ansatz(
         try:
             mcmc = MCMC(NUTS(sample_posterior), num_warmup=num_warmup, num_samples=num_samples)
             mcmc.run(random.PRNGKey(s), mom)
-        except:
+        except Exception as e:
             if verbose:
                 print('>>> sampler failed!')
+                print(e)
             continue
 
         if verbose:
