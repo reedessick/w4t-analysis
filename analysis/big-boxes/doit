@@ -1,6 +1,10 @@
 #!/bin/zsh
 
-rtol=1e-1
+#---
+
+rtol=1e-1 # required to get the sampler to find anything reasonable. May need to anneal to burn in correctly...
+
+#---
 
 for long_or_trsv in trsv long
 do
@@ -34,8 +38,8 @@ do
                 --min-rtol $rtol \
                 --outpath structure-function-ansatz-samples-${field}-${long_or_trsv}-${index}.hdf \
                 --seed 123 --seed 456 --seed 789 \
-                --num-warmup 1000 \
-                --num-samples 10000 \
+                --num-warmup 500 \
+                --num-samples 1000 \
                 --num-segs 5 \
                 --verbose \
             || exit 1

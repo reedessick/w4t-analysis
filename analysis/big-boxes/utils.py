@@ -94,6 +94,9 @@ def write_structure_function_samples(
         path,
         posterior,
         prior,
+        scales,
+        mom,
+        stdv,
         verbose=False,
         **meta
     ):
@@ -104,14 +107,19 @@ def write_structure_function_samples(
         for k, v in meta.items():
             obj.attrs.create(k, v)
 
+        grp = obj.create_group('data')
+        grp.create_dataset('scales', data=scales)
+        grp.create_dataset('mom', data=mom)
+        grp.create_dataset('stdv', data=stdv)
+
         for grp, data in [(obj.create_group('posterior'), posterior), (obj.create_group('prior'), prior)]:
             for k, v in data.items():
                 grp.create_dataset(k, data=v)
 
 #-------------------------------------------------
 
-def structure_function_ansatz(scales, amp, xi, s1, b1, n1, s2, b2, n2, s3, b3, n3):
-    return amp * scales**xi * (1 + (s1/scales)**n1)**(b1/n1) * (1 + (s2/scales)**n2)**(b2/n2) * (1 + (s3/scales)**n3)**(b3/n3)
+def structure_function_ansatz(scales, amp, xi, s1, b1, n1, s2, b2, n2, s3, b3, n3, ref_scale=0.5):
+    return amp * (scales/ref_scale)**xi * (1 + (s1/scales)**n1)**(b1/n1) * (1 + (s2/scales)**n2)**(b2/n2) * (1 + (s3/scales)**n3)**(b3/n3)
 
 #------------------------
 
@@ -208,6 +216,7 @@ def sample_structure_function_ansatz(
         seed=[DEFAULT_SEED],
         verbose=False,
         num_segs=1,
+        ref_scale=0.5,
         **prior_kwargs
     ):
     """sample for parameters of a simple model for structure function scaling
@@ -223,7 +232,7 @@ def sample_structure_function_ansatz(
         params = _sample_sfa_prior(**prior_kwargs)
 
         # compute expected value
-        sf = structure_function_ansatz(scales, *params)
+        sf = structure_function_ansatz(scales, *params, ref_scale=ref_scale)
 
         # compare to observed data
         numpyro.sample('mom', dist.Normal(sf, std), obs=obs)
