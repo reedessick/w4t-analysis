@@ -1,34 +1,43 @@
 #!/bin/zsh
 
+rtol=1e-1
+
 for long_or_trsv in trsv long
 do
 
     for field in vel mag
     do
 
-        #echo \
+#        echo \
         ./plot-structure-function \
             strufu_10k/${field}/EXTREME_Turb_hdf5_plt_cnt_*_downsampled_sf_${field}s.dat \
             --index 1 --index 2 --index 3 --index 4 --index 5 --index 6 --index 7 --index 8 \
             --long-or-trsv $long_or_trsv \
             --min-scale 0.0 \
             --max-scale 0.5 \
+            --min-rtol $rtol \
             --tag ${field}-${long_or_trsv} \
             --title "$field $long_or_trsv" \
             --verbose \
         || exit 1
 
-    for index in 01 02 03 04 05 06 07 08 09 10
-    do
+        for index in 01 02 03 04 05 06 07 08 09 10
+        do
 
-            echo \
+#            echo \
             ./sample-structure-function-ansatz \
                 strufu_10k/${field}/EXTREME_Turb_hdf5_plt_cnt_*_downsampled_sf_${field}s.dat \
                 --index ${index} \
                 --long-or-trsv $long_or_trsv \
                 --min-scale 0.0 \
                 --max-scale 0.5 \
+                --min-rtol $rtol \
                 --outpath structure-function-ansatz-samples-${field}-${long_or_trsv}-${index}.hdf \
+                --seed 123 --seed 456 --seed 789 \
+                --num-warmup 1000 \
+                --num-samples 10000 \
+                --num-segs 5 \
+                --verbose \
             || exit 1
 
         done
