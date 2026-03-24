@@ -27,6 +27,8 @@ parser.add_argument('samples', type=str, nargs="+")
 
 parser.add_argument('--max-num-samples', default=500, type=int)
 
+parser.add_argument('--num-sigma', default=3, type=float)
+
 parser.add_argument('-o', '--output-dir', default='.', type=str)
 parser.add_argument('-t', '--tag', default='', type=str)
 
@@ -49,18 +51,18 @@ for ind, path in enumerate(args.samples):
 
     color = 'C%d' % meta['index']
 
-    ax.plot(
-        data['scales'],
-        data['mom'],
-        linestyle='none',
-        marker='o',
-        markerfacecolor='none',
-        markeredgecolor='k',
-        label='p=%d' % meta['index'],
-    )
+#    ax.plot(
+#        data['scales'],
+#        data['mom'],
+#        linestyle='none',
+#        marker='o',
+#        markerfacecolor='none',
+#        markeredgecolor='k',
+#        label='p=%d' % meta['index'],
+#    )
 
-    low = data['mom'] - data['stdv']
-    high = data['mom'] + data['stdv']
+    low = data['mom'] - args.num_sigma*data['stdv']
+    high = data['mom'] + args.num_sigma*data['stdv']
     for i, s in enumerate(data['scales']):
         ax.plot([s]*2, [low[i], high[i]], color='k')
 

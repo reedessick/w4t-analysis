@@ -3,6 +3,7 @@
 #---
 
 rtol=5e-2 # required to get the sampler to find anything reasonable. May need to anneal to burn in correctly...
+num_grid=51
 
 #---
 
@@ -23,8 +24,8 @@ do
             --index 1 --index 2 --index 3 --index 4 --index 5 --index 6 --index 7 --index 8 --index 9 --index 10 \
             --long-or-trsv $long_or_trsv \
             --min-scale 2e-3 \
-            --max-scale 5e-1 \
-            --logspace-scales 51 \
+            --max-scale 4e-1 \
+            --logspace-scales $num_grid \
             --min-rtol $rtol \
             --output-dir $OUTDIR \
             --tag ${field}-${long_or_trsv} \
@@ -32,8 +33,11 @@ do
             --verbose \
         || exit 1
 
-        for index in 01 02 03 04 05 06 07 08 09 10
+        #for index in 01 02 03 04 05 06 07 08 09 10
+        for index in 01 02 03
         do
+
+            echo ">>> SAMPLING FOR INDEX=${INDEX}"
 
             outpath="${OUTDIR}/structure-function-ansatz-samples-${field}-${long_or_trsv}-${index}.hdf"
 
@@ -43,18 +47,18 @@ do
                 --index ${index} \
                 --long-or-trsv $long_or_trsv \
                 --min-scale 2e-3 \
-                --max-scale 5e-1 \
-                --logspace-scales 51 \
+                --max-scale 4e-1 \
+                --logspace-scales $num_grid \
                 --min-rtol $rtol \
                 --outpath $outpath \
-                --seed 1 --seed 2 --seed 3 \
+                --seed 1 --seed 2 --seed 3 --seed 4 --seed 5 \
                 --num-warmup 500 \
                 --num-samples 50000 \
                 --num-segs 5 \
                 --verbose \
             || exit 1
 
-# --seed 4 --seed 5 --seed 6 --seed 7 --seed 8 --seed 9 \
+#                --seed 6 --seed 7 --seed 8 --seed 9 \
 
 #            echo \
             w4t-corner \
@@ -68,6 +72,17 @@ do
                 --verbose \
             || exit 1 
 
+#            echo \
+            w4t-corner \
+                $outpath \
+                -f amp xi s1 b1 n1 s2 b2 n2 s3 b3 n3 \
+                --log amp --log s1 --log s2 --log s3 \
+                --root prior \
+                --title "$field $long_or_trsv $index" \
+                --output-dir $OUTDIR \
+                --tag ${field}-${long_or_trsv}-${index}-prior \
+                --verbose \
+            || exit 1
         done
 
 #        echo \

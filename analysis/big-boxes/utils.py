@@ -89,17 +89,18 @@ def load_structure_function_dat(
             print('resampling %d linearly-spaced points to %d logarithmically spaced points' % \
                 (len(scales), logspace_scales))
 
-        new_scales = np.logspace(np.log10(np.min(scales)), np.log10(np.max(scales)), logspace_scales)
+        new_scales = np.logspace(np.log10(min_scale), np.log10(max_scale), logspace_scales)
         mom = np.interp(new_scales, scales, mom)
         stdv = np.interp(new_scales, scales, stdv)
         scales = new_scales
 
-    if verbose:
-        print('downselecting to scales between %.3e - %.3e' % (min_scale, max_scale))
-    sel = (min_scale <= scales) * (scales < max_scale)
-    scales = scales[sel]
-    mom = mom[sel]
-    stdv = stdv[sel]
+    else:
+        if verbose:
+            print('downselecting to scales between %.3e - %.3e' % (min_scale, max_scale))
+        sel = (min_scale <= scales) * (scales < max_scale)
+        scales = scales[sel]
+        mom = mom[sel]
+        stdv = stdv[sel]
 
     # return
     return scales, mom, stdv
@@ -163,19 +164,19 @@ def _sample_sfa_prior(
         mean_b1=0.0,
         stdv_b1=3.0,
         min_n1=+0.0,
-        max_n1=+3.0,
+        max_n1=+5.0,
         mean_logs2=np.log(4e-2),
         stdv_logs2=1.0,
         mean_b2=0.0,
         stdv_b2=3.0,
         min_n2=+0.0, 
-        max_n2=+3.0,
+        max_n2=+5.0,
         mean_logs3=np.log(3e-1),
         stdv_logs3=1.0,
         mean_b3=0.0,
         stdv_b3=3.0,
         min_n3=+0.0,
-        max_n3=+3.0,
+        max_n3=+5.0,
         **ignored
     ):  
     amp = _sample_sfa_amp_prior(mean_logamp=mean_logamp, stdv_logamp=stdv_logamp)
@@ -226,7 +227,7 @@ def _sample_sfa_sbn_prior(
         mean_b=-3.0,
         stdv_b=+3.0,
         min_n=0.0,
-        max_n=3.0,
+        max_n=5.0,
         suffix='',
     ):
     s = numpyro.sample("s"+suffix, dist.LogNormal(mean_logs, stdv_logs))

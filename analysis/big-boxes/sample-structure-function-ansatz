@@ -79,8 +79,8 @@ posterior, prior = utils.sample_structure_function_ansatz(
     seed=args.seed,
     num_segs=args.num_segs,
     verbose=args.verbose,
-    ref_scale=scales[-1],
-    mean_logamp=np.log(mom[-1]),
+    ref_scale=args.max_scale,
+    mean_logamp=np.log(np.interp(args.max_scale, scales, mom)),
     stdv_logamp=1.0,
     **args.prior_kwarg
 )
