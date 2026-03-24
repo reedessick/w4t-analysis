@@ -2,24 +2,31 @@
 
 #---
 
-rtol=1e-1 # required to get the sampler to find anything reasonable. May need to anneal to burn in correctly...
+rtol=5e-2 # required to get the sampler to find anything reasonable. May need to anneal to burn in correctly...
 
 #---
 
-for long_or_trsv in trsv long
+for field in vel # mag
 do
 
-    for field in vel mag
+    for long_or_trsv in trsv # long
     do
+
+        OUTDIR="fits/${field}-$long_or_trsv"
+        mkdir -p $OUTDIR
+
+        #---
 
 #        echo \
         ./plot-structure-function \
             strufu_10k/${field}/EXTREME_Turb_hdf5_plt_cnt_*_downsampled_sf_${field}s.dat \
-            --index 1 --index 2 --index 3 --index 4 --index 5 --index 6 --index 7 --index 8 \
+            --index 1 --index 2 --index 3 --index 4 --index 5 --index 6 --index 7 --index 8 --index 9 --index 10 \
             --long-or-trsv $long_or_trsv \
-            --min-scale 0.0 \
-            --max-scale 0.5 \
+            --min-scale 2e-3 \
+            --max-scale 5e-1 \
+            --logspace-scales 51 \
             --min-rtol $rtol \
+            --output-dir $OUTDIR \
             --tag ${field}-${long_or_trsv} \
             --title "$field $long_or_trsv" \
             --verbose \
@@ -28,23 +35,48 @@ do
         for index in 01 02 03 04 05 06 07 08 09 10
         do
 
+            outpath="${OUTDIR}/structure-function-ansatz-samples-${field}-${long_or_trsv}-${index}.hdf"
+
 #            echo \
             ./sample-structure-function-ansatz \
                 strufu_10k/${field}/EXTREME_Turb_hdf5_plt_cnt_*_downsampled_sf_${field}s.dat \
                 --index ${index} \
                 --long-or-trsv $long_or_trsv \
-                --min-scale 0.0 \
-                --max-scale 0.5 \
+                --min-scale 2e-3 \
+                --max-scale 5e-1 \
+                --logspace-scales 51 \
                 --min-rtol $rtol \
-                --outpath structure-function-ansatz-samples-${field}-${long_or_trsv}-${index}.hdf \
-                --seed 123 --seed 456 --seed 789 \
+                --outpath $outpath \
+                --seed 1 --seed 2 --seed 3 \
                 --num-warmup 500 \
-                --num-samples 1000 \
+                --num-samples 50000 \
                 --num-segs 5 \
                 --verbose \
             || exit 1
 
+# --seed 4 --seed 5 --seed 6 --seed 7 --seed 8 --seed 9 \
+
+#            echo \
+            w4t-corner \
+                $outpath \
+                -f amp xi s1 b1 n1 s2 b2 n2 s3 b3 n3 \
+                --log amp --log s1 --log s2 --log s3 \
+                --root posterior \
+                --title "$field $long_or_trsv $index" \
+                --output-dir $OUTDIR \
+                --tag ${field}-${long_or_trsv}-${index} \
+                --verbose \
+            || exit 1 
+
         done
+
+#        echo \
+        ./plot-structure-function-ansatz \
+            $OUTDIR/structure-function-ansatz-samples-${field}-${long_or_trsv}-??.hdf \
+            --output-dir $OUTDIR \
+            --tag ${field}-${long_or_trsv} \
+            --verbose \
+        || exit 1
 
     done
 

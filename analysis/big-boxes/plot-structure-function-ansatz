@@ -1,0 +1,125 @@
+#!/usr/bin/env python3
+
+"""plot the structure function ansatz
+"""
+__author__ = "Reed Essick (reed.essick@gmail.com)"
+
+#-------------------------------------------------
+
+import os
+
+import numpy as np
+
+import matplotlib
+matplotlib.use("Agg")
+from matplotlib import pyplot as plt
+
+from argparse import ArgumentParser
+
+### non-standard libraries
+import utils
+
+#-------------------------------------------------
+
+parser = ArgumentParser()
+
+parser.add_argument('samples', type=str, nargs="+")
+
+parser.add_argument('--max-num-samples', default=500, type=int)
+
+parser.add_argument('-o', '--output-dir', default='.', type=str)
+parser.add_argument('-t', '--tag', default='', type=str)
+
+parser.add_argument('-v', '--verbose', default=False, action='store_true')
+
+args = parser.parse_args()
+
+os.makedirs(args.output_dir, exist_ok=True)
+
+if args.tag:
+    args.tag = "_"+args.tag
+
+#-------------------------------------------------
+
+fig = plt.figure()
+ax = fig.gca()
+
+for ind, path in enumerate(args.samples):
+    post, prior, data, meta = utils.load_structure_function_samples(path, verbose=args.verbose)
+
+    color = 'C%d' % meta['index']
+
+    ax.plot(
+        data['scales'],
+        data['mom'],
+        linestyle='none',
+        marker='o',
+        markerfacecolor='none',
+        markeredgecolor='k',
+        label='p=%d' % meta['index'],
+    )
+
+    low = data['mom'] - data['stdv']
+    high = data['mom'] + data['stdv']
+    for i, s in enumerate(data['scales']):
+        ax.plot([s]*2, [low[i], high[i]], color='k')
+
+    scales = np.logspace(np.log10(np.min(data['scales'])), np.log10(np.max(data['scales'])), 101)
+
+    num = len(post['xi'])
+    step = int(np.ceil(num / args.max_num_samples))
+    i = 0
+    while i < num:
+        ax.plot(
+            scales,
+            utils.structure_function_ansatz(
+                scales,
+                post['amp'][i],
+                post['xi'][i],
+                post['s1'][i],
+                post['b1'][i],
+                post['n1'][i],
+                post['s2'][i],
+                post['b2'][i],
+                post['n2'][i],
+                post['s3'][i],
+                post['b3'][i],
+                post['n3'][i],
+            ),
+            color=color,
+            alpha=0.01,
+            zorder=-10,
+        )
+
+        i += step
+
+    ax.set_xlim(xmin=np.min(scales), xmax=np.max(scales))
+
+ax.set_xlabel('scale')
+ax.set_ylabel('$S^p$')
+
+ax.set_xscale('log')
+ax.set_yscale('log')
+
+ax.tick_params(
+    left=True,
+    right=True,
+    top=True,
+    bottom=True,
+    which='both',
+    direction='in',
+)
+
+ax.grid(True, which='both')
+
+plt.subplots_adjust(
+    left=0.10,
+    right=0.95,
+    bottom=0.10,
+    top=0.90,
+)
+
+figname = os.path.join(args.output_dir, 'plot-structure-function-ansatz%s.png' % args.tag)
+print('saving: '+figname)
+fig.savefig(figname, dpi=200)
+plt.close(fig)

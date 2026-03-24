@@ -39,6 +39,8 @@ parser.add_argument('--min-atol', default=1e-3, type=float)
 parser.add_argument('--min-scale', default=0.0, type=float)
 parser.add_argument('--max-scale', default=0.5, type=float)
 
+parser.add_argument('--logspace-scales', default=None, type=int)
+
 parser.add_argument('-v', '--verbose', default=False, action='store_true')
 parser.add_argument('-V', '--Verbose', default=False, action='store_true')
 
@@ -74,6 +76,7 @@ for index in args.index:
         min_atol=args.min_atol,
         min_scale=args.min_scale,
         max_scale=args.max_scale,
+        logspace_scales=args.logspace_scales,
         verbose=args.Verbose,
     )
 
@@ -81,7 +84,7 @@ for index in args.index:
 
     color = 'C%d' % index
 
-    ax.plot(scales, mom, color=color, alpha=0.75, linewidth=1, label='$p=%d$' % index)
+    ax.plot(scales, mom, color=color, alpha=0.75, linewidth=1, label='$p=%d$' % index, marker='.', markersize=1)
 
 #    for l, m, s in zip(scales, mom, stdv):
 #        ax.plot([l]*2, [m-3*s, m+3*s], color=color, linewidth=1)

@@ -32,6 +32,8 @@ parser.add_argument('--min-atol', default=1e-3, type=float)
 parser.add_argument('--min-scale', default=0.0, type=float)
 parser.add_argument('--max-scale', default=0.5, type=float)
 
+parser.add_argument('--logspace-scales', default=None, type=int)
+
 parser.add_argument('--num-warmup', default=1000, type=int)
 parser.add_argument('--num-samples', default=10000, type=int)
 parser.add_argument('--seed', default=[], type=int, action='append', required=True)
@@ -61,6 +63,7 @@ scales, mom, stdv = utils.load_structure_function_dat(
     min_atol=args.min_atol,
     min_scale=args.min_scale,
     max_scale=args.max_scale,
+    logspace_scales=args.logspace_scales,
     verbose=args.Verbose,
 )
 
@@ -77,7 +80,7 @@ posterior, prior = utils.sample_structure_function_ansatz(
     num_segs=args.num_segs,
     verbose=args.verbose,
     ref_scale=scales[-1],
-    mean_logamp=np.log(mom[-1]), ### FIXME! 
+    mean_logamp=np.log(mom[-1]),
     stdv_logamp=1.0,
     **args.prior_kwarg
 )
@@ -89,9 +92,7 @@ utils.write_structure_function_samples(
     args.outpath,
     posterior,
     prior,
-    scales,
-    mom,
-    stdv,
+    dict(scales=scales, mom=mom, stdv=stdv),
     index=args.index,
     long_or_trsv=args.long_or_trsv,
     dat=args.dat,

@@ -41,6 +41,7 @@ def load_structure_function_dat(
         min_atol=0.0,
         min_scale=0.0,
         max_scale=0.5,
+        logspace_scales=False,
         verbose=False,
     ):
     scales = None
@@ -82,11 +83,26 @@ def load_structure_function_dat(
             print('limitting stdv to atol >= %.3e' % min_atol)
         stdv = np.where(stdv < min_atol, min_atol, stdv)
 
-    # return
+    # interpolate to get fewer data
+    if logspace_scales is not None:
+        if verbose:
+            print('resampling %d linearly-spaced points to %d logarithmically spaced points' % \
+                (len(scales), logspace_scales))
+
+        new_scales = np.logspace(np.log10(np.min(scales)), np.log10(np.max(scales)), logspace_scales)
+        mom = np.interp(new_scales, scales, mom)
+        stdv = np.interp(new_scales, scales, stdv)
+        scales = new_scales
+
     if verbose:
         print('downselecting to scales between %.3e - %.3e' % (min_scale, max_scale))
     sel = (min_scale <= scales) * (scales < max_scale)
-    return scales[sel], mom[sel], stdv[sel]
+    scales = scales[sel]
+    mom = mom[sel]
+    stdv = stdv[sel]
+
+    # return
+    return scales, mom, stdv
 
 #------------------------
 
@@ -94,9 +110,7 @@ def write_structure_function_samples(
         path,
         posterior,
         prior,
-        scales,
-        mom,
-        stdv,
+        data,
         verbose=False,
         **meta
     ):
@@ -107,19 +121,35 @@ def write_structure_function_samples(
         for k, v in meta.items():
             obj.attrs.create(k, v)
 
-        grp = obj.create_group('data')
-        grp.create_dataset('scales', data=scales)
-        grp.create_dataset('mom', data=mom)
-        grp.create_dataset('stdv', data=stdv)
-
-        for grp, data in [(obj.create_group('posterior'), posterior), (obj.create_group('prior'), prior)]:
+        for grp, data in [
+                (obj.create_group('posterior'), posterior),
+                (obj.create_group('prior'), prior),
+                (obj.create_group('data'), data),
+            ]:
             for k, v in data.items():
                 grp.create_dataset(k, data=v)
+
+#---
+
+def load_structure_function_samples(path, verbose=False):
+    if verbose:
+        print('loading structure function samples from: '+path)
+
+    with h5py.File(path, 'r') as obj:
+        posterior = dict((k, v[:]) for k, v in obj['posterior'].items())
+        prior = dict((k, v[:]) for k, v in obj['prior'].items())
+        data = dict((k, v[:]) for k, v in obj['data'].items())
+        meta = dict(obj.attrs.items())
+
+    return posterior, prior, data, meta
 
 #-------------------------------------------------
 
 def structure_function_ansatz(scales, amp, xi, s1, b1, n1, s2, b2, n2, s3, b3, n3, ref_scale=0.5):
-    return amp * (scales/ref_scale)**xi * (1 + (s1/scales)**n1)**(b1/n1) * (1 + (s2/scales)**n2)**(b2/n2) * (1 + (s3/scales)**n3)**(b3/n3)
+    return amp * (scales/ref_scale)**xi \
+        * (1 + (scales/s1)**n1)**(b1/n1) \
+        * (1 + (scales/s2)**n2)**(b2/n2) \
+        * (1 + (scales/s3)**n3)**(b3/n3)
 
 #------------------------
 
@@ -132,20 +162,20 @@ def _sample_sfa_prior(
         stdv_logs1=1.0, 
         mean_b1=0.0,
         stdv_b1=3.0,
-        mean_n1=-3.0,
-        stdv_n1=+3.0,
+        min_n1=+0.0,
+        max_n1=+3.0,
         mean_logs2=np.log(4e-2),
         stdv_logs2=1.0,
         mean_b2=0.0,
         stdv_b2=3.0,
-        mean_n2=-3.0, 
-        stdv_n2=+3.0,
+        min_n2=+0.0, 
+        max_n2=+3.0,
         mean_logs3=np.log(3e-1),
         stdv_logs3=1.0,
         mean_b3=0.0,
         stdv_b3=3.0,
-        mean_n3=-3.0,
-        stdv_n3=+3.0,
+        min_n3=+0.0,
+        max_n3=+3.0,
         **ignored
     ):  
     amp = _sample_sfa_amp_prior(mean_logamp=mean_logamp, stdv_logamp=stdv_logamp)
@@ -157,8 +187,8 @@ def _sample_sfa_prior(
         stdv_logs=stdv_logs1,
         mean_b=mean_b1,
         stdv_b=stdv_b1,
-        mean_n=mean_n1,
-        stdv_n=stdv_n1,
+        min_n=min_n1,
+        max_n=max_n1,
         suffix='1',
     )
 
@@ -167,8 +197,8 @@ def _sample_sfa_prior(
         stdv_logs=stdv_logs2,
         mean_b=mean_b2,
         stdv_b=stdv_b2,
-        mean_n=mean_n2,
-        stdv_n=stdv_n2,
+        min_n=min_n2,
+        max_n=max_n2,
         suffix='2',
     )
 
@@ -177,8 +207,8 @@ def _sample_sfa_prior(
         stdv_logs=stdv_logs3,
         mean_b=mean_b3,
         stdv_b=stdv_b3,
-        mean_n=mean_n3,
-        stdv_n=stdv_n3,
+        min_n=min_n3,
+        max_n=max_n3,
         suffix='3',
     )
 
@@ -193,15 +223,15 @@ def _sample_sfa_xi_prior(mean_xi=0.0, stdv_xi=3.0):
 def _sample_sfa_sbn_prior(
         mean_logs=np.log(10),
         stdv_logs=1.0,
-        mean_b=0.0,
-        stdv_b=3.0,
-        mean_n=0.0,
-        stdv_n=3.0,
+        mean_b=-3.0,
+        stdv_b=+3.0,
+        min_n=0.0,
+        max_n=3.0,
         suffix='',
     ):
     s = numpyro.sample("s"+suffix, dist.LogNormal(mean_logs, stdv_logs))
     b = numpyro.sample("b"+suffix, dist.Normal(mean_b, stdv_b))
-    n = numpyro.sample("n"+suffix, dist.Normal(mean_n, stdv_n))
+    n = numpyro.sample("n"+suffix, dist.Uniform(min_n, max_n))
     return s, b, n
 
 #------------------------
