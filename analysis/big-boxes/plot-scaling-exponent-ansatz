@@ -88,9 +88,62 @@ while i < num:
 
 # plot violins
 
-raise NotImplementedError('''
-make violins
-''')
+for _p in range(1, 11):
+
+    color = 'C%d' % _p
+
+    # plot the She-Leveque fit
+
+    samp = utils.scaling_exponent_ansatz(_p, post['x'], post['C0'], post['beta'])
+    kde_stdv = 1.06 * np.std(samp) / len(samp)**0.2
+
+    grid = np.min(samp), np.max(samp)
+    d = 0.5*(grid[1]-grid[0])
+    grid = np.linspace(grid[0]-d, grid[1]+d, 101)
+
+    kde = np.sum(
+        [np.exp(-0.5*(S-grid)**2/kde_stdv**2)/(2*np.pi*kde_stdv**2)**0.5 for S in samp],
+        axis=0,
+    )
+    kde *= 0.25/np.max(kde)
+
+    ax.fill_betweenx(grid, _p*np.ones_like(grid), _p+kde, color=color, alpha=0.50)
+
+# plot independent violins
+
+for _p, samples in indep_post.items():
+
+    color = 'C%d' % _p
+
+    samp = utils.averaged_logarithmic_derivative_ansatz(
+        meta['ref_scale'][0],
+        meta['ref_scale'][1],
+        samples['amp'],
+        samples['xi'],
+        samples['s1'],
+        samples['b1'],
+        samples['n1'],
+        samples['s2'],
+        samples['b2'],
+        samples['n2'],
+        samples['s3'],
+        samples['b3'],
+        samples['n3'],
+    )
+
+    kde_stdv = 1.06 * np.std(samp) / len(samp)**0.2
+
+    grid = np.min(samp), np.max(samp)
+    d = 0.5*(grid[1]-grid[0])
+    grid = np.linspace(grid[0]-d, grid[1]+d, 101)
+
+    kde = np.sum(
+        [np.exp(-0.5*(S-grid)**2/kde_stdv**2)/(2*np.pi*kde_stdv**2)**0.5 for S in samp],
+        axis=0,
+    )
+    kde *= 0.25/np.max(kde)
+
+    ax.plot(_p-kde, grid, color=color, alpha=0.50)
 
 #---
 

@@ -25,6 +25,8 @@ parser = ArgumentParser()
 
 parser.add_argument('samples', type=str, nargs="+")
 
+parser.add_argument('--vband', nargs=2, default=[], type=float, action='append')
+
 parser.add_argument('--max-num-samples', default=500, type=int)
 
 parser.add_argument('--num-sigma', default=3, type=float)
@@ -147,6 +149,8 @@ for ind, path in enumerate(args.samples):
     xmin = min(xmin, np.min(scales))
     xmax = max(xmax, np.max(scales))
 
+#---
+
 ax.set_xlim(xmin=xmin, xmax=xmax)
 
 ax.set_xlabel('$s$')
@@ -157,6 +161,11 @@ ax.set_yscale('log')
 
 if args.title is not None:
     ax.set_title(args.title)
+
+ylim = ax.get_ylim()
+for l, h in args.vband:
+    ax.fill_between([l, h], [ylim[0]]*2, [ylim[1]]*2, color='grey', alpha=0.25, zorder=-10)
+ax.set_ylim(ylim)
 
 ax.tick_params(
     left=True,
@@ -185,6 +194,11 @@ AX.set_xscale('log')
 
 if args.title is not None:
     AX.set_title(args.title)
+
+ylim = AX.get_ylim()
+for l, h in args.vband:
+    AX.fill_between([l, h], [ylim[0]]*2, [ylim[1]]*2, color='grey', alpha=0.25, zorder=-10)
+AX.set_ylim(ylim)
 
 AX.tick_params(
     left=True,
