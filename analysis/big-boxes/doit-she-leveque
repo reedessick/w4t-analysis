@@ -39,7 +39,7 @@ do
 
     outpath=$OUTDIR/scaling-exponent-ansatz-samples-${field}-${long_or_trsv}-${ref_low}_${ref_high}.hdf
 
-    echo \
+#    echo \
     ./simple-sample-scaling-exponent-ansatz \
         $OUTDIR/structure-function-ansatz-samples-${field}-${long_or_trsv}-??.hdf \
         --ref-scale $ref_low $ref_high \
@@ -49,6 +49,8 @@ do
         --seed 6 --seed 7 --seed 8 --seed 9 --seed 0 \
         --num-segs 5 \
         --verbose \
+        --prior-kwarg min_C0 0 \
+        --prior-kwarg max_C0 3 \
     || exit 1
 
 #    echo \
@@ -123,7 +125,7 @@ do
 
     outpath=$OUTDIR/scaling-exponent-ansatz-samples-${field}-${long_or_trsv}-${ref_low}_${ref_high}.hdf
 
-    echo \
+#    echo \
     ./simple-sample-scaling-exponent-ansatz \
         $OUTDIR/structure-function-ansatz-samples-${field}-${long_or_trsv}-??.hdf \
         --ref-scale $ref_low $ref_high \
@@ -133,6 +135,8 @@ do
         --seed 6 --seed 7 --seed 8 --seed 9 --seed 0 \
         --num-segs 5 \
         --verbose \
+        --prior-kwarg min_C0 0 \
+        --prior-kwarg max_C0 3 \
     || exit 1
 
 #    echo \
@@ -204,7 +208,7 @@ do
 
     outpath=$OUTDIR/scaling-exponent-ansatz-samples-${field}-${long_or_trsv}-${ref_low}_${ref_high}.hdf
 
-    echo \
+#    echo \
     ./simple-sample-scaling-exponent-ansatz \
         $OUTDIR/structure-function-ansatz-samples-${field}-${long_or_trsv}-??.hdf \
         --ref-scale $ref_low $ref_high \
@@ -214,6 +218,8 @@ do
         --seed 6 --seed 7 --seed 8 --seed 9 --seed 0 \
         --num-segs 5 \
         --verbose \
+        --prior-kwarg min_C0 0 \
+        --prior-kwarg max_C0 3 \
     || exit 1
 
 #    echo \
@@ -285,7 +291,7 @@ do
 
     outpath=$OUTDIR/scaling-exponent-ansatz-samples-${field}-${long_or_trsv}-${ref_low}_${ref_high}.hdf
 
-    echo \
+#    echo \
     ./simple-sample-scaling-exponent-ansatz \
         $OUTDIR/structure-function-ansatz-samples-${field}-${long_or_trsv}-??.hdf \
         --ref-scale $ref_low $ref_high \
@@ -295,6 +301,8 @@ do
         --seed 6 --seed 7 --seed 8 --seed 9 --seed 0 \
         --num-segs 5 \
         --verbose \
+        --prior-kwarg min_C0 0 \
+        --prior-kwarg max_C0 3 \
     || exit 1
 
 #    echo \
