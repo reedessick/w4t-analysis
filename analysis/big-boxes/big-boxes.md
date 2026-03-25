@@ -24,29 +24,24 @@ Results for each range are shown separately as well.
 
 ### vel trsv 3e-4 6e-4
 
-|stupid|table|
+|structure function|scaling exponent|
 |---|---|
 |<img src="fits/vel-trsv/plot-structure-function-ansatz_vel-trsv-3e-4_6e-4.png">|<img src="fits/vel-trsv/plot-scaling-exponent-ansatz_vel-trsv-3e-4_6e-4.png">|
 |<img src="fits/vel-trsv/plot-structure-function-ansatz-logarithmic-derivative_vel-trsv-3e-4_6e-4.png">|<img src="fits/vel-trsv/w4t-corner_vel-trsv-3e-4_6e-4.png">|
 
-<img src="fits/vel-trsv/plot-scaling-exponent-ansatz_vel-trsv-3e-4_6e-4.png">
-<img src="fits/vel-trsv/w4t-corner_vel-trsv-3e-4_6e-4.png">
+### vel trsv 3e-4 6e-4
+
+|structure function|scaling exponent|
+|---|---|
+|<img src="fits/vel-trsv/plot-structure-function-ansatz_vel-trsv-4e-3_8e-3.png">|<img src="fits/vel-trsv/plot-scaling-exponent-ansatz_vel-trsv-4e-3_8e-3.png">|
+|<img src="fits/vel-trsv/plot-structure-function-ansatz-logarithmic-derivative_vel-trsv-4e-3_8e-3.png">|<img src="fits/vel-trsv/w4t-corner_vel-trsv-4e-3_8e-3.png">|
 
 ### vel trsv 3e-4 6e-4
 
-<img src="fits/vel-trsv/plot-structure-function-ansatz_vel-trsv-4e-3_8e-3.png">
-<img src="fits/vel-trsv/plot-structure-function-ansatz-logarithmic-derivative_vel-trsv-4e-3_8e-3.png">
-
-<img src="fits/vel-trsv/plot-scaling-exponent-ansatz_vel-trsv-4e-3_8e-3.png">
-<img src="fits/vel-trsv/w4t-corner_vel-trsv-4e-3_8e-3.png">
-
-### vel trsv 3e-4 6e-4
-
-<img src="fits/vel-trsv/plot-structure-function-ansatz_vel-trsv-7e-2_14e-2.png">
-<img src="fits/vel-trsv/plot-structure-function-ansatz-logarithmic-derivative_vel-trsv-7e-2_14e-2.png">
-
-<img src="fits/vel-trsv/plot-scaling-exponent-ansatz_vel-trsv-7e-2_14e-2.png">
-<img src="fits/vel-trsv/w4t-corner_vel-trsv-7e-2_14e-2.png">
+|structure function|scaling exponent|
+|---|---|
+|<img src="fits/vel-trsv/plot-structure-function-ansatz_vel-trsv-7e-2_14e-2.png">|<img src="fits/vel-trsv/plot-scaling-exponent-ansatz_vel-trsv-7e-2_14e-2.png">|
+|<img src="fits/vel-trsv/plot-structure-function-ansatz-logarithmic-derivative_vel-trsv-7e-2_14e-2.png">|<img src="fits/vel-trsv/w4t-corner_vel-trsv-7e-2_14e-2.png">|
 
 ---
 
