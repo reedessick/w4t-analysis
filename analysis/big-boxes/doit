@@ -21,7 +21,7 @@ do
 
         #---
 
-#        echo \
+        echo \
         ./plot-structure-function \
             strufu_10k/${field}/EXTREME_Turb_hdf5_plt_cnt_*_downsampled_sf_${field}s.dat \
             --index 1 --index 2 --index 3 --index 4 --index 5 --index 6 --index 7 --index 8 --index 9 --index 10 \
@@ -43,7 +43,7 @@ do
 
             outpath="${OUTDIR}/structure-function-ansatz-samples-${field}-${long_or_trsv}-${index}.hdf"
 
-#            echo \
+            echo \
             ./sample-structure-function-ansatz \
                 strufu_10k/${field}/EXTREME_Turb_hdf5_plt_cnt_*_downsampled_sf_${field}s.dat \
                 --index ${index} \
@@ -62,7 +62,7 @@ do
 
 #                --seed 6 --seed 7 --seed 8 --seed 9 \
 
-#            echo \
+            echo \
             w4t-corner \
                 $outpath \
                 -f amp xi s1 b1 n1 s2 b2 n2 s3 b3 n3 \
@@ -74,7 +74,7 @@ do
                 --verbose \
             || exit 1 
 
-#            echo \
+            echo \
             w4t-corner \
                 $outpath \
                 -f amp xi s1 b1 n1 s2 b2 n2 s3 b3 n3 \
@@ -87,12 +87,28 @@ do
             || exit 1
         done
 
-#        echo \
+        echo \
         ./plot-structure-function-ansatz \
             $OUTDIR/structure-function-ansatz-samples-${field}-${long_or_trsv}-??.hdf \
             --output-dir $OUTDIR \
             --tag ${field}-${long_or_trsv} \
             --title "$field $long_or_trsv" \
+            --verbose \
+        || exit 1
+
+        #---
+
+        outpath=$OUTDIR/scaling-exponent-ansatz-samples-${field}-${long_or_trsv}-1e-3_1e-2.hdf
+
+#        echo \
+        ./simple-sample-scaling-exponent-ansatz \
+            $OUTDIR/structure-function-ansatz-samples-${field}-${long_or_trsv}-??.hdf \
+            --ref-scale 1e-3 1e-2 \
+            --outpath $outpath \
+            --num-warmup 500 \
+            --num-samples 50000 \
+            --seed 6 --seed 7 --seed 8 --seed 9 --seed 0 \
+            --num-segs 5 \
             --verbose \
         || exit 1
 

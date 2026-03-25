@@ -6,6 +6,8 @@ __author__ = "Reed Essick (reed.essick@gmail.com)"
 
 #-------------------------------------------------
 
+import numpy as np
+
 from argparse import ArgumentParser
 
 ### non-standard libraries
@@ -16,6 +18,8 @@ import utils
 parser = ArgumentParser()
 
 parser.add_argument("paths", nargs="+", type=str)
+
+parser.add_argument('--ref-scale', nargs=2, type=float, required=True)
 
 parser.add_argument('--num-warmup', default=1000, type=int)
 parser.add_argument('--num-samples', default=10000, type=int)
@@ -37,9 +41,41 @@ args.verbose |= args.Verbose
 
 #-------------------------------------------------
 
-raise NotImplementedError('''
-load data
-pass to some fitting function from utils
-    --> build KDE internally, etc
-save samples to disk
-''')
+# load independent fits
+indep_posterior = dict()
+for path in args.paths:
+    posterior, _, _, meta = utils.load_structure_function_samples(path, verbose=args.Verbose)
+    indep_posterior[meta['index']] = posterior
+
+indexes = np.array(sorted(indep_posterior.keys()), dtype=int)
+
+#------------------------
+
+posterior, prior = utils.simple_sample_scaling_exponent_ansatz(
+    indexes,
+    indep_posterior,
+    args.ref_scale,
+    num_warmup=args.num_warmup,
+    num_samples=args.num_samples,
+    seed=args.seed,
+    num_segs=args.num_segs,
+    verbose=args.verbose,
+    **args.prior_kwarg
+)
+
+#------------------------
+
+# save data
+utils.write_structure_function_samples(
+    args.outpath,
+    posterior,
+    prior,
+    paths=args.paths,
+    ref_scale=args.ref_scale,
+    num_warmup=args.num_warmup,
+    num_samples=args.num_samples,
+    seed=args.seed,
+    num_segs=args.num_segs,
+    verbose=args.verbose,
+    **args.prior_kwarg
+)

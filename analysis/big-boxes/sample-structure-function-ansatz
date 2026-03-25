@@ -103,4 +103,5 @@ utils.write_structure_function_samples(
     seed=args.seed,
     num_segs=args.num_segs,
     verbose=args.verbose,
+    **args.prior_kwarg
 )
