@@ -24,7 +24,8 @@ Results for each range are shown separately as well.
 
 ### vel trsv 3e-4 6e-4
 
-
+|stupid|table|
+|---|---|
 |<img src="fits/vel-trsv/plot-structure-function-ansatz_vel-trsv-3e-4_6e-4.png">|<img src="fits/vel-trsv/plot-scaling-exponent-ansatz_vel-trsv-3e-4_6e-4.png">|
 |<img src="fits/vel-trsv/plot-structure-function-ansatz-logarithmic-derivative_vel-trsv-3e-4_6e-4.png">|<img src="fits/vel-trsv/w4t-corner_vel-trsv-3e-4_6e-4.png">|
 
