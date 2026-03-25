@@ -16,20 +16,58 @@ Results for each range are shown separately as well.
 
 ---
 
+# vel
 
-fits/vel-trsv/plot-scaling-exponent-ansatz_vel-trsv-3e-4_6e-4.png
-fits/vel-trsv/plot-scaling-exponent-ansatz_vel-trsv-4e-3_8e-3.png
-fits/vel-trsv/plot-scaling-exponent-ansatz_vel-trsv-7e-2_14e-2.png
-fits/vel-trsv/plot-structure-function-ansatz_vel-trsv-3e-4_6e-4.png
-fits/vel-trsv/plot-structure-function-ansatz_vel-trsv-4e-3_8e-3.png
-fits/vel-trsv/plot-structure-function-ansatz_vel-trsv-7e-2_14e-2.png
-fits/vel-trsv/plot-structure-function-ansatz-logarithmic-derivative_vel-trsv-3e-4_6e-4.png
-fits/vel-trsv/plot-structure-function-ansatz-logarithmic-derivative_vel-trsv-4e-3_8e-3.png
-fits/vel-trsv/plot-structure-function-ansatz-logarithmic-derivative_vel-trsv-7e-2_14e-2.png
+---
 
-fits/vel-trsv/w4t-corner_vel-trsv-3e-4_6e-4-prior.png
-fits/vel-trsv/w4t-corner_vel-trsv-3e-4_6e-4.png
-fits/vel-trsv/w4t-corner_vel-trsv-4e-3_8e-3-prior.png
-fits/vel-trsv/w4t-corner_vel-trsv-4e-3_8e-3.png
-fits/vel-trsv/w4t-corner_vel-trsv-7e-2_14e-2-prior.png
-fits/vel-trsv/w4t-corner_vel-trsv-7e-2_14e-2.png
+## vel trsv
+
+### vel trsv 3e-4 6e-4
+
+<img src="fits/vel-trsv/plot-structure-function-ansatz_vel-trsv-3e-4_6e-4.png">
+<img src="fits/vel-trsv/plot-structure-function-ansatz-logarithmic-derivative_vel-trsv-3e-4_6e-4.png">
+
+<img src="fits/vel-trsv/plot-scaling-exponent-ansatz_vel-trsv-3e-4_6e-4.png">
+<img src="fits/vel-trsv/w4t-corner_vel-trsv-3e-4_6e-4.png">
+
+### vel trsv 3e-4 6e-4
+
+<img src="fits/vel-trsv/plot-structure-function-ansatz_vel-trsv-4e-3_8e-3.png">
+<img src="fits/vel-trsv/plot-structure-function-ansatz-logarithmic-derivative_vel-trsv-4e-3_8e-3.png">
+
+<img src="fits/vel-trsv/plot-scaling-exponent-ansatz_vel-trsv-4e-3_8e-3.png">
+<img src="fits/vel-trsv/w4t-corner_vel-trsv-4e-3_8e-3.png">
+
+### vel trsv 3e-4 6e-4
+
+<img src="fits/vel-trsv/plot-structure-function-ansatz_vel-trsv-7e-2_14e-2.png">
+<img src="fits/vel-trsv/plot-structure-function-ansatz-logarithmic-derivative_vel-trsv-7e-2_14e-2.png">
+
+<img src="fits/vel-trsv/plot-scaling-exponent-ansatz_vel-trsv-7e-2_14e-2.png">
+<img src="fits/vel-trsv/w4t-corner_vel-trsv-7e-2_14e-2.png">
+
+---
+
+## vel long
+
+### vel long 3e-4 6e-4
+
+### vel long 7e-3 14e-3
+
+### vel long 6e-2 12e-2
+
+---
+
+# mag
+
+---
+
+## mag trsv
+
+### mag trsv 7e-4 14e-4
+
+---
+
+## mag long
+
+### mag long 7e-4 14e-4
