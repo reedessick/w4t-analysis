@@ -66,7 +66,7 @@ posterior, prior = utils.simple_sample_scaling_exponent_ansatz(
 #------------------------
 
 # save data
-utils.write_structure_function_samples(
+utils.write_scaling_exponent_samples(
     args.outpath,
     posterior,
     prior,

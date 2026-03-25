@@ -442,12 +442,15 @@ def simple_sample_scaling_exponent_ansatz(
             ref_scale[1],
             samples[i]['amp'],
             samples[i]['xi'],
-            samples[i]['sl'],
-            samples[i]['bl'],
-            samples[i]['nl'],
-            samples[i]['sh'],
-            samples[i]['bh'],
-            samples[i]['nh'],
+            samples[i]['s1'],
+            samples[i]['b1'],
+            samples[i]['n1'],
+            samples[i]['s2'],
+            samples[i]['b2'],
+            samples[i]['n2'],
+            samples[i]['s3'],
+            samples[i]['b3'],
+            samples[i]['n3'],
         )
 
         # NOTE! this assumes a default prior, which could be fragile
@@ -498,15 +501,12 @@ def simple_sample_scaling_exponent_ansatz(
                 (s, num_warmup, num_samples))
 
         try:
-            mcmc = MCMC(
-                NUTS(_sample_sea_xcb_prior, init_strategy=init_to_value(values=init_xcb_values)),
-                num_warmup=num_warmup,
-                num_samples=num_samples,
-            )
+            mcmc = MCMC(NUTS(_sample_sea_xcb_prior), num_warmup=num_warmup, num_samples=num_samples)
             mcmc.run(random.PRNGKey(s), **prior_kwargs)
-        except:
+        except Exception as e:
             if verbose:
                 print('>>> sampler failed!')
+                print(e)
             continue
 
         if verbose:
@@ -540,15 +540,12 @@ def simple_sample_scaling_exponent_ansatz(
                 (s, num_warmup, num_samples))
 
         try:
-            mcmc = MCMC(
-                NUTS(sample_posterior, init_strategy=init_to_value(values=init_xcb_values)),
-                num_warmup=num_warmup,
-                num_samples=num_samples,
-            )
+            mcmc = MCMC(NUTS(sample_posterior), num_warmup=num_warmup, num_samples=num_samples)
             mcmc.run(random.PRNGKey(s), **prior_kwargs)
-        except:
+        except Exception as e:
             if verbose:
                 print('>>> sampler failed!')
+                print(e)
             continue
 
         if verbose:
