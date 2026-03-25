@@ -67,6 +67,8 @@ plt.subplots_adjust(
 
 #---
 
+# plot the full fitted curves
+
 p = np.linspace(0, 11, 101)
 num = len(post['C0'])
 
@@ -82,9 +84,13 @@ while i < num:
     )
     i += step
 
-#raise NotImplementedError('''
-#make violin plots
-#''')
+#---
+
+# plot violins
+
+raise NotImplementedError('''
+make violins
+''')
 
 #---
 
