@@ -80,8 +80,8 @@ Results for each range are shown separately as well.
 
 |structure function|scaling exponent|
 |---|---|
-|<img src="fits/mag-long/plot-structure-function-ansatz_mag-trsv-7e-4_14e-4.png">|<img src="fits/vel-long/plot-scaling-exponent-ansatz_mag-trsv-7e-4_14e-4.png">|
-|<img src="fits/mag-long/plot-structure-function-ansatz-logarithmic-derivative_trsv-long-7e-4_14e-4.png">|<img src="fits/mag-long/w4t-corner_mag-trsv-7e-4_14e-4.png">|
+|<img src="fits/mag-trsv/plot-structure-function-ansatz_mag-trsv-7e-4_14e-4.png">|<img src="fits/mag-trsv/plot-scaling-exponent-ansatz_mag-trsv-7e-4_14e-4.png">|
+|<img src="fits/mag-trsv/plot-structure-function-ansatz-logarithmic-derivative_mag-trsv-7e-4_14e-4.png">|<img src="fits/mag-trsv/w4t-corner_mag-trsv-7e-4_14e-4.png">|
 
 ---
 
@@ -91,5 +91,5 @@ Results for each range are shown separately as well.
 
 |structure function|scaling exponent|
 |---|---|
-|<img src="fits/mag-long/plot-structure-function-ansatz_mag-long-7e-4_14e-4.png">|<img src="fits/vel-long/plot-scaling-exponent-ansatz_mag-long-7e-4_14e-4.png">|
+|<img src="fits/mag-long/plot-structure-function-ansatz_mag-long-7e-4_14e-4.png">|<img src="fits/mag-long/plot-scaling-exponent-ansatz_mag-long-7e-4_14e-4.png">|
 |<img src="fits/mag-long/plot-structure-function-ansatz-logarithmic-derivative_mag-long-7e-4_14e-4.png">|<img src="fits/mag-long/w4t-corner_mag-long-7e-4_14e-4.png">|
