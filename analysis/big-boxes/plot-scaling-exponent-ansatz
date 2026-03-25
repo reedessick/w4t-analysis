@@ -70,8 +70,11 @@ plt.subplots_adjust(
 # plot the full fitted curves
 
 p = np.linspace(0, 11, 101)
-num = len(post['C0'])
 
+ax.plot(p, p/3, linestyle='dashed', color='k', alpha=0.75)
+ax.plot(p, p/4, linestyle='dotted', color='k', alpha=0.75)
+
+num = len(post['C0'])
 step = int(np.ceil(num/args.max_num_samples))
 i = 0
 while i < num:
