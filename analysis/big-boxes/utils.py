@@ -152,6 +152,9 @@ def structure_function_ansatz(scales, amp, xi, s1, b1, n1, s2, b2, n2, s3, b3, n
         * (1 + (scales/s2)**n2)**(b2/n2) \
         * (1 + (scales/s3)**n3)**(b3/n3)
 
+def logarithmic_derivative_structure_function_ansatz(scales, amp, xi, s1, b1, n1, s2, b2, n2, s3, b3, n3, ref_scale=0.5):
+    return xi + b1/(1+(scales/s1)**(-n1)) + b2/(1+(scales/s2)**(-n2)) + b3/(1+(scales/s3)**(-n3))
+
 #------------------------
 
 def _sample_sfa_prior(
@@ -161,20 +164,20 @@ def _sample_sfa_prior(
         stdv_xi=3.0,
         mean_logs1=np.log(1e-3),
         stdv_logs1=1.0, 
-        mean_b1=0.0,
-        stdv_b1=3.0,
+        min_b1=-10.0,
+        max_b1=+0.0,
         min_n1=+0.0,
         max_n1=+5.0,
         mean_logs2=np.log(4e-2),
         stdv_logs2=1.0,
-        mean_b2=0.0,
-        stdv_b2=3.0,
+        min_b2=-0.0,
+        max_b2=+10.0,
         min_n2=+0.0, 
         max_n2=+5.0,
         mean_logs3=np.log(3e-1),
         stdv_logs3=1.0,
-        mean_b3=0.0,
-        stdv_b3=3.0,
+        min_b3=-10.0,
+        max_b3=+0.0,
         min_n3=+0.0,
         max_n3=+5.0,
         **ignored
@@ -186,8 +189,8 @@ def _sample_sfa_prior(
     s1, b1, n1 = _sample_sfa_sbn_prior(
         mean_logs=mean_logs1,
         stdv_logs=stdv_logs1,
-        mean_b=mean_b1,
-        stdv_b=stdv_b1,
+        min_b=min_b1,
+        max_b=max_b1,
         min_n=min_n1,
         max_n=max_n1,
         suffix='1',
@@ -196,8 +199,8 @@ def _sample_sfa_prior(
     s2, b2, n2 = _sample_sfa_sbn_prior(
         mean_logs=mean_logs2,
         stdv_logs=stdv_logs2,
-        mean_b=mean_b2,
-        stdv_b=stdv_b2,
+        min_b=min_b2,
+        max_b=max_b2,
         min_n=min_n2,
         max_n=max_n2,
         suffix='2',
@@ -206,8 +209,8 @@ def _sample_sfa_prior(
     s3, b3, n3 = _sample_sfa_sbn_prior(
         mean_logs=mean_logs3,
         stdv_logs=stdv_logs3,
-        mean_b=mean_b3,
-        stdv_b=stdv_b3,
+        min_b=min_b3,
+        max_b=max_b3,
         min_n=min_n3,
         max_n=max_n3,
         suffix='3',
@@ -224,14 +227,14 @@ def _sample_sfa_xi_prior(mean_xi=0.0, stdv_xi=3.0):
 def _sample_sfa_sbn_prior(
         mean_logs=np.log(10),
         stdv_logs=1.0,
-        mean_b=-3.0,
-        stdv_b=+3.0,
+        min_b=-3.0,
+        max_b=+3.0,
         min_n=0.0,
         max_n=5.0,
         suffix='',
     ):
     s = numpyro.sample("s"+suffix, dist.LogNormal(mean_logs, stdv_logs))
-    b = numpyro.sample("b"+suffix, dist.Normal(mean_b, stdv_b))
+    b = numpyro.sample("b"+suffix, dist.Uniform(min_b, max_b))
     n = numpyro.sample("n"+suffix, dist.Uniform(min_n, max_n))
     return s, b, n
 

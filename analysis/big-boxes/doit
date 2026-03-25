@@ -5,9 +5,12 @@
 rtol=5e-2 # required to get the sampler to find anything reasonable. May need to anneal to burn in correctly...
 num_grid=51
 
+min_scale="2.0e-4" 
+max_scale="4.998e-1"
+
 #---
 
-for field in vel # mag
+for field in vel mag
 do
 
     for long_or_trsv in trsv # long
@@ -23,8 +26,8 @@ do
             strufu_10k/${field}/EXTREME_Turb_hdf5_plt_cnt_*_downsampled_sf_${field}s.dat \
             --index 1 --index 2 --index 3 --index 4 --index 5 --index 6 --index 7 --index 8 --index 9 --index 10 \
             --long-or-trsv $long_or_trsv \
-            --min-scale 2e-3 \
-            --max-scale 4e-1 \
+            --min-scale $min_scale \
+            --max-scale $max_scale \
             --logspace-scales $num_grid \
             --min-rtol $rtol \
             --output-dir $OUTDIR \
@@ -33,21 +36,20 @@ do
             --verbose \
         || exit 1
 
-        #for index in 01 02 03 04 05 06 07 08 09 10
-        for index in 01 02 03
+        for index in 01 02 03 04 05 06 07 08 09 10
         do
 
-            echo ">>> SAMPLING FOR INDEX=${INDEX}"
+            echo ">>> SAMPLING ${field} ${long_or_trsv} ${index}"
 
             outpath="${OUTDIR}/structure-function-ansatz-samples-${field}-${long_or_trsv}-${index}.hdf"
 
-#            echo \
+            echo \
             ./sample-structure-function-ansatz \
                 strufu_10k/${field}/EXTREME_Turb_hdf5_plt_cnt_*_downsampled_sf_${field}s.dat \
                 --index ${index} \
                 --long-or-trsv $long_or_trsv \
-                --min-scale 2e-3 \
-                --max-scale 4e-1 \
+                --min-scale $min_scale \
+                --max-scale $max_scale \
                 --logspace-scales $num_grid \
                 --min-rtol $rtol \
                 --outpath $outpath \
@@ -60,7 +62,7 @@ do
 
 #                --seed 6 --seed 7 --seed 8 --seed 9 \
 
-#            echo \
+            echo \
             w4t-corner \
                 $outpath \
                 -f amp xi s1 b1 n1 s2 b2 n2 s3 b3 n3 \
@@ -72,7 +74,7 @@ do
                 --verbose \
             || exit 1 
 
-#            echo \
+            echo \
             w4t-corner \
                 $outpath \
                 -f amp xi s1 b1 n1 s2 b2 n2 s3 b3 n3 \
@@ -90,6 +92,7 @@ do
             $OUTDIR/structure-function-ansatz-samples-${field}-${long_or_trsv}-??.hdf \
             --output-dir $OUTDIR \
             --tag ${field}-${long_or_trsv} \
+            --title "$field $long_or_trsv" \
             --verbose \
         || exit 1
 

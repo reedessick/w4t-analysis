@@ -29,6 +29,8 @@ parser.add_argument('--max-num-samples', default=500, type=int)
 
 parser.add_argument('--num-sigma', default=3, type=float)
 
+parser.add_argument('--title', default=None, type=str)
+
 parser.add_argument('-o', '--output-dir', default='.', type=str)
 parser.add_argument('-t', '--tag', default='', type=str)
 
@@ -46,6 +48,30 @@ if args.tag:
 fig = plt.figure()
 ax = fig.gca()
 
+plt.subplots_adjust(
+    left=0.10,
+    right=0.95,
+    bottom=0.10,
+    top=0.90,
+)
+
+#---
+
+FIG = plt.figure()
+AX = FIG.gca()
+
+plt.subplots_adjust(
+    left=0.10,
+    right=0.95,
+    bottom=0.10,
+    top=0.90,
+)
+
+#---
+
+xmin = +np.inf
+xmax = -np.inf
+
 for ind, path in enumerate(args.samples):
     post, prior, data, meta = utils.load_structure_function_samples(path, verbose=args.verbose)
 
@@ -58,13 +84,14 @@ for ind, path in enumerate(args.samples):
 #        marker='o',
 #        markerfacecolor='none',
 #        markeredgecolor='k',
+#        alpha=0.25,
 #        label='p=%d' % meta['index'],
 #    )
 
     low = data['mom'] - args.num_sigma*data['stdv']
     high = data['mom'] + args.num_sigma*data['stdv']
     for i, s in enumerate(data['scales']):
-        ax.plot([s]*2, [low[i], high[i]], color='k')
+        ax.plot([s]*2, [low[i], high[i]], color='k', alpha=0.25, linewidth=1)
 
     scales = np.logspace(np.log10(np.min(data['scales'])), np.log10(np.max(data['scales'])), 101)
 
@@ -93,15 +120,42 @@ for ind, path in enumerate(args.samples):
             zorder=-10,
         )
 
+        AX.plot(
+            scales,
+            utils.logarithmic_derivative_structure_function_ansatz(
+                scales,
+                post['amp'][i],
+                post['xi'][i],
+                post['s1'][i],
+                post['b1'][i],
+                post['n1'][i],
+                post['s2'][i],
+                post['b2'][i],
+                post['n2'][i],
+                post['s3'][i],
+                post['b3'][i],
+                post['n3'][i],
+            ),
+            color=color,
+            alpha=0.01,
+            zorder=-10,
+        )
+
         i += step
 
-    ax.set_xlim(xmin=np.min(scales), xmax=np.max(scales))
+    xmin = min(xmin, np.min(scales))
+    xmax = max(xmax, np.max(scales))
 
-ax.set_xlabel('scale')
-ax.set_ylabel('$S^p$')
+ax.set_xlim(xmin=xmin, xmax=xmax)
+
+ax.set_xlabel('$s$')
+ax.set_ylabel('$S^p_s$')
 
 ax.set_xscale('log')
 ax.set_yscale('log')
+
+if args.title is not None:
+    ax.set_title(args.title)
 
 ax.tick_params(
     left=True,
@@ -114,14 +168,35 @@ ax.tick_params(
 
 ax.grid(True, which='both')
 
-plt.subplots_adjust(
-    left=0.10,
-    right=0.95,
-    bottom=0.10,
-    top=0.90,
-)
-
 figname = os.path.join(args.output_dir, 'plot-structure-function-ansatz%s.png' % args.tag)
 print('saving: '+figname)
 fig.savefig(figname, dpi=200)
 plt.close(fig)
+
+#---
+
+AX.set_xlim(xmin=xmin, xmax=xmax)
+
+AX.set_xlabel('$s$')
+AX.set_ylabel(r'$\frac{d S^p_s}{ds}$')
+
+AX.set_xscale('log')
+
+if args.title is not None:
+    AX.set_title(args.title)
+
+AX.tick_params(
+    left=True,
+    right=True,
+    top=True,
+    bottom=True,
+    which='both',
+    direction='in',
+)
+
+AX.grid(True, which='both')
+
+figname = os.path.join(args.output_dir, 'plot-structure-function-ansatz-logarithmic-derivative%s.png' % args.tag)
+print('saving: '+figname)
+FIG.savefig(figname, dpi=200)
+plt.close(FIG)
