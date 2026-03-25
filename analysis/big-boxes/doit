@@ -13,7 +13,7 @@ max_scale="4.998e-1"
 for field in vel mag
 do
 
-    for long_or_trsv in trsv # long
+    for long_or_trsv in trsv long
     do
 
         OUTDIR="fits/${field}-$long_or_trsv"
@@ -21,7 +21,7 @@ do
 
         #---
 
-#        echo \
+        echo \
         ./plot-structure-function \
             strufu_10k/${field}/EXTREME_Turb_hdf5_plt_cnt_*_downsampled_sf_${field}s.dat \
             --index 1 --index 2 --index 3 --index 4 --index 5 --index 6 --index 7 --index 8 --index 9 --index 10 \

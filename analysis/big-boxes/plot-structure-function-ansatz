@@ -30,6 +30,7 @@ parser.add_argument('--max-num-samples', default=500, type=int)
 parser.add_argument('--num-sigma', default=3, type=float)
 
 parser.add_argument('--title', default=None, type=str)
+parser.add_argument('--grid', default=False, action='store_true')
 
 parser.add_argument('-o', '--output-dir', default='.', type=str)
 parser.add_argument('-t', '--tag', default='', type=str)
@@ -166,7 +167,7 @@ ax.tick_params(
     direction='in',
 )
 
-ax.grid(True, which='both')
+ax.grid(args.grid, which='both')
 
 figname = os.path.join(args.output_dir, 'plot-structure-function-ansatz%s.png' % args.tag)
 print('saving: '+figname)
@@ -194,7 +195,7 @@ AX.tick_params(
     direction='in',
 )
 
-AX.grid(True, which='both')
+AX.grid(args.grid, which='both')
 
 figname = os.path.join(args.output_dir, 'plot-structure-function-ansatz-logarithmic-derivative%s.png' % args.tag)
 print('saving: '+figname)
