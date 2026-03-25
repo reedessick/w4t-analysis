@@ -49,9 +49,24 @@ Results for each range are shown separately as well.
 
 ### vel long 3e-4 6e-4
 
+|structure function|scaling exponent|
+|---|---|
+|<img src="fits/vel-long/plot-structure-function-ansatz_vel-long-3e-4_6e-4.png">|<img src="fits/vel-long/plot-scaling-exponent-ansatz_vel-long-3e-4_6e-4.png">|
+|<img src="fits/vel-long/plot-structure-function-ansatz-logarithmic-derivative_vel-long-3e-4_6e-4.png">|<img src="fits/vel-long/w4t-corner_vel-long-3e-4_6e-4.png">|
+
 ### vel long 7e-3 14e-3
 
+|structure function|scaling exponent|
+|---|---|
+|<img src="fits/vel-long/plot-structure-function-ansatz_vel-long-7e-3_14e-3.png">|<img src="fits/vel-long/plot-scaling-exponent-ansatz_vel-long-7e-3_14e-3.png">|
+|<img src="fits/vel-long/plot-structure-function-ansatz-logarithmic-derivative_vel-long-7e-3_14e-3.png">|<img src="fits/vel-long/w4t-corner_vel-long-7e-3_14e-3.png">|
+
 ### vel long 6e-2 12e-2
+
+|structure function|scaling exponent|
+|---|---|
+|<img src="fits/vel-long/plot-structure-function-ansatz_vel-long-6e-2_12e-2.png">|<img src="fits/vel-long/plot-scaling-exponent-ansatz_vel-long-6e-2_12e-2.png">|
+|<img src="fits/vel-long/plot-structure-function-ansatz-logarithmic-derivative_vel-long-6e-2_12e-2.png">|<img src="fits/vel-long/w4t-corner_vel-long-6e-2_12e-2.png">|
 
 ---
 
@@ -63,8 +78,18 @@ Results for each range are shown separately as well.
 
 ### mag trsv 7e-4 14e-4
 
+|structure function|scaling exponent|
+|---|---|
+|<img src="fits/mag-long/plot-structure-function-ansatz_mag-trsv-7e-4_14e-4.png">|<img src="fits/vel-long/plot-scaling-exponent-ansatz_mag-trsv-7e-4_14e-4.png">|
+|<img src="fits/mag-long/plot-structure-function-ansatz-logarithmic-derivative_trsv-long-7e-4_14e-4.png">|<img src="fits/mag-long/w4t-corner_mag-trsv-7e-4_14e-4.png">|
+
 ---
 
 ## mag long
 
 ### mag long 7e-4 14e-4
+
+|structure function|scaling exponent|
+|---|---|
+|<img src="fits/mag-long/plot-structure-function-ansatz_mag-long-7e-4_14e-4.png">|<img src="fits/vel-long/plot-scaling-exponent-ansatz_mag-long-7e-4_14e-4.png">|
+|<img src="fits/mag-long/plot-structure-function-ansatz-logarithmic-derivative_mag-long-7e-4_14e-4.png">|<img src="fits/mag-long/w4t-corner_mag-long-7e-4_14e-4.png">|
