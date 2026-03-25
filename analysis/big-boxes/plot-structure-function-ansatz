@@ -179,7 +179,7 @@ plt.close(fig)
 AX.set_xlim(xmin=xmin, xmax=xmax)
 
 AX.set_xlabel('$s$')
-AX.set_ylabel(r'$\frac{d S^p_s}{ds}$')
+AX.set_ylabel(r'$\frac{d \log S^p_s}{d \log s}$')
 
 AX.set_xscale('log')
 
