@@ -39,7 +39,7 @@ do
 
     outpath=$OUTDIR/scaling-exponent-ansatz-samples-${field}-${long_or_trsv}-${ref_low}_${ref_high}.hdf
 
-#    echo \
+    echo \
     ./simple-sample-scaling-exponent-ansatz \
         $OUTDIR/structure-function-ansatz-samples-${field}-${long_or_trsv}-??.hdf \
         --ref-scale $ref_low $ref_high \
@@ -66,6 +66,7 @@ do
     w4t-corner \
         $outpath \
         -f x C0 beta \
+        --clip C0 0 3 \
         --root posterior \
         --title "$field $long_or_trsv $ref_low $ref_high" \
         --output-dir $OUTDIR \
@@ -77,6 +78,7 @@ do
     w4t-corner \
         $outpath \
         -f x C0 beta \
+        --clip C0 0 3 \
         --root prior \
         --title "$field $long_or_trsv $ref_low $ref_high" \
         --output-dir $OUTDIR \
@@ -121,7 +123,7 @@ do
 
     outpath=$OUTDIR/scaling-exponent-ansatz-samples-${field}-${long_or_trsv}-${ref_low}_${ref_high}.hdf
 
-#    echo \
+    echo \
     ./simple-sample-scaling-exponent-ansatz \
         $OUTDIR/structure-function-ansatz-samples-${field}-${long_or_trsv}-??.hdf \
         --ref-scale $ref_low $ref_high \
@@ -148,6 +150,7 @@ do
     w4t-corner \
         $outpath \
         -f x C0 beta \
+        --clip C0 0 3 \
         --root posterior \
         --title "$field $long_or_trsv $ref_low $ref_high" \
         --output-dir $OUTDIR \
@@ -159,6 +162,7 @@ do
     w4t-corner \
         $outpath \
         -f x C0 beta \
+        --clip C0 0 3 \
         --root prior \
         --title "$field $long_or_trsv $ref_low $ref_high" \
         --output-dir $OUTDIR \
@@ -200,7 +204,7 @@ do
 
     outpath=$OUTDIR/scaling-exponent-ansatz-samples-${field}-${long_or_trsv}-${ref_low}_${ref_high}.hdf
 
-#    echo \
+    echo \
     ./simple-sample-scaling-exponent-ansatz \
         $OUTDIR/structure-function-ansatz-samples-${field}-${long_or_trsv}-??.hdf \
         --ref-scale $ref_low $ref_high \
@@ -227,6 +231,7 @@ do
     w4t-corner \
         $outpath \
         -f x C0 beta \
+        --clip C0 0 3 \
         --root posterior \
         --title "$field $long_or_trsv $ref_low $ref_high" \
         --output-dir $OUTDIR \
@@ -238,6 +243,7 @@ do
     w4t-corner \
         $outpath \
         -f x C0 beta \
+        --clip C0 0 3 \
         --root prior \
         --title "$field $long_or_trsv $ref_low $ref_high" \
         --output-dir $OUTDIR \
@@ -279,7 +285,7 @@ do
 
     outpath=$OUTDIR/scaling-exponent-ansatz-samples-${field}-${long_or_trsv}-${ref_low}_${ref_high}.hdf
 
-#    echo \
+    echo \
     ./simple-sample-scaling-exponent-ansatz \
         $OUTDIR/structure-function-ansatz-samples-${field}-${long_or_trsv}-??.hdf \
         --ref-scale $ref_low $ref_high \
@@ -306,6 +312,7 @@ do
     w4t-corner \
         $outpath \
         -f x C0 beta \
+        --clip C0 0 3 \
         --root posterior \
         --title "$field $long_or_trsv $ref_low $ref_high" \
         --output-dir $OUTDIR \
@@ -317,6 +324,7 @@ do
     w4t-corner \
         $outpath \
         -f x C0 beta \
+        --clip C0 0 3 \
         --root prior \
         --title "$field $long_or_trsv $ref_low $ref_high" \
         --output-dir $OUTDIR \
