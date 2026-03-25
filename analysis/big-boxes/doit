@@ -100,7 +100,7 @@ do
 
         outpath=$OUTDIR/scaling-exponent-ansatz-samples-${field}-${long_or_trsv}-1e-3_1e-2.hdf
 
-#        echo \
+        echo \
         ./simple-sample-scaling-exponent-ansatz \
             $OUTDIR/structure-function-ansatz-samples-${field}-${long_or_trsv}-??.hdf \
             --ref-scale 1e-3 1e-2 \
@@ -109,6 +109,17 @@ do
             --num-samples 50000 \
             --seed 6 --seed 7 --seed 8 --seed 9 --seed 0 \
             --num-segs 5 \
+            --verbose \
+        || exit 1
+
+#        echo \
+        ./plot-scaling-exponent-ansatz \
+            $outpath \
+            $OUTDIR/structure-function-ansatz-samples-${field}-${long_or_trsv}-??.hdf \
+            --output-dir $OUTDIR \
+            --tag "${field}-${long_or_trsv}-1e-3_1e-2" \
+            --title "${field} ${long_or_trsv} 1e-3_1e-2" \
+            --max-num-samples 1000 \
             --verbose \
         || exit 1
 

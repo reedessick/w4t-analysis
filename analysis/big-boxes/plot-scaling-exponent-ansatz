@@ -24,8 +24,15 @@ import utils
 
 parser = ArgumentParser()
 
+parser.add_argument('she_leveque_posteriors', type=str)
+parser.add_argument('independent_posteriors', nargs='*', type=str)
+
+parser.add_argument('--max-num-samples', default=500, type=int)
+
 parser.add_argument('-o', '--output-dir', default='.', type=str)
 parser.add_argument('-t', '--tag', default='', type=str)
+
+parser.add_argument('--title', default=None, type=str)
 
 parser.add_argument('-v', '--verbose', default=False, action='store_true')
 
@@ -38,6 +45,71 @@ if args.tag:
 
 #-------------------------------------------------
 
-raise NotImplementedError('''
+# load she-leveque posteriors
+post, prior, meta = utils.load_scaling_exponent_samples(args.she_leveque_posteriors, verbose=args.verbose)
 
-''')
+indep_post = dict()
+for path in args.independent_posteriors:
+    p, _, _, m = utils.load_structure_function_samples(path, verbose=args.verbose)
+    indep_post[m['index']] = p
+
+#------------------------
+
+fig = plt.figure()
+ax = fig.gca()
+
+plt.subplots_adjust(
+    left=0.10,
+    right=0.95,
+    bottom=0.10,
+    top=0.90,
+)
+
+#---
+
+p = np.linspace(0, 11, 101)
+num = len(post['C0'])
+
+step = int(np.ceil(num/args.max_num_samples))
+i = 0
+while i < num:
+    ax.plot(
+        p,
+        utils.scaling_exponent_ansatz(p, post['x'][i], post['C0'][i], post['beta'][i]),
+        color='k',
+        alpha=0.01,
+        zorder=-10,
+    )
+    i += step
+
+#raise NotImplementedError('''
+#make violin plots
+#''')
+
+#---
+
+ax.set_xlabel('$p$')
+ax.set_ylabel(r'$\left< \xi_p \right>_{\ln s}$')
+
+if args.title is not None:
+    ax.set_title(args.title)
+
+ax.tick_params(
+    left=True,
+    right=True,
+    top=True,
+    bottom=True,
+    which='both',
+    direction='in',
+)
+
+ax.grid(True, which='both')
+
+ax.set_xlim(xmin=p[0], xmax=p[-1])
+ax.set_ylim(ymin=0.0)
+
+figname = os.path.join(args.output_dir, 'plot-scaling-exponent-ansatz%s.png' % args.tag)
+if args.verbose:
+    print('saving: '+figname)
+fig.savefig(figname, dpi=200)
+plt.close(fig)
