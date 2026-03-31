@@ -10,7 +10,7 @@ max_scale="4.998e-1"
 
 #---
 
-for field in vel mag
+for field in vel # mag
 do
 
     for long_or_trsv in trsv long
@@ -87,15 +87,46 @@ do
             || exit 1
 
         done
-
-#        echo \
-        ./plot-structure-function-ansatz \
-            $OUTDIR/structure-function-ansatz-samples-${field}-${long_or_trsv}-??.hdf \
-            --output-dir $OUTDIR \
-            --tag ${field}-${long_or_trsv} \
-            --title "$field $long_or_trsv" \
-            --verbose \
-        || exit 1
-
     done
+done
+
+#---
+
+field=vel
+for long_or_trsv in trsv long
+    do
+
+    OUTDIR="fits/${field}-$long_or_trsv"
+
+#    echo \
+    ./plot-structure-function-ansatz \
+        $OUTDIR/structure-function-ansatz-samples-${field}-${long_or_trsv}-??.hdf \
+        --mach fits/vel-${long_or_trsv}/structure-function-ansatz-samples-vel-${long_or_trsv}-02.hdf \
+        --output-dir $OUTDIR \
+        --tag ${field}-${long_or_trsv} \
+        --title "$field $long_or_trsv" \
+        --verbose \
+    || exit 1
+
+done
+
+#---
+
+field=mag
+for long_or_trsv in trsv long
+    do
+
+    OUTDIR="fits/${field}-$long_or_trsv"
+
+#    echo \
+    ./plot-structure-function-ansatz \
+        $OUTDIR/structure-function-ansatz-samples-${field}-${long_or_trsv}-??.hdf \
+        --mach fits/vel-${long_or_trsv}/structure-function-ansatz-samples-vel-${long_or_trsv}-02.hdf \
+        --alven fits/mag-${long_or_trsv}/structure-function-ansatz-samples-mag-${long_or_trsv}-02.hdf \
+        --output-dir $OUTDIR \
+        --tag ${field}-${long_or_trsv} \
+        --title "$field $long_or_trsv" \
+        --verbose \
+    || exit 1
+
 done

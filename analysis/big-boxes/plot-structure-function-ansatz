@@ -13,6 +13,7 @@ import numpy as np
 import matplotlib
 matplotlib.use("Agg")
 from matplotlib import pyplot as plt
+plt.rcParams['text.usetex'] = True
 
 from argparse import ArgumentParser
 
@@ -24,6 +25,9 @@ import utils
 parser = ArgumentParser()
 
 parser.add_argument('samples', type=str, nargs="+")
+
+parser.add_argument('--mach', default=None, type=str)
+parser.add_argument('--alven', default=None, type=str)
 
 parser.add_argument('--vband', nargs=2, default=[], type=float, action='append')
 
@@ -151,6 +155,80 @@ for ind, path in enumerate(args.samples):
 
 #---
 
+if args.mach is not None:
+    print('computing Mach numbers')
+
+    post, _, data, meta = utils.load_structure_function_samples(args.mach, verbose=args.verbose)
+    assert meta['index'] == 2
+
+    scales = np.logspace(np.log10(np.min(data['scales'])), np.log10(np.max(data['scales'])), 101)
+
+    # estimate mach <--> scale mapping via average over posterior
+    mach = np.zeros_like(scales, dtype=float)
+    num = len(post['xi'])
+    s = []
+    for i in range(num):
+        # convert from 2nd order structure function to mach number (based on large-increment scaling)
+        m = utils.structure_function_ansatz(
+            scales,
+            post['amp'][i],
+            post['xi'][i],
+            post['s1'][i],
+            post['b1'][i],
+            post['n1'][i],
+            post['s2'][i],
+            post['b2'][i],
+            post['n2'][i],
+            post['s3'][i],
+            post['b3'][i],
+            post['n3'][i],
+        )**0.5 / 2
+        s.append(np.interp(1, m, scales))
+        mach += m
+    mach /= num
+
+    print('scale for (mach=1) = %.3e +/- %.3e' % (np.mean(s), np.std(s)))
+
+if args.alven is not None:
+    print('computing Alven numbers')
+
+    assert args.mach is not None
+
+    post, _, data, meta = utils.load_structure_function_samples(args.alven, verbose=args.verbose)
+    assert meta['index'] == 2
+            
+    # estimate mach <--> scale mapping via average over posterior
+    alven = np.zeros_like(scales, dtype=float)
+    num = len(post['xi'])
+    s = []
+    for i in range(num):
+        # convert from 2nd order structure function to mach number (based on large-increment scaling)
+        m = utils.structure_function_ansatz(
+            scales,
+            post['amp'][i],
+            post['xi'][i], 
+            post['s1'][i],
+            post['b1'][i],
+            post['n1'][i],
+            post['s2'][i],
+            post['b2'][i],
+            post['n2'][i],
+            post['s3'][i],
+            post['b3'][i],
+            post['n3'][i],
+        )**0.5 / 2
+        m /= (4*np.pi)**0.5
+        s.append(np.interp(1, m, scales))
+        alven += m
+    alven /= num
+
+    # take ratio of mach and alvenic sound speed
+    alven = mach / alven
+
+    print('scale for (alven=1) = %.3e +/- %.3e' % (np.mean(s), np.std(s)))
+
+#---
+
 ax.set_xlim(xmin=xmin, xmax=xmax)
 
 ax.set_xlabel('$s$')
@@ -170,13 +248,59 @@ ax.set_ylim(ylim)
 ax.tick_params(
     left=True,
     right=True,
-    top=True,
+    top=False,
     bottom=True,
     which='both',
     direction='in',
 )
 
 ax.grid(args.grid, which='both')
+
+#---
+
+if args.alven is not None:
+    # plot
+    xa = ax.twiny()
+
+    xa.xaxis.tick_top()
+    xa.xaxis.set_label_position('top')
+    xa.set_xlabel('$\mathcal{M}_A$')
+
+    xa.set_xscale(ax.get_xscale())
+    xa.set_xlim(ax.get_xlim())
+
+    xa.set_xticklabels(['%.3f'%_ for _ in np.interp(ax.get_xticks(), scales, alven)])
+
+    xa.tick_params(top=True, direction='in', which='both')
+
+    x = np.interp(1, alven, scales)
+    ylim = xa.get_ylim()
+    xa.plot([x]*2, ylim, color='k')
+    xa.set_ylim(ylim)
+    xa.text(x, ylim[1], '$\mathcal{M}_A=1$', ha='center', va='bottom')
+
+elif args.mach is not None:
+    # plot
+    xa = ax.twiny()
+
+    xa.xaxis.tick_top()
+    xa.xaxis.set_label_position('top')
+    xa.set_xlabel('$\mathcal{M}$')
+
+    xa.set_xscale(ax.get_xscale())
+    xa.set_xlim(ax.get_xlim())
+
+    xa.set_xticklabels(['%.3f'%_ for _ in np.interp(ax.get_xticks(), scales, mach)])
+
+    xa.tick_params(top=True, direction='in', which='both')
+
+    x = np.interp(1, mach, scales)
+    ylim = xa.get_ylim()
+    xa.plot([x]*2, ylim, color='k')
+    xa.set_ylim(ylim)
+    xa.text(x, ylim[1], '$\mathcal{M}=1$', ha='center', va='bottom')
+
+#---
 
 figname = os.path.join(args.output_dir, 'plot-structure-function-ansatz%s.png' % args.tag)
 print('saving: '+figname)
