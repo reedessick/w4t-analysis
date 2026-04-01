@@ -22,14 +22,26 @@ import utils
 
 #-------------------------------------------------
 
+figtypes = ['png', 'pdf']
+
+FIELD = dict(
+    vel='\\vec{u}',
+    mag='\\vec{B}',
+)
+
+#-------------------------------------------------
+
 parser = ArgumentParser()
 
 parser.add_argument('samples', type=str, nargs="+")
 
+parser.add_argument('--field', required=True)
+parser.add_argument('--long-or-trsv', required=True)
+
 parser.add_argument('--mach', default=None, type=str)
 parser.add_argument('--alven', default=None, type=str)
 
-parser.add_argument('--vband', nargs=2, default=[], type=float, action='append')
+parser.add_argument('--vband', nargs=4, default=[], type=str, action='append')
 
 parser.add_argument('--max-num-samples', default=500, type=int)
 
@@ -50,29 +62,55 @@ os.makedirs(args.output_dir, exist_ok=True)
 if args.tag:
     args.tag = "_"+args.tag
 
+args.vband = [(color, hatch, (float(l), float(h))) for color, hatch, l, h in args.vband]
+
 #-------------------------------------------------
 
-fig = plt.figure()
+fig = plt.figure(figsize=(4,3))
 ax = fig.gca()
 
-plt.subplots_adjust(
-    left=0.10,
-    right=0.95,
-    bottom=0.10,
-    top=0.90,
-)
+if args.field == 'vel':
+    plt.subplots_adjust(
+        left=0.15,
+        right=0.97,
+        bottom=0.15,
+        top=0.84,
+    )
+elif args.field == 'mag':
+    plt.subplots_adjust(
+        left=0.03,
+        right=0.85,
+        bottom=0.15,
+        top=0.84,
+    )
+    ax.yaxis.tick_right()
+    ax.yaxis.set_label_position('right')
+else:
+    raise ValueError
 
 #---
 
-FIG = plt.figure()
+FIG = plt.figure(figsize=(4,3))
 AX = FIG.gca()
 
-plt.subplots_adjust(
-    left=0.10,
-    right=0.95,
-    bottom=0.10,
-    top=0.90,
-)
+if args.field == 'vel':
+    plt.subplots_adjust(
+        left=0.15,
+        right=0.97,
+        bottom=0.15,
+        top=0.84,
+    )
+elif args.field == 'mag':
+    plt.subplots_adjust(
+        left=0.03,
+        right=0.85,
+        bottom=0.15,
+        top=0.84,
+    )
+    AX.yaxis.tick_right()
+    AX.yaxis.set_label_position('right')
+else:
+    raise ValueError
 
 #---
 
@@ -95,10 +133,11 @@ for ind, path in enumerate(args.samples):
 #        label='p=%d' % meta['index'],
 #    )
 
-    low = data['mom'] - args.num_sigma*data['stdv']
-    high = data['mom'] + args.num_sigma*data['stdv']
-    for i, s in enumerate(data['scales']):
-        ax.plot([s]*2, [low[i], high[i]], color='k', alpha=0.25, linewidth=1)
+    for S in range(1, args.num_sigma+1):
+        low = data['mom'] - S*data['stdv']
+        high = data['mom'] + S*data['stdv']
+        for i, s in enumerate(data['scales']):
+            ax.plot([s]*2, [low[i], high[i]], color='k', alpha=0.05, linewidth=1)
 
     scales = np.logspace(np.log10(np.min(data['scales'])), np.log10(np.max(data['scales'])), 101)
 
@@ -169,7 +208,7 @@ if args.mach is not None:
     s = []
     for i in range(num):
         # convert from 2nd order structure function to mach number (based on large-increment scaling)
-        m = utils.structure_function_ansatz(
+        m = (utils.structure_function_ansatz(
             scales,
             post['amp'][i],
             post['xi'][i],
@@ -182,7 +221,7 @@ if args.mach is not None:
             post['s3'][i],
             post['b3'][i],
             post['n3'][i],
-        )**0.5 / 2
+        ) / 2)**0.5
         s.append(np.interp(1, m, scales))
         mach += m
     mach /= num
@@ -203,7 +242,7 @@ if args.alven is not None:
     s = []
     for i in range(num):
         # convert from 2nd order structure function to mach number (based on large-increment scaling)
-        m = utils.structure_function_ansatz(
+        m = (utils.structure_function_ansatz(
             scales,
             post['amp'][i],
             post['xi'][i], 
@@ -216,7 +255,7 @@ if args.alven is not None:
             post['s3'][i],
             post['b3'][i],
             post['n3'][i],
-        )**0.5 / 2
+        ) / 2)**0.5
         m /= (4*np.pi)**0.5
         s.append(np.interp(1, m, scales))
         alven += m
@@ -231,19 +270,21 @@ if args.alven is not None:
 
 ax.set_xlim(xmin=xmin, xmax=xmax)
 
-ax.set_xlabel('$s$')
-ax.set_ylabel('$S^p_s$')
+ax.set_ylim(ymin=3e-2) ### NOTE: this could be fragile
+
+ax.set_xlabel('$l/L$')
+if args.long_or_trsv == 'long':
+    ax.set_ylabel('$S^p_{\parallel}(%s)$' % FIELD[args.field])
+elif args.long_or_trsv == 'trsv':
+    ax.set_ylabel('$S^p_{\perp}(%s)$' % FIELD[args.field])
+else:
+    raise ValueError
 
 ax.set_xscale('log')
 ax.set_yscale('log')
 
 if args.title is not None:
     ax.set_title(args.title)
-
-ylim = ax.get_ylim()
-for l, h in args.vband:
-    ax.fill_between([l, h], [ylim[0]]*2, [ylim[1]]*2, color='grey', alpha=0.25, zorder=-10)
-ax.set_ylim(ylim)
 
 ax.tick_params(
     left=True,
@@ -258,8 +299,41 @@ ax.grid(args.grid, which='both')
 
 #---
 
+AX.set_xlim(xmin=xmin, xmax=xmax)
+
+AX.set_ylim(ymin=-1) ### NOTE: this could be fragile
+
+AX.set_xlabel('$l/L$')
+if args.long_or_trsv == 'long':
+    AX.set_ylabel(r'$\left. d \log S^p_{\parallel}(%s) \right/ d \log s$' % FIELD[args.field])
+elif args.long_or_trsv == 'trsv':
+    AX.set_ylabel(r'$\left. d \log S^p_{\perp}(%s) \right/ d \log s$' % FIELD[args.field])
+else:
+    raise ValueError
+
+AX.set_xscale('log')
+
+if args.title is not None:
+    AX.set_title(args.title)
+
+AX.tick_params(
+    left=True,
+    right=True,
+    top=False,
+    bottom=True,
+    which='both',
+    direction='in',
+)
+
+AX.grid(args.grid, which='both')
+
+#---
+
+mach_ticks = [0.1, 0.2, 0.3, 0.4, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0]
+
 if args.alven is not None:
-    # plot
+    ax.set_ylim(ymax=ax.get_ylim()[1]*20)
+
     xa = ax.twiny()
 
     xa.xaxis.tick_top()
@@ -269,7 +343,9 @@ if args.alven is not None:
     xa.set_xscale(ax.get_xscale())
     xa.set_xlim(ax.get_xlim())
 
-    xa.set_xticklabels(['%.3f'%_ for _ in np.interp(ax.get_xticks(), scales, alven)])
+    xa.set_xticks(np.logspace(np.log10(np.min(scales)), np.log10(np.max(scales)), 11))
+    xa.set_xticks([], minor=True)
+    xa.set_xticklabels(['$%.2f$'%_ for _ in np.interp(xa.get_xticks(), scales, alven)], fontsize=9, rotation=45)
 
     xa.tick_params(top=True, direction='in', which='both')
 
@@ -277,10 +353,33 @@ if args.alven is not None:
     ylim = xa.get_ylim()
     xa.plot([x]*2, ylim, color='k')
     xa.set_ylim(ylim)
-    xa.text(x, ylim[1], '$\mathcal{M}_A=1$', ha='center', va='bottom')
+
+    dx = (np.max(scales)/np.min(scales))**0.01
+    dy = (ylim[1]/ylim[0])**0.03
+#    xa.text(x/dx, ylim[1]/dy, '$\mathcal{M}_A=1$', ha='right', va='top', rotation=90)
+    xa.text(x/dx, ylim[1]/dy, '$s=%.1f\\times10^{-2}$' % (x*1e2), ha='right', va='top', rotation=0)
+
+    XA = AX.twiny()
+
+    XA.xaxis.tick_top()
+    XA.xaxis.set_label_position('top')
+    XA.set_xlabel('$\mathcal{M}_A$')
+
+    XA.set_xscale(AX.get_xscale())
+    XA.set_xlim(AX.get_xlim())
+
+    XA.set_xticks(np.logspace(np.log10(np.min(scales)), np.log10(np.max(scales)), 11))
+    XA.set_xticks([], minor=True)
+    XA.set_xticklabels(['$%.2f$'%_ for _ in np.interp(XA.get_xticks(), scales, alven)], fontsize=9, rotation=45)
+
+    XA.tick_params(top=True, direction='in', which='both')
+
+    x = np.interp(1, alven, scales)
+    ylim = XA.get_ylim()
+    XA.plot([x]*2, ylim, color='k')
+    XA.set_ylim(ylim)
 
 elif args.mach is not None:
-    # plot
     xa = ax.twiny()
 
     xa.xaxis.tick_top()
@@ -290,7 +389,10 @@ elif args.mach is not None:
     xa.set_xscale(ax.get_xscale())
     xa.set_xlim(ax.get_xlim())
 
-    xa.set_xticklabels(['%.3f'%_ for _ in np.interp(ax.get_xticks(), scales, mach)])
+#    xa.set_xticks(np.interp(mach_ticks, mach, scales))
+    xa.set_xticks(np.logspace(np.log10(np.min(scales)), np.log10(np.max(scales)), 11))
+    xa.set_xticks([], minor=True)
+    xa.set_xticklabels(['$%.2f$'%_ for _ in np.interp(xa.get_xticks(), scales, mach)], fontsize=9, rotation=45)
 
     xa.tick_params(top=True, direction='in', which='both')
 
@@ -298,44 +400,59 @@ elif args.mach is not None:
     ylim = xa.get_ylim()
     xa.plot([x]*2, ylim, color='k')
     xa.set_ylim(ylim)
-    xa.text(x, ylim[1], '$\mathcal{M}=1$', ha='center', va='bottom')
+
+    dx = (np.max(scales)/np.min(scales))**0.01
+    dy = (ylim[1]/ylim[0])**0.03
+#    xa.text(x/dx, ylim[1]/dy, '$\mathcal{M}=1$', ha='right', va='top', rotation=90)
+    xa.text(x/dx, ylim[1]/dy, '$s=%.1f\\times10^{-2}$' % (x*1e2), ha='right', va='top', rotation=0)
+
+    XA = AX.twiny()
+
+    XA.xaxis.tick_top()
+    XA.xaxis.set_label_position('top')
+    XA.set_xlabel('$\mathcal{M}$')
+
+    XA.set_xscale(ax.get_xscale())
+    XA.set_xlim(ax.get_xlim())
+
+#    XA.set_xticks(np.interp(mach_ticks, mach, scales))
+    XA.set_xticks(np.logspace(np.log10(np.min(scales)), np.log10(np.max(scales)), 11))
+    XA.set_xticks([], minor=True)
+    XA.set_xticklabels(['$%.2f$'%_ for _ in np.interp(xa.get_xticks(), scales, mach)], fontsize=9, rotation=45)
+
+    XA.tick_params(top=True, direction='in', which='both')
+
+    x = np.interp(1, mach, scales)
+    ylim = XA.get_ylim()
+    XA.plot([x]*2, ylim, color='k')
+    XA.set_ylim(ylim)
 
 #---
 
-figname = os.path.join(args.output_dir, 'plot-structure-function-ansatz%s.png' % args.tag)
-print('saving: '+figname)
-fig.savefig(figname, dpi=200)
+ylim = ax.get_ylim()
+for color, hatch, lh in args.vband:
+    ax.fill_between(lh, [ylim[0]]*2, [ylim[1]]*2, color=color, alpha=0.25, hatch=hatch, zorder=-10)
+ax.set_ylim(ylim)
+
+#---
+
+for figtype in figtypes:
+    figname = os.path.join(args.output_dir, 'plot-structure-function-ansatz%s.%s' % (args.tag, figtype))
+    print('saving: '+figname)
+    fig.savefig(figname, dpi=250)
 plt.close(fig)
 
 #---
 
-AX.set_xlim(xmin=xmin, xmax=xmax)
-
-AX.set_xlabel('$s$')
-AX.set_ylabel(r'$\frac{d \log S^p_s}{d \log s}$')
-
-AX.set_xscale('log')
-
-if args.title is not None:
-    AX.set_title(args.title)
-
 ylim = AX.get_ylim()
-for l, h in args.vband:
-    AX.fill_between([l, h], [ylim[0]]*2, [ylim[1]]*2, color='grey', alpha=0.25, zorder=-10)
+for color, hatch, lh in args.vband:
+    AX.fill_between(lh, [ylim[0]]*2, [ylim[1]]*2, color=color, alpha=0.25, hatch=hatch, zorder=-10)
 AX.set_ylim(ylim)
 
-AX.tick_params(
-    left=True,
-    right=True,
-    top=True,
-    bottom=True,
-    which='both',
-    direction='in',
-)
+#---
 
-AX.grid(args.grid, which='both')
-
-figname = os.path.join(args.output_dir, 'plot-structure-function-ansatz-logarithmic-derivative%s.png' % args.tag)
-print('saving: '+figname)
-FIG.savefig(figname, dpi=200)
+for figtype in figtypes:
+    figname = os.path.join(args.output_dir, 'plot-structure-function-ansatz-logarithmic-derivative%s.%s' % (args.tag, figtype))
+    print('saving: '+figname)
+    FIG.savefig(figname, dpi=250)
 plt.close(FIG)

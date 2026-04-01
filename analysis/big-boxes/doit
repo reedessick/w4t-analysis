@@ -93,22 +93,45 @@ done
 #---
 
 field=vel
-for long_or_trsv in trsv long
-    do
+long_or_trsv=trsv
 
-    OUTDIR="fits/${field}-$long_or_trsv"
+OUTDIR="fits/${field}-$long_or_trsv"
 
-#    echo \
-    ./plot-structure-function-ansatz \
-        $OUTDIR/structure-function-ansatz-samples-${field}-${long_or_trsv}-??.hdf \
-        --mach fits/vel-${long_or_trsv}/structure-function-ansatz-samples-vel-${long_or_trsv}-02.hdf \
-        --output-dir $OUTDIR \
-        --tag ${field}-${long_or_trsv} \
-        --title "$field $long_or_trsv" \
-        --verbose \
-    || exit 1
+#echo \
+./plot-structure-function-ansatz \
+    $OUTDIR/structure-function-ansatz-samples-${field}-${long_or_trsv}-??.hdf \
+    --mach fits/vel-${long_or_trsv}/structure-function-ansatz-samples-vel-${long_or_trsv}-02.hdf \
+    --vband C0 '/' 3e-4 6e-4 \
+    --vband C1 '\' 4e-3 8e-3 \
+    --vband C2 'x' 7e-2 14e-2 \
+    --output-dir $OUTDIR \
+    --tag ${field}-${long_or_trsv} \
+    --long-or-trsv $long_or_trsv \
+    --field $field \
+    --verbose \
+|| exit 1
 
-done
+#    --title "$field $long_or_trsv" \
+
+long_or_trsv=long
+            
+OUTDIR="fits/${field}-$long_or_trsv"
+            
+#echo \ 
+./plot-structure-function-ansatz \
+    $OUTDIR/structure-function-ansatz-samples-${field}-${long_or_trsv}-??.hdf \
+    --mach fits/vel-${long_or_trsv}/structure-function-ansatz-samples-vel-${long_or_trsv}-02.hdf \
+    --vband C0 '/' 3e-4 6e-4 \
+    --vband C1 '\' 7e-3 14e-3 \
+    --vband C2 'x' 6e-2 12e-2 \
+    --output-dir $OUTDIR \
+    --tag ${field}-${long_or_trsv} \
+    --long-or-trsv $long_or_trsv \
+    --field $field \
+    --verbose \
+|| exit 1
+            
+#    --title "$field $long_or_trsv" \
 
 #---
 
@@ -123,10 +146,14 @@ for long_or_trsv in trsv long
         $OUTDIR/structure-function-ansatz-samples-${field}-${long_or_trsv}-??.hdf \
         --mach fits/vel-${long_or_trsv}/structure-function-ansatz-samples-vel-${long_or_trsv}-02.hdf \
         --alven fits/mag-${long_or_trsv}/structure-function-ansatz-samples-mag-${long_or_trsv}-02.hdf \
+        --vband C0 'x' 7e-4 14e-4 \
         --output-dir $OUTDIR \
         --tag ${field}-${long_or_trsv} \
-        --title "$field $long_or_trsv" \
+        --long-or-trsv $long_or_trsv \
+        --field $field \
         --verbose \
     || exit 1
+
+#        --title "$field $long_or_trsv" \
 
 done

@@ -22,10 +22,14 @@ import utils
 
 #-------------------------------------------------
 
+figtypes = ['png', 'pdf']
+
+#-------------------------------------------------
+
 parser = ArgumentParser()
 
-parser.add_argument('she_leveque_posteriors', type=str)
-parser.add_argument('independent_posteriors', nargs='*', type=str)
+parser.add_argument('she_leveque_posteriors', nargs='+', type=str)
+parser.add_argument('-i', '--independent_posteriors', nargs='*', type=str)
 
 parser.add_argument('--max-num-samples', default=500, type=int)
 
@@ -45,108 +49,119 @@ if args.tag:
 
 #-------------------------------------------------
 
-# load she-leveque posteriors
-post, prior, meta = utils.load_scaling_exponent_samples(args.she_leveque_posteriors, verbose=args.verbose)
-
-indep_post = dict()
-for path in args.independent_posteriors:
-    p, _, _, m = utils.load_structure_function_samples(path, verbose=args.verbose)
-    indep_post[m['index']] = p
-
-#------------------------
-
-fig = plt.figure()
+fig = plt.figure(figsize=(4,3))
 ax = fig.gca()
 
 plt.subplots_adjust(
-    left=0.10,
+    left=0.15,
     right=0.95,
-    bottom=0.10,
+    bottom=0.15,
     top=0.90,
 )
 
 #---
 
-# plot the full fitted curves
+# plot theoretical predictions
 
 p = np.linspace(0, 11, 101)
 
 ax.plot(p, p/3, linestyle='dashed', color='k', alpha=0.75)
 ax.plot(p, p/4, linestyle='dotted', color='k', alpha=0.75)
 
-num = len(post['C0'])
-step = int(np.ceil(num/args.max_num_samples))
-i = 0
-while i < num:
-    ax.plot(
-        p,
-        utils.scaling_exponent_ansatz(p, post['x'][i], post['C0'][i], post['beta'][i]),
-        color='k',
-        alpha=0.01,
-        zorder=-10,
-    )
-    i += step
+#---
+
+# iterate over posteriors and plot them
+
+metas = []
+
+for mnd, path in enumerate(args.she_leveque_posteriors):
+    post, prior, meta = utils.load_scaling_exponent_samples(path, verbose=args.verbose)
+
+    metas.append(meta)
+
+    color = 'C%d' % mnd
+
+    num = len(post['C0'])
+    step = int(np.ceil(num/args.max_num_samples))
+    i = 0
+    while i < num:
+        ax.plot(
+            p,
+            utils.scaling_exponent_ansatz(p, post['x'][i], post['C0'][i], post['beta'][i]),
+            color=color,
+            alpha=0.01,
+            zorder=-10,
+        )
+        i += step
+
+    # plot violins
+
+    for _p in range(1, 11):
+
+        samp = utils.scaling_exponent_ansatz(_p, post['x'], post['C0'], post['beta'])
+        kde_stdv = 1.06 * np.std(samp) / len(samp)**0.2
+
+        grid = np.min(samp), np.max(samp)
+        d = 0.5*(grid[1]-grid[0])
+        grid = np.linspace(grid[0]-d, grid[1]+d, 101)
+
+        kde = np.sum(
+            [np.exp(-0.5*(S-grid)**2/kde_stdv**2)/(2*np.pi*kde_stdv**2)**0.5 for S in samp],
+            axis=0,
+        )
+        kde *= 0.25/np.max(kde)
+
+        sel = kde > 1e-3*np.max(kde)
+
+        ax.fill_betweenx(grid[sel], _p*np.ones_like(grid)[sel], _p+kde[sel], color=color, alpha=0.50)
 
 #---
 
-# plot violins
+indep_post = dict()
+for path in args.independent_posteriors:
+    samples, _, _, m = utils.load_structure_function_samples(path, verbose=args.verbose)
+    indep_post[m['index']] = samples
 
-for _p in range(1, 11):
+for mnd, meta in enumerate(metas):
 
-    color = 'C%d' % _p
+    # plot violins
 
-    # plot the She-Leveque fit
+    color = 'C%d' % mnd
 
-    samp = utils.scaling_exponent_ansatz(_p, post['x'], post['C0'], post['beta'])
-    kde_stdv = 1.06 * np.std(samp) / len(samp)**0.2
+    for _p, samples in indep_post.items():
 
-    grid = np.min(samp), np.max(samp)
-    d = 0.5*(grid[1]-grid[0])
-    grid = np.linspace(grid[0]-d, grid[1]+d, 101)
+        samp = utils.averaged_logarithmic_derivative_ansatz(
+            meta['ref_scale'][0],
+            meta['ref_scale'][1],
+            samples['amp'],
+            samples['xi'],
+            samples['s1'],
+            samples['b1'],
+            samples['n1'],
+            samples['s2'],
+            samples['b2'],
+            samples['n2'],
+            samples['s3'],
+            samples['b3'],
+            samples['n3'],
+        )
 
-    kde = np.sum(
-        [np.exp(-0.5*(S-grid)**2/kde_stdv**2)/(2*np.pi*kde_stdv**2)**0.5 for S in samp],
-        axis=0,
-    )
-    kde *= 0.25/np.max(kde)
+        kde_stdv = 1.06 * np.std(samp) / len(samp)**0.2
 
-    ax.fill_betweenx(grid, _p*np.ones_like(grid), _p+kde, color=color, alpha=0.50)
+        grid = np.min(samp), np.max(samp)
+        d = 0.5*(grid[1]-grid[0])
+        grid = np.linspace(grid[0]-d, grid[1]+d, 101)
 
-# plot independent violins
+        kde = np.sum(
+            [np.exp(-0.5*(S-grid)**2/kde_stdv**2)/(2*np.pi*kde_stdv**2)**0.5 for S in samp],
+            axis=0,
+        )
+        kde *= 0.25/np.max(kde)
 
-for _p, samples in indep_post.items():
+        sel = kde > 1e-3*np.max(kde)
 
-    color = 'C%d' % _p
-
-    samp = utils.averaged_logarithmic_derivative_ansatz(
-        meta['ref_scale'][0],
-        meta['ref_scale'][1],
-        samples['amp'],
-        samples['xi'],
-        samples['s1'],
-        samples['b1'],
-        samples['n1'],
-        samples['s2'],
-        samples['b2'],
-        samples['n2'],
-        samples['s3'],
-        samples['b3'],
-        samples['n3'],
-    )
-
-    kde_stdv = 1.06 * np.std(samp) / len(samp)**0.2
-
-    grid = np.min(samp), np.max(samp)
-    d = 0.5*(grid[1]-grid[0])
-    grid = np.linspace(grid[0]-d, grid[1]+d, 101)
-
-    kde = np.sum(
-        [np.exp(-0.5*(S-grid)**2/kde_stdv**2)/(2*np.pi*kde_stdv**2)**0.5 for S in samp],
-        axis=0,
-    )
-    kde *= 0.25/np.max(kde)
-
-    ax.plot(_p-kde, grid, color=color, alpha=0.50)
+        ax.plot(_p-kde[sel], grid[sel], color=color, alpha=0.50)
+        ax.plot(_p*np.ones_like(grid)[sel], grid[sel], color=color, alpha=0.50)
 
 #---
 
@@ -168,10 +183,11 @@ ax.tick_params(
 ax.grid(True, which='both')
 
 ax.set_xlim(xmin=p[0], xmax=p[-1])
-ax.set_ylim(ymin=0.0)
+ax.set_ylim(ymin=0.0, ymax=4.0)
 
-figname = os.path.join(args.output_dir, 'plot-scaling-exponent-ansatz%s.png' % args.tag)
-if args.verbose:
-    print('saving: '+figname)
-fig.savefig(figname, dpi=200)
+for figtype in figtypes:
+    figname = os.path.join(args.output_dir, 'plot-scaling-exponent-ansatz%s.%s' % (args.tag, figtype))
+    if args.verbose:
+        print('saving: '+figname)
+    fig.savefig(figname, dpi=250)
 plt.close(fig)

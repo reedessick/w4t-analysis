@@ -20,15 +20,17 @@ REF_HIGH[3e-4]=6e-4
 REF_HIGH[4e-3]=8e-3
 REF_HIGH[7e-2]=14e-2
 
+OUTPATHS=""
+
 for ref_low in ${=REF_LOW}
 do
 
     ref_high=${REF_HIGH[$ref_low]}
 
-#    echo \
+    echo \
     ./plot-structure-function-ansatz \
         $OUTDIR/structure-function-ansatz-samples-${field}-${long_or_trsv}-??.hdf \
-        --vband $ref_low $ref_high \
+        --vband grey x $ref_low $ref_high \
         --output-dir $OUTDIR \
         --tag ${field}-${long_or_trsv}-${ref_low}_${ref_high} \
         --title "$field $long_or_trsv $ref_low $ref_high" \
@@ -38,8 +40,9 @@ do
     #---
 
     outpath=$OUTDIR/scaling-exponent-ansatz-samples-${field}-${long_or_trsv}-${ref_low}_${ref_high}.hdf
+    OUTPATHS="$OUTPATHS $outpath"
 
-#    echo \
+    echo \
     ./simple-sample-scaling-exponent-ansatz \
         $OUTDIR/structure-function-ansatz-samples-${field}-${long_or_trsv}-??.hdf \
         --ref-scale $ref_low $ref_high \
@@ -53,18 +56,7 @@ do
         --prior-kwarg max_C0 3 \
     || exit 1
 
-#    echo \
-    ./plot-scaling-exponent-ansatz \
-        $outpath \
-        $OUTDIR/structure-function-ansatz-samples-${field}-${long_or_trsv}-??.hdf \
-        --output-dir $OUTDIR \
-        --tag "${field}-${long_or_trsv}-${ref_low}_${ref_high}" \
-        --title "${field} ${long_or_trsv} $ref_low $ref_high" \
-        --max-num-samples 1000 \
-        --verbose \
-    || exit 1
-
-#    echo \
+    echo \
     w4t-corner \
         $outpath \
         -f x C0 beta \
@@ -76,7 +68,7 @@ do
         --verbose \
     || exit 1
 
-#    echo \
+    echo \
     w4t-corner \
         $outpath \
         -f x C0 beta \
@@ -89,6 +81,28 @@ do
     || exit 1
 
 done
+
+#echo \
+./plot-scaling-exponent-ansatz \
+    ${=OUTPATHS} \
+    -i $OUTDIR/structure-function-ansatz-samples-${field}-${long_or_trsv}-??.hdf \
+    --output-dir $OUTDIR \
+    --tag "${field}-${long_or_trsv}" \
+    --max-num-samples 100 \
+    --verbose \
+|| exit 1
+
+#    --title "${field} ${long_or_trsv}" \
+
+#echo \
+./corner-scaling-exponent-ansatz \
+    ${=OUTPATHS} \
+    --output-dir $OUTDIR \
+    --tag "${field}-${long_or_trsv}" \
+    --verbose \
+|| exit 1
+
+#    --title "${field} ${long_or_trsv}" \
 
 #------------------------
 
@@ -106,15 +120,17 @@ REF_HIGH[3e-4]=6e-4
 REF_HIGH[7e-3]=14e-3
 REF_HIGH[6e-2]=12e-2
 
+OUTPATHS=""
+
 for ref_low in ${=REF_LOW}
 do
 
     ref_high=${REF_HIGH[$ref_low]}
 
-#    echo \
+    echo \
     ./plot-structure-function-ansatz \
         $OUTDIR/structure-function-ansatz-samples-${field}-${long_or_trsv}-??.hdf \
-        --vband $ref_low $ref_high \
+        --vband grey x $ref_low $ref_high \
         --output-dir $OUTDIR \
         --tag ${field}-${long_or_trsv}-${ref_low}_${ref_high} \
         --title "$field $long_or_trsv $ref_low $ref_high" \
@@ -124,8 +140,9 @@ do
     #---
 
     outpath=$OUTDIR/scaling-exponent-ansatz-samples-${field}-${long_or_trsv}-${ref_low}_${ref_high}.hdf
+    OUTPATHS="$OUTPATHS $outpath"
 
-#    echo \
+    echo \
     ./simple-sample-scaling-exponent-ansatz \
         $OUTDIR/structure-function-ansatz-samples-${field}-${long_or_trsv}-??.hdf \
         --ref-scale $ref_low $ref_high \
@@ -139,18 +156,7 @@ do
         --prior-kwarg max_C0 3 \
     || exit 1
 
-#    echo \
-    ./plot-scaling-exponent-ansatz \
-        $outpath \
-        $OUTDIR/structure-function-ansatz-samples-${field}-${long_or_trsv}-??.hdf \
-        --output-dir $OUTDIR \
-        --tag "${field}-${long_or_trsv}-${ref_low}_${ref_high}" \
-        --title "${field} ${long_or_trsv} $ref_low $ref_high" \
-        --max-num-samples 1000 \
-        --verbose \
-    || exit 1
-
-#    echo \
+    echo \
     w4t-corner \
         $outpath \
         -f x C0 beta \
@@ -162,7 +168,7 @@ do
         --verbose \
     || exit 1
 
-#    echo \
+    echo \
     w4t-corner \
         $outpath \
         -f x C0 beta \
@@ -175,6 +181,28 @@ do
     || exit 1
 
 done
+
+#echo \
+./plot-scaling-exponent-ansatz \
+    ${=OUTPATHS} \
+    -i $OUTDIR/structure-function-ansatz-samples-${field}-${long_or_trsv}-??.hdf \
+    --output-dir $OUTDIR \
+    --tag "${field}-${long_or_trsv}" \
+    --max-num-samples 100 \
+    --verbose \
+|| exit 1
+
+#    --title "${field} ${long_or_trsv}" \
+
+#echo \
+./corner-scaling-exponent-ansatz \
+    ${=OUTPATHS} \
+    --output-dir $OUTDIR \
+    --tag "${field}-${long_or_trsv}" \
+    --verbose \
+|| exit 1
+
+#    --title "${field} ${long_or_trsv}" \
 
 #------------------------
 
@@ -189,15 +217,17 @@ mkdir -p $OUTDIR
 REF_LOW="7e-4"
 REF_HIGH[7e-4]=14e-4
 
+OUTPATHS=""
+
 for ref_low in ${=REF_LOW}
 do
 
     ref_high=${REF_HIGH[$ref_low]}
 
-#    echo \
+    echo \
     ./plot-structure-function-ansatz \
         $OUTDIR/structure-function-ansatz-samples-${field}-${long_or_trsv}-??.hdf \
-        --vband $ref_low $ref_high \
+        --vband grey x $ref_low $ref_high \
         --output-dir $OUTDIR \
         --tag ${field}-${long_or_trsv}-${ref_low}_${ref_high} \
         --title "$field $long_or_trsv $ref_low $ref_high" \
@@ -207,8 +237,9 @@ do
     #---
 
     outpath=$OUTDIR/scaling-exponent-ansatz-samples-${field}-${long_or_trsv}-${ref_low}_${ref_high}.hdf
+    OUTPATHS="$OUTPATHS $outpath"
 
-#    echo \
+    echo \
     ./simple-sample-scaling-exponent-ansatz \
         $OUTDIR/structure-function-ansatz-samples-${field}-${long_or_trsv}-??.hdf \
         --ref-scale $ref_low $ref_high \
@@ -222,18 +253,7 @@ do
         --prior-kwarg max_C0 3 \
     || exit 1
 
-#    echo \
-    ./plot-scaling-exponent-ansatz \
-        $outpath \
-        $OUTDIR/structure-function-ansatz-samples-${field}-${long_or_trsv}-??.hdf \
-        --output-dir $OUTDIR \
-        --tag "${field}-${long_or_trsv}-${ref_low}_${ref_high}" \
-        --title "${field} ${long_or_trsv} $ref_low $ref_high" \
-        --max-num-samples 1000 \
-        --verbose \
-    || exit 1
-
-#    echo \
+    echo \
     w4t-corner \
         $outpath \
         -f x C0 beta \
@@ -245,7 +265,7 @@ do
         --verbose \
     || exit 1
 
-#    echo \
+    echo \
     w4t-corner \
         $outpath \
         -f x C0 beta \
@@ -258,6 +278,28 @@ do
     || exit 1
 
 done
+
+#echo \
+./plot-scaling-exponent-ansatz \
+    ${=OUTPATHS} \
+    -i $OUTDIR/structure-function-ansatz-samples-${field}-${long_or_trsv}-??.hdf \
+    --output-dir $OUTDIR \
+    --tag "${field}-${long_or_trsv}" \
+    --max-num-samples 100 \
+    --verbose \
+|| exit 1
+
+#    --title "${field} ${long_or_trsv}" \
+
+#echo \
+./corner-scaling-exponent-ansatz \
+    ${=OUTPATHS} \
+    --output-dir $OUTDIR \
+    --tag "${field}-${long_or_trsv}" \
+    --verbose \
+|| exit 1
+
+#    --title "${field} ${long_or_trsv}" \
 
 #------------------------
 
@@ -272,15 +314,17 @@ mkdir -p $OUTDIR
 REF_LOW="7e-4"
 REF_HIGH[7e-4]=14e-4
 
+OUTPATHS=""
+
 for ref_low in ${=REF_LOW}
 do
 
     ref_high=${REF_HIGH[$ref_low]}
 
-#    echo \
+    echo \
     ./plot-structure-function-ansatz \
         $OUTDIR/structure-function-ansatz-samples-${field}-${long_or_trsv}-??.hdf \
-        --vband $ref_low $ref_high \
+        --vband grey x $ref_low $ref_high \
         --output-dir $OUTDIR \
         --tag ${field}-${long_or_trsv}-${ref_low}_${ref_high} \
         --title "$field $long_or_trsv $ref_low $ref_high" \
@@ -290,8 +334,9 @@ do
     #---
 
     outpath=$OUTDIR/scaling-exponent-ansatz-samples-${field}-${long_or_trsv}-${ref_low}_${ref_high}.hdf
+    OUTPATHS="$OUTPATHS $outpath"
 
-#    echo \
+    echo \
     ./simple-sample-scaling-exponent-ansatz \
         $OUTDIR/structure-function-ansatz-samples-${field}-${long_or_trsv}-??.hdf \
         --ref-scale $ref_low $ref_high \
@@ -305,18 +350,7 @@ do
         --prior-kwarg max_C0 3 \
     || exit 1
 
-#    echo \
-    ./plot-scaling-exponent-ansatz \
-        $outpath \
-        $OUTDIR/structure-function-ansatz-samples-${field}-${long_or_trsv}-??.hdf \
-        --output-dir $OUTDIR \
-        --tag "${field}-${long_or_trsv}-${ref_low}_${ref_high}" \
-        --title "${field} ${long_or_trsv} $ref_low $ref_high" \
-        --max-num-samples 1000 \
-        --verbose \
-    || exit 1
-
-#    echo \
+    echo \
     w4t-corner \
         $outpath \
         -f x C0 beta \
@@ -328,7 +362,7 @@ do
         --verbose \
     || exit 1
 
-#    echo \
+    echo \
     w4t-corner \
         $outpath \
         -f x C0 beta \
@@ -341,3 +375,25 @@ do
     || exit 1
 
 done
+
+#echo \
+./plot-scaling-exponent-ansatz \
+    ${=OUTPATHS} \
+    -i $OUTDIR/structure-function-ansatz-samples-${field}-${long_or_trsv}-??.hdf \
+    --output-dir $OUTDIR \
+    --tag "${field}-${long_or_trsv}" \
+    --max-num-samples 100 \
+    --verbose \
+|| exit 1
+
+#    --title "${field} ${long_or_trsv}" \
+
+#echo \
+./corner-scaling-exponent-ansatz \
+    ${=OUTPATHS} \
+    --output-dir $OUTDIR \
+    --tag "${field}-${long_or_trsv}" \
+    --verbose \
+|| exit 1
+
+#    --title "${field} ${long_or_trsv}" \

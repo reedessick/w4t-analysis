@@ -1,0 +1,85 @@
+#!/usr/bin/env python3
+
+"""a script to make plots of the scaling exponent ansatz
+"""
+__author__ = "Reed Essick (reed.essick@gmail.com)"
+
+#-------------------------------------------------
+
+import os
+
+import numpy as np
+
+import matplotlib
+matplotlib.use("Agg")
+from matplotlib import pyplot as plt
+plt.rcParams['text.usetex'] = True
+
+import corner
+
+from argparse import ArgumentParser
+
+### non-standard libraries
+import utils
+
+#-------------------------------------------------
+
+figtypes = ['png', 'pdf']
+
+#-------------------------------------------------
+
+parser = ArgumentParser()
+
+parser.add_argument('she_leveque_posteriors', nargs='+', type=str)
+
+parser.add_argument('-o', '--output-dir', default='.', type=str)
+parser.add_argument('-t', '--tag', default='', type=str)
+
+parser.add_argument('--title', default=None, type=str)
+
+parser.add_argument('-v', '--verbose', default=False, action='store_true')
+
+args = parser.parse_args()
+
+os.makedirs(args.output_dir, exist_ok=True)
+
+if args.tag:
+    args.tag = "_"+args.tag
+
+#-------------------------------------------------
+
+fig = plt.figure(figsize=(4,4))
+
+for mnd, path in enumerate(args.she_leveque_posteriors):
+    post, prior, meta = utils.load_scaling_exponent_samples(path, verbose=args.verbose)
+
+    color = 'C%d' % mnd
+
+    fig = corner.corner(
+        np.transpose([post['C0'], post['beta'], post['x']]),
+        labels=['$C_0$', '$\\beta$', '$x$'],
+        color=color,
+        hist_kwargs=dict(density=True),
+        plot_datapoints=True,
+        plot_density=False,
+        fill_contours=True,
+        levels=[0.5, 0.9],
+        fig=fig,
+    )
+
+for ax in fig.axes:
+    ax.tick_params(
+        left=True,
+        right=True,
+        top=True,
+        bottom=True,
+        direction='in',
+        which='both',
+    )
+
+for figtype in figtypes:
+    figname = os.path.join(args.output_dir, 'corner-scaling-exponent-ansatz%s.%s' % (args.tag, figtype))
+    if args.verbose:
+        print('saving: '+figname)
+    fig.savefig(figname, dpi=250)
+plt.close(fig)
