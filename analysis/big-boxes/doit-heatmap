@@ -1,0 +1,11 @@
+#!/bin/zsh
+
+for field in vel mag
+do
+
+    ./heatmap \
+        $field \
+        --verbose \
+    || exit 1
+
+done

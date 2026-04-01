@@ -456,3 +456,15 @@ for figtype in figtypes:
     print('saving: '+figname)
     FIG.savefig(figname, dpi=250)
 plt.close(FIG)
+
+#---
+
+if args.mach is not None:
+    outpath = figname = os.path.join(args.output_dir, 'plot-structure-function-ansatz-mach%s.csv' % (args.tag))
+    print('saving: '+outpath)
+    np.savetxt(outpath, np.transpose([scales, mach]), delimiter=',', comments='', header='scale,mach')
+
+if args.alven is not None:
+    outpath = figname = os.path.join(args.output_dir, 'plot-structure-function-ansatz-alven%s.csv' % (args.tag))
+    print('saving: '+outpath)
+    np.savetxt(outpath, np.transpose([scales, alven]), delimiter=',', comments='', header='scale,alven')

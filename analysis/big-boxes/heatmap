@@ -1,0 +1,267 @@
+#!/usr/bin/env python3
+
+"""a quick script to plot heatmaps of inferred She-Leveque parameters on a grid of flow parameters
+"""
+__author__ = "Reed Essick (reed.essick@gmail.com)"
+
+#-------------------------------------------------
+
+import os
+
+import numpy as np
+
+import matplotlib
+matplotlib.use("Agg")
+from matplotlib import pyplot as plt
+plt.rcParams['text.usetex'] = True
+
+from argparse import ArgumentParser
+
+### non-standard libraries
+from w4t.utils import io
+
+#-------------------------------------------------
+
+def heatmap(Ms, MAs, Zgrid, anno, clabel=None, title=None, cmap='Reds', right=False, **kwargs):
+    """make a heatmap of Z with corresponding colorbar
+    """
+    fig = plt.figure(figsize=(4,3))
+    ax = fig.gca()
+
+    if right:
+        plt.subplots_adjust(
+            left=0.02,
+            right=0.85,
+            top=0.98,
+            bottom=0.15,
+        )
+        ax.yaxis.tick_right()
+        ax.yaxis.set_label_position('right')
+    else:
+        plt.subplots_adjust(
+            left=0.15,
+            right=0.98,
+            top=0.98,
+            bottom=0.15,
+        )
+
+    #---
+
+#    ax.imshow(Zgrid, origin='lower', **kwargs)
+    cmap = plt.get_cmap(cmap)
+
+    low = np.min(Zgrid)
+    diff = np.max(Zgrid) - low
+
+    for i, M in enumerate(Ms):
+        for j, MA in enumerate(MAs):
+            color = cmap((Zgrid[i,j]-low)/diff)
+            ax.text(M, MA, anno[i][j], ha='center', va='center', color=color, fontsize=8)
+
+    #---
+
+#    raise NotImplementedError('add colorbar')
+
+    ax.set_xlabel('$\mathcal{M}$')
+    ax.set_ylabel('$\mathcal{M}_A$')
+
+    ax.set_xscale('log')
+    ax.set_yscale('log')
+
+#    ax.set_xlim(xmin=np.min(Ms), xmax=np.max(Ms))
+    ax.set_xlim(xmin=0.2, xmax=20)
+
+#    ax.set_ylim(ymin=np.min(MAs), ymax=np.max(MAs))
+    ax.set_ylim(ymin=0.08, ymax=13.0)
+
+    ax.set_xticks(list(Ms)+[1])
+    ax.set_xticks([], minor=True)
+    ax.set_xticklabels(['$%.1f$'%_ for _ in ax.get_xticks()])
+
+    ax.set_yticks(MAs)
+    ax.set_yticks([], minor=True)
+    ax.set_yticklabels(['$%.1f$'%_ for _ in ax.get_yticks()])
+
+    ax.set_title(title)
+
+    ax.tick_params(
+        left=True,
+        right=True,
+        top=True,
+        bottom=True,
+        which='both',
+        direction='in',
+    )
+
+    #---
+
+    return fig
+
+#-------------------------------------------------
+
+parser = ArgumentParser()
+
+parser.add_argument('field', type=str)
+parser.add_argument('--scale', default='16-64', type=str)
+
+parser.add_argument('-v', '--verbose', default=False, action='store_true')
+
+parser.add_argument('-o', '--output-dir', default='.', type=str)
+parser.add_argument('-t', '--tag', default='', type=str)
+
+parser.add_argument('--figtype', default=[], type=str, action='append')
+parser.add_argument('--dpi', default=250, type=float)
+
+args = parser.parse_args()
+
+os.makedirs(args.output_dir, exist_ok=True)
+
+if args.tag:
+    args.tag = "_"+args.tag
+
+
+if not args.figtype:
+    args.figtype = ['png', 'pdf']
+
+#-------------------------------------------------
+
+# load trajectories
+mach = dict()
+alven = dict()
+
+for lot in ['long', 'trsv']:
+    mach[lot] = np.genfromtxt(
+        'fits/vel-%s/plot-structure-function-ansatz-mach_vel-%s.csv' % (lot, lot),
+        delimiter=',',
+        names=True,
+    )
+    alven[lot] = np.genfromtxt(
+        'fits/mag-%s/plot-structure-function-ansatz-alven_mag-%s.csv' % (lot, lot),
+        delimiter=',',
+        names=True,
+    )
+
+color_scales = dict(vel=dict(), mag=dict())
+
+color_scales['vel']['trsv'] = [
+    ('C0', 3e-4, 6e-4),
+    ('C1', 4e-3, 8e-3),
+    ('C2', 7e-2, 1.4e-1),
+]
+
+color_scales['vel']['long'] = [
+    ('C0', 3e-4, 6e-4),
+    ('C1', 7e-3, 1.4e-2),
+    ('C2', 6e-2, 1.2e-1),
+]
+
+color_scales['mag']['trsv'] = [
+    ('C0', 7e-4, 1.4e-3),
+]
+color_scales['mag']['long'] = color_scales['mag']['trsv']
+
+
+linestyle = dict(long='dashed', trsv='dotted')
+
+#------------------------
+
+# load posteriors
+Ms = [('05', 0.5), ('2', 2), ('4', 4), ('10', 10)]
+Mgrid = np.array([b for a, b in Ms], dtype=float)
+
+MAs = [('01', 0.1), ('05', 0.5), ('1', 1), ('2', 2), ('4', 4), ('6', 6), ('8', 8), ('10', 10)]
+MAgrid = np.array([b for a, b in MAs], dtype=float)
+
+data = dict()
+for Mtag, M in Ms:
+    for MAtag, MA in MAs:
+        tag = 'M%sMA%s' % (Mtag, MAtag)
+        path = r"../cita/%s/%s_avrg_%s_dsf-scaling-ansatz-%s-thinned.hdf" % \
+            (tag, tag, args.field, args.scale)
+
+        post, _, index, ref_scale, kwargs = io.load_simple_scaling_exponent_ansatz_samples(path, verbose=args.verbose)
+
+        sel = (0 <= post['C0']) * (post['C0'] <= 3)
+
+        if args.verbose:
+            print('    retaining %d/%d samples' % (np.sum(sel), len(sel)))
+
+        data[(M, MA)] = dict(
+            posterior=dict((k, v[sel]) for k, v in post.items()),
+            sel=sel,
+#            scales=scales,
+            index=index,
+            ref_sale=ref_scale,
+            **kwargs
+        )
+
+#------------------------
+
+# iterate over keys and compute/plot some basic properties
+
+Zgrid = np.empty((len(Ms), len(MAs)), dtype=float) # use this to generate plots
+anno = [[[] for _ in range(len(MAs))] for _ in range(len(Ms))]
+
+figtmp = os.path.join(args.output_dir, 'heatmap-%s-%s%s.%s' % (args.field, '%s', args.tag, '%s'))
+
+for key, label, kwargs in [
+        ('C0',   r'$C_0$',   dict(vmin=0, vmax=3, cmap='viridis')),
+        ('beta', r'$\beta$', dict(vmin=None, vmax=None, cmap='cividis')),
+        ('x',    r'$x$',     dict(vmin=None, vmax=None, cmap='plasma')),
+    ]:
+    if args.verbose:
+        print('plotting: '+key) 
+
+    #---
+
+    # plot median a posterior
+    if args.verbose:
+        print('    median a posterior')
+
+    Zgrid[:] = np.nan # make sure we don't plot garbage data
+
+    for i, (_, M) in enumerate(Ms):
+        for j, (_, MA) in enumerate(MAs):
+            if (M, MA) in data:
+                m = np.median(data[(M,MA)]['posterior'][key])
+
+                Zgrid[i,j] = m
+                anno[i][j] = '$%.2f^{\\tiny{+%.2f}}_{\\tiny{-%.2f}}$' % (
+                    m,
+                    np.percentile(data[(M,MA)]['posterior'][key], 95)-m,
+                    m-np.percentile(data[(M,MA)]['posterior'][key], 5),
+                )
+            else:
+                anno[i][j] = ''
+            
+    fig = heatmap(
+        Mgrid,
+        MAgrid,
+        Zgrid,
+        anno,
+        right=args.field=='mag',
+        **kwargs
+    )
+
+    # add the trajectories
+    ax = fig.gca()
+
+    for lot in ['long', 'trsv']:
+        m = mach[lot]
+        ma = alven[lot]
+
+        assert np.all(m['scale']==ma['scale'])
+
+        ax.plot(m['mach'], ma['alven'], color='k', alpha=0.75, linestyle=linestyle[lot], zorder=-10)
+
+        for color, min_scale, max_scale in color_scales[args.field][lot]:
+            sel = (min_scale <= ma['scale'])*(ma['scale'] <= max_scale)
+            ax.plot(m['mach'][sel], ma['alven'][sel], color=color, alpha=1.0, zorder=-1)
+
+    # save
+    for figtype in args.figtype:
+        figname = figtmp % (key, figtype)
+        if args.verbose:
+            print('        saving: '+figname)
+        fig.savefig(figname, dpi=args.dpi)
+    plt.close(fig)
