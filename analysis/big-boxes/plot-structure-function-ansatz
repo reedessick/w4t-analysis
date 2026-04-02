@@ -431,7 +431,10 @@ elif args.mach is not None:
 
 ylim = ax.get_ylim()
 for color, hatch, lh in args.vband:
-    ax.fill_between(lh, [ylim[0]]*2, [ylim[1]]*2, color=color, alpha=0.25, hatch=hatch, zorder=-10)
+    if hatch == 'none':
+        ax.fill_between(lh, [ylim[0]]*2, [ylim[1]]*2, color=color, alpha=0.25, zorder=-10)
+    else:
+        ax.fill_between(lh, [ylim[0]]*2, [ylim[1]]*2, color=color, alpha=0.25, hatch=hatch, zorder=-10)
 ax.set_ylim(ylim)
 
 #---
@@ -446,7 +449,10 @@ plt.close(fig)
 
 ylim = AX.get_ylim()
 for color, hatch, lh in args.vband:
-    AX.fill_between(lh, [ylim[0]]*2, [ylim[1]]*2, color=color, alpha=0.25, hatch=hatch, zorder=-10)
+    if hatch == 'none':
+        AX.fill_between(lh, [ylim[0]]*2, [ylim[1]]*2, color=color, alpha=0.25, zorder=-10)
+    else:
+        AX.fill_between(lh, [ylim[0]]*2, [ylim[1]]*2, color=color, alpha=0.25, hatch=hatch, zorder=-10)
 AX.set_ylim(ylim)
 
 #---
