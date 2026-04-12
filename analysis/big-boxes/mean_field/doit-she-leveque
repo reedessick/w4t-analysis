@@ -1,0 +1,399 @@
+#!/bin/zsh
+
+# ranges for scaling-exponent extraction differ for each (field, long_or_trsv) so I'm just going to type them out by hand
+
+declare -A REF_HIGH
+
+#-------------------------------------------------
+
+field="vel"
+long_or_trsv="trsv"
+
+OUTDIR="fits/${field}-$long_or_trsv"
+mkdir -p $OUTDIR
+
+#-----------
+
+REF_LOW="3e-4 4e-3 7e-2"
+
+REF_HIGH[3e-4]=6e-4
+REF_HIGH[4e-3]=8e-3
+REF_HIGH[7e-2]=14e-2
+
+OUTPATHS=""
+
+for ref_low in ${=REF_LOW}
+do
+
+    ref_high=${REF_HIGH[$ref_low]}
+
+    echo \
+    ../plot-structure-function-ansatz \
+        $OUTDIR/structure-function-ansatz-samples-${field}-${long_or_trsv}-??.hdf \
+        --vband grey x $ref_low $ref_high \
+        --output-dir $OUTDIR \
+        --tag ${field}-${long_or_trsv}-${ref_low}_${ref_high} \
+        --title "$field $long_or_trsv $ref_low $ref_high" \
+        --verbose \
+    || exit 1
+
+    #---
+
+    outpath=$OUTDIR/scaling-exponent-ansatz-samples-${field}-${long_or_trsv}-${ref_low}_${ref_high}.hdf
+    OUTPATHS="$OUTPATHS $outpath"
+
+    echo \
+    ../simple-sample-scaling-exponent-ansatz \
+        $OUTDIR/structure-function-ansatz-samples-${field}-${long_or_trsv}-??.hdf \
+        --ref-scale $ref_low $ref_high \
+        --outpath $outpath \
+        --num-warmup 500 \
+        --num-samples 50000 \
+        --seed 6 --seed 7 --seed 8 --seed 9 --seed 0 \
+        --num-segs 5 \
+        --verbose \
+        --prior-kwarg min_C0 0 \
+        --prior-kwarg max_C0 3 \
+    || exit 1
+
+    echo \
+    w4t-corner \
+        $outpath \
+        -f x C0 beta \
+        --clip C0 0 3 \
+        --root posterior \
+        --title "$field $long_or_trsv $ref_low $ref_high" \
+        --output-dir $OUTDIR \
+        --tag ${field}-${long_or_trsv}-${ref_low}_${ref_high} \
+        --verbose \
+    || exit 1
+
+    echo \
+    w4t-corner \
+        $outpath \
+        -f x C0 beta \
+        --clip C0 0 3 \
+        --root prior \
+        --title "$field $long_or_trsv $ref_low $ref_high" \
+        --output-dir $OUTDIR \
+        --tag ${field}-${long_or_trsv}-${ref_low}_${ref_high}-prior \
+        --verbose \
+    || exit 1
+
+done
+
+#echo \
+../plot-scaling-exponent-ansatz \
+    ${=OUTPATHS} \
+    -i $OUTDIR/structure-function-ansatz-samples-${field}-${long_or_trsv}-??.hdf \
+    --output-dir $OUTDIR \
+    --tag "${field}-${long_or_trsv}" \
+    --max-num-samples 100 \
+    --verbose \
+|| exit 1
+
+#    --title "${field} ${long_or_trsv}" \
+
+#echo \
+../corner-scaling-exponent-ansatz \
+    ${=OUTPATHS} \
+    --output-dir $OUTDIR \
+    --tag "${field}-${long_or_trsv}" \
+    --verbose \
+|| exit 1
+
+#    --title "${field} ${long_or_trsv}" \
+
+#------------------------
+
+field="vel"
+long_or_trsv="long"
+
+OUTDIR="fits/${field}-$long_or_trsv"
+mkdir -p $OUTDIR
+
+#-----------
+
+REF_LOW="3e-4 7e-3 6e-2"
+
+REF_HIGH[3e-4]=6e-4
+REF_HIGH[7e-3]=14e-3
+REF_HIGH[6e-2]=12e-2
+
+OUTPATHS=""
+
+for ref_low in ${=REF_LOW}
+do
+
+    ref_high=${REF_HIGH[$ref_low]}
+
+    echo \
+    ../plot-structure-function-ansatz \
+        $OUTDIR/structure-function-ansatz-samples-${field}-${long_or_trsv}-??.hdf \
+        --vband grey x $ref_low $ref_high \
+        --output-dir $OUTDIR \
+        --tag ${field}-${long_or_trsv}-${ref_low}_${ref_high} \
+        --title "$field $long_or_trsv $ref_low $ref_high" \
+        --verbose \
+    || exit 1
+
+    #---
+
+    outpath=$OUTDIR/scaling-exponent-ansatz-samples-${field}-${long_or_trsv}-${ref_low}_${ref_high}.hdf
+    OUTPATHS="$OUTPATHS $outpath"
+
+    echo \
+    ../simple-sample-scaling-exponent-ansatz \
+        $OUTDIR/structure-function-ansatz-samples-${field}-${long_or_trsv}-??.hdf \
+        --ref-scale $ref_low $ref_high \
+        --outpath $outpath \
+        --num-warmup 500 \
+        --num-samples 50000 \
+        --seed 6 --seed 7 --seed 8 --seed 9 --seed 0 \
+        --num-segs 5 \
+        --verbose \
+        --prior-kwarg min_C0 0 \
+        --prior-kwarg max_C0 3 \
+    || exit 1
+
+    echo \
+    w4t-corner \
+        $outpath \
+        -f x C0 beta \
+        --clip C0 0 3 \
+        --root posterior \
+        --title "$field $long_or_trsv $ref_low $ref_high" \
+        --output-dir $OUTDIR \
+        --tag ${field}-${long_or_trsv}-${ref_low}_${ref_high} \
+        --verbose \
+    || exit 1
+
+    echo \
+    w4t-corner \
+        $outpath \
+        -f x C0 beta \
+        --clip C0 0 3 \
+        --root prior \
+        --title "$field $long_or_trsv $ref_low $ref_high" \
+        --output-dir $OUTDIR \
+        --tag ${field}-${long_or_trsv}-${ref_low}_${ref_high}-prior \
+        --verbose \
+    || exit 1
+
+done
+
+#echo \
+../plot-scaling-exponent-ansatz \
+    ${=OUTPATHS} \
+    -i $OUTDIR/structure-function-ansatz-samples-${field}-${long_or_trsv}-??.hdf \
+    --output-dir $OUTDIR \
+    --tag "${field}-${long_or_trsv}" \
+    --max-num-samples 100 \
+    --verbose \
+|| exit 1
+
+#    --title "${field} ${long_or_trsv}" \
+
+#echo \
+../corner-scaling-exponent-ansatz \
+    ${=OUTPATHS} \
+    --output-dir $OUTDIR \
+    --tag "${field}-${long_or_trsv}" \
+    --verbose \
+|| exit 1
+
+#    --title "${field} ${long_or_trsv}" \
+
+#------------------------
+
+field="mag"
+long_or_trsv="trsv"
+
+OUTDIR="fits/${field}-$long_or_trsv"
+mkdir -p $OUTDIR
+
+#-----------
+
+REF_LOW="7e-4"
+REF_HIGH[7e-4]=14e-4
+
+OUTPATHS=""
+
+for ref_low in ${=REF_LOW}
+do
+
+    ref_high=${REF_HIGH[$ref_low]}
+
+    echo \
+    ../plot-structure-function-ansatz \
+        $OUTDIR/structure-function-ansatz-samples-${field}-${long_or_trsv}-??.hdf \
+        --vband grey x $ref_low $ref_high \
+        --output-dir $OUTDIR \
+        --tag ${field}-${long_or_trsv}-${ref_low}_${ref_high} \
+        --title "$field $long_or_trsv $ref_low $ref_high" \
+        --verbose \
+    || exit 1
+
+    #---
+
+    outpath=$OUTDIR/scaling-exponent-ansatz-samples-${field}-${long_or_trsv}-${ref_low}_${ref_high}.hdf
+    OUTPATHS="$OUTPATHS $outpath"
+
+    echo \
+    ../simple-sample-scaling-exponent-ansatz \
+        $OUTDIR/structure-function-ansatz-samples-${field}-${long_or_trsv}-??.hdf \
+        --ref-scale $ref_low $ref_high \
+        --outpath $outpath \
+        --num-warmup 500 \
+        --num-samples 50000 \
+        --seed 6 --seed 7 --seed 8 --seed 9 --seed 0 \
+        --num-segs 5 \
+        --verbose \
+        --prior-kwarg min_C0 0 \
+        --prior-kwarg max_C0 3 \
+    || exit 1
+
+    echo \
+    w4t-corner \
+        $outpath \
+        -f x C0 beta \
+        --clip C0 0 3 \
+        --root posterior \
+        --title "$field $long_or_trsv $ref_low $ref_high" \
+        --output-dir $OUTDIR \
+        --tag ${field}-${long_or_trsv}-${ref_low}_${ref_high} \
+        --verbose \
+    || exit 1
+
+    echo \
+    w4t-corner \
+        $outpath \
+        -f x C0 beta \
+        --clip C0 0 3 \
+        --root prior \
+        --title "$field $long_or_trsv $ref_low $ref_high" \
+        --output-dir $OUTDIR \
+        --tag ${field}-${long_or_trsv}-${ref_low}_${ref_high}-prior \
+        --verbose \
+    || exit 1
+
+done
+
+#echo \
+../plot-scaling-exponent-ansatz \
+    ${=OUTPATHS} \
+    -i $OUTDIR/structure-function-ansatz-samples-${field}-${long_or_trsv}-??.hdf \
+    --output-dir $OUTDIR \
+    --tag "${field}-${long_or_trsv}" \
+    --max-num-samples 100 \
+    --verbose \
+|| exit 1
+
+#    --title "${field} ${long_or_trsv}" \
+
+#echo \
+../corner-scaling-exponent-ansatz \
+    ${=OUTPATHS} \
+    --output-dir $OUTDIR \
+    --tag "${field}-${long_or_trsv}" \
+    --verbose \
+|| exit 1
+
+#    --title "${field} ${long_or_trsv}" \
+
+#------------------------
+
+field="mag"
+long_or_trsv="long"
+
+OUTDIR="fits/${field}-$long_or_trsv"
+mkdir -p $OUTDIR
+
+#-----------
+
+REF_LOW="7e-4"
+REF_HIGH[7e-4]=14e-4
+
+OUTPATHS=""
+
+for ref_low in ${=REF_LOW}
+do
+
+    ref_high=${REF_HIGH[$ref_low]}
+
+    echo \
+    ../plot-structure-function-ansatz \
+        $OUTDIR/structure-function-ansatz-samples-${field}-${long_or_trsv}-??.hdf \
+        --vband grey x $ref_low $ref_high \
+        --output-dir $OUTDIR \
+        --tag ${field}-${long_or_trsv}-${ref_low}_${ref_high} \
+        --title "$field $long_or_trsv $ref_low $ref_high" \
+        --verbose \
+    || exit 1
+
+    #---
+
+    outpath=$OUTDIR/scaling-exponent-ansatz-samples-${field}-${long_or_trsv}-${ref_low}_${ref_high}.hdf
+    OUTPATHS="$OUTPATHS $outpath"
+
+    echo \
+    ../simple-sample-scaling-exponent-ansatz \
+        $OUTDIR/structure-function-ansatz-samples-${field}-${long_or_trsv}-??.hdf \
+        --ref-scale $ref_low $ref_high \
+        --outpath $outpath \
+        --num-warmup 500 \
+        --num-samples 50000 \
+        --seed 6 --seed 7 --seed 8 --seed 9 --seed 0 \
+        --num-segs 5 \
+        --verbose \
+        --prior-kwarg min_C0 0 \
+        --prior-kwarg max_C0 3 \
+    || exit 1
+
+    echo \
+    w4t-corner \
+        $outpath \
+        -f x C0 beta \
+        --clip C0 0 3 \
+        --root posterior \
+        --title "$field $long_or_trsv $ref_low $ref_high" \
+        --output-dir $OUTDIR \
+        --tag ${field}-${long_or_trsv}-${ref_low}_${ref_high} \
+        --verbose \
+    || exit 1
+
+    echo \
+    w4t-corner \
+        $outpath \
+        -f x C0 beta \
+        --clip C0 0 3 \
+        --root prior \
+        --title "$field $long_or_trsv $ref_low $ref_high" \
+        --output-dir $OUTDIR \
+        --tag ${field}-${long_or_trsv}-${ref_low}_${ref_high}-prior \
+        --verbose \
+    || exit 1
+
+done
+
+#echo \
+../plot-scaling-exponent-ansatz \
+    ${=OUTPATHS} \
+    -i $OUTDIR/structure-function-ansatz-samples-${field}-${long_or_trsv}-??.hdf \
+    --output-dir $OUTDIR \
+    --tag "${field}-${long_or_trsv}" \
+    --max-num-samples 100 \
+    --verbose \
+|| exit 1
+
+#    --title "${field} ${long_or_trsv}" \
+
+#echo \
+../corner-scaling-exponent-ansatz \
+    ${=OUTPATHS} \
+    --output-dir $OUTDIR \
+    --tag "${field}-${long_or_trsv}" \
+    --verbose \
+|| exit 1
+
+#    --title "${field} ${long_or_trsv}" \
